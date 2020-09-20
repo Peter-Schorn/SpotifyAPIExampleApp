@@ -5,7 +5,7 @@ Requires Xcode 12 and iOS 14.
 
 To compile this application, go to https://developer.spotify.com/dashboard/login and create an app. Take note of the client id and client secret. Then click on "edit settings" and add the following redirect URI:
 ```
-spotify-api-example-app
+spotify-api-example-app://login-callback
 ```
 
 Next, add `client_id` and `client_secret` to the environment variables for your scheme:
