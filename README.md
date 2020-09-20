@@ -1,5 +1,5 @@
 # SpotifyAPIExampleApp
-An Example App that demonstrates the usage of SpotifyAPI.
+An Example App that demonstrates the usage of [SpotifyAPI](https://github.com/Peter-Schorn/SpotifyAPI), a Swift library for the Spotify web API.
 
 Requires Xcode 12 and iOS 14.
 
