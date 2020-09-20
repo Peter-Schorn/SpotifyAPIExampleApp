@@ -64,7 +64,7 @@ struct AlbumTracksView: View {
                 else {
                     ForEach(albumTracks.enumeratedArray(), id: \.index) { track in
                         HStack {
-                            Text("\(track.index). \(track.element.name)")
+                            Text("\(track.index + 1). \(track.element.name)")
                             Spacer()
                         }
                         .padding()

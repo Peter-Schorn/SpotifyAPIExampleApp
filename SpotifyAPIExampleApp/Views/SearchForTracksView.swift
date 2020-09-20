@@ -93,6 +93,7 @@ struct SearchForTracksView: View {
             .cornerRadius(10)
     }
     
+    /// Includes the name of the track and the artist.
     func trackDisplayName(_ track: Track) -> String {
         var displayName = track.name
         if let artistName = track.artists?.first?.name {

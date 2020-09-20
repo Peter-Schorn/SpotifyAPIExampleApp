@@ -46,6 +46,7 @@ struct PlaylistCellView: View {
         .onAppear(perform: loadImage)
     }
     
+    /// Loads the image for the playlist.
     func loadImage() {
         
         // Return early if the image has already been requested.
@@ -70,6 +71,7 @@ struct PlaylistCellView: View {
             // You were expecting this method to be longer, weren't you?
     }
     
+    /// Plays the playlist on the user's active device.
     func playPlaylist() {
         let playbackRequest = PlaybackRequest(
             context: .contextURI(playlist), offset: nil
