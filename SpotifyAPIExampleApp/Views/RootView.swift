@@ -1,5 +1,5 @@
 //
-//  RooView.swift
+//  RootView.swift
 //  SpotifyAPIExampleApp
 //
 //  Created by Peter Schorn on 9/19/20.
