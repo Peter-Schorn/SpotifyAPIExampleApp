@@ -17,6 +17,18 @@ struct PlaylistsListView: View {
     @State private var isLoadingPlaylists = false
     @State private var couldntLoadPlaylists = false
     
+    let debug: Bool
+    
+    init() {
+        self.debug = false
+    }
+    
+    /// Used only by the preview provider to provide sample data.
+    fileprivate init(samplePlaylists: [Playlist<PlaylistsItemsReference>]) {
+        self._playlists = State(initialValue: samplePlaylists)
+        self.debug = true
+    }
+    
     var body: some View {
         VStack {
             if playlists.isEmpty {
@@ -42,7 +54,7 @@ struct PlaylistsListView: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
                 List {
-                    ForEach(playlists, id: \.self) { playlist in
+                    ForEach(playlists, id: \.uri) { playlist in
                         PlaylistCellView(playlist)
                     }
                 }
@@ -72,6 +84,12 @@ struct PlaylistsListView: View {
     }
     
     func retrievePlaylists() {
+        
+        // If `debug` is `true`, then sample albums have been provided
+        // for testing purposes, so we shouldn't try to retrieve any from
+        // the Spotify web API.
+        if self.debug { return }
+        
         self.isLoadingPlaylists = true
         self.playlists = []
         spotify.api.currentUserPlaylists()
@@ -111,9 +129,16 @@ struct PlaylistsListView_Previews: PreviewProvider {
     
     static let spotify = Spotify()
     
+    static let playlists: [Playlist<PlaylistsItemsReference>] = [
+        .menITrust, .modernPsychedelia, .menITrust,
+        .lucyInTheSkyWithDiamonds, .rockClassics,
+        .thisIsMFDoom, .thisIsSonicYouth, .thisIsMildHighClub,
+        .thisIsSkinshape
+    ]
+    
     static var previews: some View {
         NavigationView {
-            PlaylistsListView()
+            PlaylistsListView(samplePlaylists: playlists)
                 .environmentObject(spotify)
         }
     }

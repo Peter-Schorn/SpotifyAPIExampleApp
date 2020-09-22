@@ -58,7 +58,7 @@ struct RootView: View {
     }
 
     /// Handle the URL that Spotify redirects to after the user
-    /// Either authorizes or denies authorizaion for your application.
+    /// Either authorizes or denies authorizaion for the application.
     func handleURL(_ url: URL) {
         
         // **Always** validate URLs; they offer a potential attack
@@ -116,7 +116,11 @@ struct RootView: View {
 
 struct RootView_Previews: PreviewProvider {
     
-    static let spotify = Spotify()
+    static let spotify: Spotify = {
+        let spotify = Spotify()
+        spotify.isAuthorized = true
+        return spotify
+    }()
     
     static var previews: some View {
         RootView()

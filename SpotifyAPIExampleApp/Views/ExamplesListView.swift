@@ -27,7 +27,15 @@ struct ExamplesListView: View {
 }
 
 struct ExamplesListView_Previews: PreviewProvider {
+    
+    static let spotify: Spotify = {
+        let spotify = Spotify()
+        spotify.isAuthorized = true
+        return spotify
+    }()
+    
     static var previews: some View {
         ExamplesListView()
+            .environmentObject(spotify)
     }
 }

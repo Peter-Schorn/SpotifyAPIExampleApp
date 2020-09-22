@@ -26,13 +26,13 @@ struct AlbumTracksView: View {
     @State var albumTracks: [Track] = []
 
     var album: Album
-    var image: Image?
+    var image: Image
     
     var body: some View {
         ScrollView {
             LazyVStack {
                 ZStack {
-                    (image ?? Image(.spotifyAlbumPlaceholder))
+                    image
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .cornerRadius(20)
@@ -40,9 +40,12 @@ struct AlbumTracksView: View {
                     playButton
                 }
                 .padding(30)
-                Text("\(album.artists?.first?.name ?? "")")
-                    .font(.title)
-                    .bold()
+                Text(
+                    "\(album.artists?.first?.name ?? "")" +
+                    " - \(album.tracks?.total ?? 0) Tracks"
+                )
+                .font(.title)
+                .bold()
                 if albumTracks.isEmpty {
                     if isLoadingTracks {
                         HStack {
@@ -89,7 +92,7 @@ struct AlbumTracksView: View {
                 print("missing album uri for '\(album.name)'")
                 return
             }
-            let playbackRequest = PlaybackRequest(
+            let playbackRequest = PlaybackRequest.init(
                 context: .contextURI(albumURI), offset: nil
             )
             print("playing album '\(album.name)'")
@@ -153,8 +156,15 @@ struct AlbumTracksView: View {
     
 }
 
-// struct AlbumTracksView_Previews: PreviewProvider {
-//     static var previews: some View {
-//         AlbumTracksView()
-//     }
-// }
+struct AlbumTracksView_Previews: PreviewProvider {
+    
+    static let spotify = Spotify()
+    static let album = Album.jinx
+    
+    static var previews: some View {
+        AlbumTracksView(
+            album: album, image: Image(.spotifyAlbumPlaceholder)
+        )
+        .environmentObject(spotify)
+    }
+}

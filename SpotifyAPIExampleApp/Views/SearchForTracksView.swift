@@ -110,7 +110,7 @@ struct SearchForTracksView: View {
         self.tracks = []
         
         self.searchCancellable = spotify.api.search(
-            query: searchText, types: [.track]
+            query: searchText, categories: [.track]
         )
         .receive(on: RunLoop.main)
         .sink(

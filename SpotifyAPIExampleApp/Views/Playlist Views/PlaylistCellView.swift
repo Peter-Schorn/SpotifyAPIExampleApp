@@ -7,7 +7,7 @@ struct PlaylistCellView: View {
     @EnvironmentObject var spotify: Spotify
 
     /// The cover image for the playlist.
-    @State private var image: Image? = nil
+    @State private var image = Image(.spotifyAlbumPlaceholder)
 
     @State private var loadImageCancellable: AnyCancellable? = nil
     @State private var didRequestImage = false
@@ -28,7 +28,7 @@ struct PlaylistCellView: View {
     var body: some View {
         Button(action: playPlaylist, label: {
             HStack {
-                (image ?? Image(.spotifyAlbumPlaceholder))
+                image
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 70, height: 70)
@@ -52,14 +52,18 @@ struct PlaylistCellView: View {
         // Return early if the image has already been requested.
         // We can't just check if `self.image == nil` because the image
         // might have already been requested, but not loaded yet.
-        if self.didRequestImage { return }
+        if self.didRequestImage {
+            // print("didRequestImage image for '\(playlist.name)'")
+            return
+        }
         self.didRequestImage = true
         
         guard let spotifyImage = playlist.images.largest else {
+            // print("no image found for '\(playlist.name)'")
             return
         }
 
-        print("loading image for '\(playlist.name)'")
+        // print("loading image for '\(playlist.name)'")
         
         // Note that a `Set<AnyCancellable>` is NOT being used
         // so that each time a request to load the image is made,
@@ -67,8 +71,13 @@ struct PlaylistCellView: View {
         // is deallocated, which cancels the publisher.
         self.loadImageCancellable = spotifyImage.load()
             .receive(on: RunLoop.main)
-            .assignToOptional(\.image, on: self)
-            // You were expecting this method to be longer, weren't you?
+            .sink(
+                receiveCompletion: { _ in },
+                receiveValue: { image in
+                    // print("received image for '\(playlist.name)'")
+                    self.image = image
+                }
+            )
     }
     
     /// Plays the playlist on the user's active device.
@@ -90,9 +99,12 @@ struct PlaylistCellView: View {
     
 }
 
-// struct PlaylistCellView_Previews: PreviewProvider {
-//
-//     static var previews: some View {
-//         PlaylistCellView()
-//     }
-// }
+struct PlaylistCellView_Previews: PreviewProvider {
+
+    static let spotify = Spotify()
+    static let playlist = Playlist.rockClassics
+    
+    static var previews: some View {
+        PlaylistCellView(playlist)
+    }
+}

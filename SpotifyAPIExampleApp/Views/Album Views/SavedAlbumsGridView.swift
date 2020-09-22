@@ -19,8 +19,20 @@ struct SavedAlbumsGridView: View {
     @State private var loadAlbumsCancellable: AnyCancellable? = nil
     
     let columns = [
-        GridItem(.adaptive(minimum: 100))
+        GridItem(.adaptive(minimum: 100, maximum: 200))
     ]
+
+    let debug: Bool
+    
+    init() {
+        self.debug = false
+    }
+    
+    /// Used only by the preview provider to provide sample data.
+    fileprivate init(sampleAlbums: [Album]) {
+        self._savedAlbums = State(initialValue: sampleAlbums)
+        self.debug = true
+    }
     
     var body: some View {
         Group {
@@ -41,11 +53,17 @@ struct SavedAlbumsGridView: View {
                         .font(.title)
                         .foregroundColor(.secondary)
                 }
+                else {
+                    Text("DEBUG")
+                }
             }
             else {
                 ScrollView {
                     LazyVGrid(columns: columns) {
-                        ForEach(savedAlbums, id: \.self) { album in
+                        // WARNING: do not use `\.self` for the id.
+                        // This is extremely expensive and causes lag when
+                        // scrolling.
+                        ForEach(savedAlbums, id: \.id) { album in
                             SavedAlbumView(album: album)
                         }
                     }
@@ -80,6 +98,11 @@ struct SavedAlbumsGridView: View {
     }
     
     func retrieveSavedAlbums() {
+
+        // If `debug` is `true`, then sample albums have been provided
+        // for testing purposes, so we shouldn't try to retrieve any from
+        // the Spotify web API.
+        if self.debug { return }
         
         self.didRequestAlbums = true
         self.isLoadingAlbums = true
@@ -90,6 +113,7 @@ struct SavedAlbumsGridView: View {
         self.loadAlbumsCancellable = spotify.api
             .currentUserSavedAlbums()
             .extendPages(spotify.api)
+            .receive(on: RunLoop.main)
             .sink(
                 receiveCompletion: { completion in
                     self.isLoadingAlbums = false
@@ -104,8 +128,23 @@ struct SavedAlbumsGridView: View {
                     }
                 },
                 receiveValue: { savedAlbums in
-                    let albums = savedAlbums.items.map(\.item)
+                    let albums = savedAlbums.items
+                        .map(\.item)
+                        /*
+                         Remove albums that have `nil` for Id
+                         so it can be used as the id for the
+                         ForEach above. (The id must be unique, otherwise
+                         the app will crash.) Using \.self is extremely
+                         expensive as this involves calculating the hash of
+                         the entire `Album` instance, which is very large.
+                         
+                         The `currentUserSavedAlbums` endpoint should never
+                         return an Album with a `nil` Id.
+                         */
+                        .filter { $0.id != nil }
+                    
                     self.savedAlbums.append(contentsOf: albums)
+                    
                 }
             )
     }
@@ -113,7 +152,18 @@ struct SavedAlbumsGridView: View {
 }
 
 struct SavedAlbumsView_Previews: PreviewProvider {
+    
+    static let spotify = Spotify()
+
+    static let sampleAlbums: [Album] = [
+        .jinx, .abbeyRoad, .darkSideOfTheMoon, .meddle, .inRainbows,
+        .skiptracing
+    ]
+    
     static var previews: some View {
-        SavedAlbumsGridView()
+        SavedAlbumsGridView(sampleAlbums: sampleAlbums)
+            .environmentObject(spotify)
+            
     }
+    
 }
