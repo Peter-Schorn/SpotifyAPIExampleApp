@@ -28,6 +28,16 @@ struct AlbumTracksView: View {
     var album: Album
     var image: Image
     
+    /// The artist of the album and the number of tracks; e.g.,
+    /// "By Pink Floyd - 5 Tracks".
+    var artistTracksString: String {
+        let tracksString = "\(album.tracks?.total ?? 0) Tracks"
+        if let artistName = album.artists?.first?.name {
+            return "By \(artistName) - \(tracksString)"
+        }
+        return tracksString
+    }
+    
     var body: some View {
         ScrollView {
             LazyVStack {
@@ -40,10 +50,7 @@ struct AlbumTracksView: View {
                     playButton
                 }
                 .padding(30)
-                Text(
-                    "\(album.artists?.first?.name ?? "")" +
-                    " - \(album.tracks?.total ?? 0) Tracks"
-                )
+                Text(artistTracksString)
                 .font(.title)
                 .bold()
                 if albumTracks.isEmpty {

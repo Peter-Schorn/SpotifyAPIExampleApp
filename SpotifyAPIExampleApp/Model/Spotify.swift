@@ -30,7 +30,7 @@ final class Spotify: ObservableObject {
     )!
     
     /// A cryptographically-secure random string.
-    static let authorizationState: String = {
+    let authorizationState: String = {
         var bytes = NSMutableData(length: 32)!
         _ = SecRandomCopyBytes(
             kSecRandomDefault,
@@ -57,8 +57,8 @@ final class Spotify: ObservableObject {
     
     init() {
         
-        self.api.apiRequestLogger.level = .trace
-        self.api.logger.level = .trace
+        self.api.apiRequestLogger.logLevel = .trace
+        self.api.logger.logLevel = .trace
         
         // MARK: Important: Subscribe to `authorizationManagerDidChange` BEFORE
         // MARK: retrieving `authorizationManager` from persistent storage
@@ -81,15 +81,18 @@ final class Spotify: ObservableObject {
                 )
                 print("found authorization info in keychain")
                 
-                // This assignment triggers the didSet property observer
-                // of `SpotifyAPI.authorizationManager`, which causes
-                // `authorizationManagerDidChange` to emit a signal,
-                // meaning that `handleChangesToAuthorizationManager will be
-                // called. Note that if you had subscribed to
-                // `authorizationManagerDidChange` after this line,
-                // then `handleChangesToAuthorizationManager` would not
-                // have been called and the @Published `isAuthorized` property
-                // would not have been properly updated.
+                /*
+                 This assignment causes `authorizationManagerDidChange`
+                 to emit a signal, meaning that
+                 `handleChangesToAuthorizationManager will be
+                 called.
+                 
+                 Note that if you had subscribed to
+                 `authorizationManagerDidChange` after this line,
+                 then `handleChangesToAuthorizationManager` would not
+                 have been called and the @Published `isAuthorized` property
+                 would not have been properly updated.
+                 */
                 self.api.authorizationManager = authorizationManager
                 
             } catch {
@@ -125,7 +128,7 @@ final class Spotify: ObservableObject {
             // This same value **MUST** be provided for the state parameter of
             // `authorizationManager.requestAccessAndRefreshTokens(redirectURIWithQuery:state:)`.
             // Otherwise, an error will be thrown.
-            state: Self.authorizationState,
+            state: authorizationState,
             scopes: [
                 .userReadPlaybackState, .userReadEmail, .userLibraryModify,
                 .userLibraryRead, .userModifyPlaybackState

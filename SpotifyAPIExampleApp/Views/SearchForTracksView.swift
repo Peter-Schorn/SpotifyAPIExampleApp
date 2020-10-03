@@ -132,7 +132,7 @@ struct SearchForTracksView: View {
     /// Plays a track on the user's active device.
     func playTrack(_ track: Track) {
         
-        guard let uri = track.uri else {
+        guard let trackURI = track.uri else {
             self.alertTitle = "Couldn't Play '\(track.name)'"
             self.alertMessage = "missing URI"
             self.alertIsPresented = true
@@ -140,10 +140,8 @@ struct SearchForTracksView: View {
         }
         
         // A request to play a single track.
-        let playbackRequest = PlaybackRequest(
-            context: .uris([uri]),
-            offset: nil
-        )
+        let playbackRequest = PlaybackRequest(trackURI)
+        
         self.spotify.api.play(playbackRequest)
             .sink(receiveCompletion: { completion in
                 if case .failure(let error) = completion {
