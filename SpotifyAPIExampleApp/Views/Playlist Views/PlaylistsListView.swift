@@ -85,7 +85,7 @@ struct PlaylistsListView: View {
     
     func retrievePlaylists() {
         
-        // If `debug` is `true`, then sample albums have been provided
+        // If `debug` is `true`, then sample playlists have been provided
         // for testing purposes, so we shouldn't try to retrieve any from
         // the Spotify web API.
         if self.debug { return }

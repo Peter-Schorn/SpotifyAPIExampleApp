@@ -24,7 +24,6 @@ struct SearchForTracksView: View {
     @State private var searchText = ""
     @State private var searchCancellable: AnyCancellable? = nil
 
-
     @State private var playRequestCancellables: Set<AnyCancellable> = []
     
     var body: some View {
