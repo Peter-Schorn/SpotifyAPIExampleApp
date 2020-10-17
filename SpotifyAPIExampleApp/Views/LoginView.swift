@@ -83,7 +83,7 @@ struct LoginView: ViewModifier {
         .background(backgroundGradient)
         .clipShape(Capsule())
         .shadow(radius: 5)
-        // MARK: Authorize Application
+        // MARK: Authorize The Application
         .onTapGesture(perform: self.spotify.authorize)
     }
     

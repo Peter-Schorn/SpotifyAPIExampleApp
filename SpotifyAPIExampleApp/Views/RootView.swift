@@ -42,13 +42,13 @@ struct RootView: View {
     
     var logoutButton: some View {
         Button(action: {
-            // calling this method will also cause
+            // Calling this method will also cause
             // `SpotifyAPI.authorizationManagerDidChange` to emit
             // a signal.
             spotify.api.authorizationManager.deauthorize()
             
             do {
-                
+                // Remove the authorization information from the keychain.
                 try spotify.keychain.remove(KeychainKeys.authorizationManager)
                 
             } catch {
@@ -76,7 +76,7 @@ struct RootView: View {
         // **Always** validate URLs; they offer a potential attack
         // vector into your app.
         guard url.scheme == Spotify.loginCallbackURL.scheme else {
-            print("Not opening URL: unexpected scheme:", url)
+            print("not opening URL: unexpected scheme: '\(url)'")
             return
         }
 
@@ -87,7 +87,7 @@ struct RootView: View {
         
         spotify.api.authorizationManager.requestAccessAndRefreshTokens(
             redirectURIWithQuery: url,
-            // this value must be the same as the one used to create the
+            // This value must be the same as the one used to create the
             // authorization URL. Otherwise, an error will be thrown.
             state: spotify.authorizationState
         )
@@ -102,8 +102,8 @@ struct RootView: View {
              `SpotifyAPI.authorizationManagerDidChange` will emit a
              signal, causing `handleChangesToAuthorizationManager` to be
              called, which will dismiss the loginView if the app was
-             successfully authorized by setting `spotify.isAuthorized` to
-             `true`.
+             successfully authorized by setting the
+             @Published `spotify.isAuthorized` property to `true`.
 
              The only thing we need to do here is handle the error and
              show it to the user if one was received.

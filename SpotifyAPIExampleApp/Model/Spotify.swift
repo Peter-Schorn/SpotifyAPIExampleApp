@@ -5,6 +5,13 @@ import SwiftUI
 import KeychainAccess
 import SpotifyWebAPI
 
+/**
+ A helper class that wraps around an instance of `SpotifyAPI`
+ and provides convenience methods for authorizing your application.
+ 
+ It's most important role is to handle changes to the authorzation
+ information and save them to persistent storage in the keychain.
+ */
 final class Spotify: ObservableObject {
     
     private static let clientID: String = {
@@ -30,17 +37,14 @@ final class Spotify: ObservableObject {
     )!
     
     /// A cryptographically-secure random string.
-    let authorizationState: String = {
-        var bytes = NSMutableData(length: 32)!
-        _ = SecRandomCopyBytes(
-            kSecRandomDefault,
-            bytes.length,
-            UnsafeMutableRawPointer(bytes.mutableBytes)
-        )
-        return bytes.base64EncodedString()
-    }()
-    
+    let authorizationState = String.randomURLSafe(length: 32)
+ 
     /**
+     Whether or not the application has been authorized. If `true`,
+     then you can begin making requests to the Spotify web API
+     using the `api` property of this class, which contains an instance
+     of `SpotifyAPI`.
+     
      This property provides a convenient way for the user interface
      to be updated based on whether the user has logged in with their
      Spotify account yet.
@@ -51,14 +55,15 @@ final class Spotify: ObservableObject {
     @Published var isAuthorized = false
 
     /// The keychain to store the authorization information in.
-    let keychain = Keychain(service: "Peter-Schorn.SpotifyAPIApp")
+    let keychain = Keychain(service: "com.Peter-Schorn.SpotifyAPIExampleApp")
     
-    var cancellables: [AnyCancellable] = []
+    var cancellables: Set<AnyCancellable> = []
     
     init() {
         
+        // MARK: Configure the Loggers
         self.api.apiRequestLogger.logLevel = .trace
-        self.api.logger.logLevel = .trace
+        // self.api.logger.logLevel = .trace
         
         // MARK: Important: Subscribe to `authorizationManagerDidChange` BEFORE
         // MARK: retrieving `authorizationManager` from persistent storage
@@ -84,8 +89,7 @@ final class Spotify: ObservableObject {
                 /*
                  This assignment causes `authorizationManagerDidChange`
                  to emit a signal, meaning that
-                 `handleChangesToAuthorizationManager will be
-                 called.
+                 `handleChangesToAuthorizationManager` will be called.
                  
                  Note that if you had subscribed to
                  `authorizationManagerDidChange` after this line,
@@ -130,8 +134,11 @@ final class Spotify: ObservableObject {
             // Otherwise, an error will be thrown.
             state: authorizationState,
             scopes: [
-                .userReadPlaybackState, .userReadEmail, .userLibraryModify,
-                .userLibraryRead, .userModifyPlaybackState
+                .userReadPlaybackState,
+                .userReadEmail,
+                .userLibraryModify,
+                .userLibraryRead,
+                .userModifyPlaybackState
             ]
         )!
         
@@ -169,6 +176,7 @@ final class Spotify: ObservableObject {
         do {
             // Encode the authorization manager to data.
             let authManagerData = try JSONEncoder().encode(api.authorizationManager)
+            
             // Save the data to the keychain.
             keychain[data: KeychainKeys.authorizationManager] = authManagerData
             

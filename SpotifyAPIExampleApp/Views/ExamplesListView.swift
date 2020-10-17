@@ -1,15 +1,12 @@
-//
-//  ExamplesListView.swift
-//  SpotifyAPIExampleApp
-//
-//  Created by Peter Schorn on 9/19/20.
-//
-
 import SwiftUI
 
 struct ExamplesListView: View {
     
     var body: some View {
+        /*
+         This is the location where you can add your own views to
+         test out your application.
+         */
         List {
             NavigationLink(
                 "Playlists", destination: PlaylistsListView()
@@ -30,6 +27,7 @@ struct ExamplesListView_Previews: PreviewProvider {
     
     static let spotify: Spotify = {
         let spotify = Spotify()
+        // Don't ever do this in non-testing code.
         spotify.isAuthorized = true
         return spotify
     }()
