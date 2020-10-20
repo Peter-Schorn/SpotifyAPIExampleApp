@@ -33,7 +33,7 @@ When the access and refresh tokens are successfully retrieved, the `SpotifyAPI.a
 
 Every time the authorization information changes (e.g., when the access token, which expires after an hour, gets refreshed), `Spotify.handleChangesToAuthorizationManager()` is called so that the authorization information in the keychain can be updated. See the wiki page [Saving authorization information to persistent storage][9].
 
-The next time the app is quit and relaunched, the authorization information will be retrieved from the keychain in the init method of `Spotify`, which prevents the user from having to login each time the app is quit and relaunched.
+The next time the app is quit and relaunched, the authorization information will be retrieved from the keychain in the init method of `Spotify`, which prevents the user from having to login again.
 
 [1]: https://help.apple.com/xcode/mac/11.4/index.html?localePath=en.lproj#/dev3ec8a1cb4
 [2]: https://github.com/Peter-Schorn/SpotifyAPI#authorizing-with-the-authorization-code-flow
