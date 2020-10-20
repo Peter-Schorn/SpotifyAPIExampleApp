@@ -27,7 +27,13 @@ The next step is to create the authorization URL using `AuthorizationCodeFlowMan
 
 <a href="https://ibb.co/Bc7ZYzV"><img src="https://i.ibb.co/17pq4vf/IMG-67-DE87-F2410-C-1.jpg" alt="IMG-67-DE87-F2410-C-1" border="0"></a>
 
-When the user presses "agree" or "cancel", the system redirects back to this app and calls the [`onOpenURL(perform:)`][6] view modifier in `Rootview.swift`, which calls through to the `handleURL(_:)` method directly below. After validating the URl, this method requests the access and refresh tokens using `AuthorizationCodeFlowManager.requestAccessAndRefreshTokens(redirectURIWithQuery:state:)`, the final step in the authorization process.
+When the user presses "agree" or "cancel", the system redirects back to this app and calls the [`onOpenURL(perform:)`][6] view modifier in `Rootview.swift`, which calls through to the `handleURL(_:)` method directly below. After validating the URL scheme, this method requests the access and refresh tokens using `AuthorizationCodeFlowManager.requestAccessAndRefreshTokens(redirectURIWithQuery:state:)`, which completes the final step in the authorization process.
+
+When the access and refresh tokens are successfully retrieved, the `SpotifyAPI.authorizationManagerDidChange` `PassthroughSubject` emits a signal. This subject is subscribed to in the [init method of `Spotify`][7]. The subscription calls [`Spotify.handleChangesToAuthorizationManager()`][8] everytime this subject emits. This method saves the authorization information to persistent storage in the keychain and updates the `@Published var isAuthorized` property of `Spotify`. Assuming the access and refresh tokens have been successfully retrieved, `Spotify.isAuthorized` is set to `true`, which dismisses `LoginView` and allows the user to interact with the rest of the app.
+
+Every time the authorization information changes (e.g., when the access token, which expires after an hour, gets refreshed), `Spotify.handleChangesToAuthorizationManager()` is called so that the authorization information in the keychain can be updated. See the wiki page [Saving authorization information to persistent storage][9].
+
+The next time the app is quit and relaunched, the authorization information will be retrieved from the keychain in the init method of `Spotify`, which prevents the user from having to login each time the app is quit and relaunched.
 
 [1]: https://help.apple.com/xcode/mac/11.4/index.html?localePath=en.lproj#/dev3ec8a1cb4
 [2]: https://github.com/Peter-Schorn/SpotifyAPI#authorizing-with-the-authorization-code-flow
@@ -35,3 +41,6 @@ When the user presses "agree" or "cancel", the system redirects back to this app
 [4]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/d6996e798fb2ef96d732298572c3ad6c81569172/SpotifyAPIExampleApp/Model/Spotify.swift#L127-L150
 [5]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/d6996e798fb2ef96d732298572c3ad6c81569172/SpotifyAPIExampleApp/Views/LoginView.swift#L87
 [6]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/d6996e798fb2ef96d732298572c3ad6c81569172/SpotifyAPIExampleApp/Views/RootView.swift#L39
+[7]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/d6996e798fb2ef96d732298572c3ad6c81569172/SpotifyAPIExampleApp/Model/Spotify.swift#L68-L75
+[8]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/d6996e798fb2ef96d732298572c3ad6c81569172/SpotifyAPIExampleApp/Model/Spotify.swift#L164
+[9]: https://github.com/Peter-Schorn/SpotifyAPI/wiki/Saving-authorization-information-to-persistent-storage.
