@@ -24,7 +24,7 @@ struct SearchForTracksView: View {
     @State private var searchText = ""
     @State private var searchCancellable: AnyCancellable? = nil
 
-    @State private var playRequestCancellables: Set<AnyCancellable> = []
+    @State private var playRequestCancellable: AnyCancellable? = nil
     
     var body: some View {
         VStack {
@@ -32,7 +32,7 @@ struct SearchForTracksView: View {
                 .padding([.top, .horizontal])
             Text(
                 "Enter a query to search for tracks. " +
-                "Tap on a track to play it on your active device."
+                "Tap on a track to play it."
             )
             .font(.caption)
             .foregroundColor(.secondary)
@@ -77,8 +77,10 @@ struct SearchForTracksView: View {
         }
     }
     
+    /// A search bar. Essentially a textfield with a magnifying glass
+    /// overlayed in front of it.
     var searchBar: some View {
-        // Every time the user presses the return key, perform a search.
+        // `onCommit` is called when the user presses the return key.
         TextField("Search", text: $searchText, onCommit: search)
             .padding(.leading, 22)
             .overlay(
@@ -92,7 +94,8 @@ struct SearchForTracksView: View {
             .cornerRadius(10)
     }
     
-    /// Includes the name of the track and the artist.
+    /// Includes the name of the track and the name of artist.
+    /// E.g., "Time - Pink Floyd".
     func trackDisplayName(_ track: Track) -> String {
         var displayName = track.name
         if let artistName = track.artists?.first?.name {
@@ -141,7 +144,7 @@ struct SearchForTracksView: View {
         // A request to play a single track.
         let playbackRequest = PlaybackRequest(trackURI)
         
-        self.spotify.api.play(playbackRequest)
+        self.playRequestCancellable = self.spotify.api.play(playbackRequest)
             .sink(receiveCompletion: { completion in
                 if case .failure(let error) = completion {
                     self.alertTitle = "Couldn't Play '\(track.name)'"
@@ -149,7 +152,7 @@ struct SearchForTracksView: View {
                     self.alertIsPresented = true
                 }
             })
-            .store(in: &playRequestCancellables)
+        
     }
     
 }

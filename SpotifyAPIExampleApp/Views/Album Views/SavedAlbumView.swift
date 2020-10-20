@@ -49,7 +49,7 @@ struct SavedAlbumView: View {
             return
         }
     
-        print("loading image for '\(album.name)'")
+        // print("loading image for '\(album.name)'")
     
         // Note that a `Set<AnyCancellable>` is NOT being used
         // so that each time a request to load the image is made,

@@ -22,7 +22,7 @@ struct PlaylistCellView: View {
     
     init(_ playlist: Playlist<PlaylistsItemsReference>) {
         self.playlist = playlist
-        print("PlaylistCellView init for '\(playlist.name)'")
+        // print("PlaylistCellView init for '\(playlist.name)'")
     }
     
     var body: some View {

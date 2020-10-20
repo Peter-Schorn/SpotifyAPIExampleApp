@@ -22,7 +22,7 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>Peter-Schorn.SpotifyAPIExampleApp</string>
+			<string>com.Peter-Schorn.SpotifyAPIExampleApp</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>spotify-api-example-app</string>

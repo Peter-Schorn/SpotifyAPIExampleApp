@@ -3,10 +3,6 @@ import SwiftUI
 struct ExamplesListView: View {
     
     var body: some View {
-        /*
-         This is the location where you can add your own views to
-         test out your application.
-         */
         List {
             NavigationLink(
                 "Playlists", destination: PlaylistsListView()
@@ -18,6 +14,10 @@ struct ExamplesListView: View {
                 "Search For Tracks", destination: SearchForTracksView()
             )
             
+            // This is the location where you can add your own views to
+            // test out your application. Each view receives an instance
+            // of `Spotify` from the environment.
+            
         }
         .listStyle(PlainListStyle())
     }
@@ -27,7 +27,6 @@ struct ExamplesListView_Previews: PreviewProvider {
     
     static let spotify: Spotify = {
         let spotify = Spotify()
-        // Don't ever do this in non-testing code.
         spotify.isAuthorized = true
         return spotify
     }()

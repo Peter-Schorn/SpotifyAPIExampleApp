@@ -1,9 +1,23 @@
 import SwiftUI
 import Combine
 
+/**
+ A view that presents a button to login with Spotify.
+ 
+ It is presented when `isAuthorized` is `false`.
+ 
+ When the user taps the button, the authorization URL is opened in the browser,
+ which prompts them to login with their Spotify account and authorize this
+ application.
+ 
+ After Spotify redirects back to this app and the access and refresh
+ tokens have been retrieved, dismiss this view by setting `isAuthorized`
+ to `true`.
+ */
 struct LoginView: ViewModifier {
 
     /// Always show this view for debugging purposes.
+    /// Most importantly, this is useful for the preview provider.
     fileprivate static var debugAlwaysShowing = false
     
     /// The animation that should be used for
@@ -18,6 +32,11 @@ struct LoginView: ViewModifier {
     /// view so that the animation can be seen.
     @State private var finishedViewLoadDelay = false
     
+    @Binding var isAuthorized: Bool
+    
+    /// If `true`, a request to retrieve the access and refresh tokens
+    /// is currently in progress, in which case an activity indicator
+    /// is displayed.
     @Binding var isRetrievingTokens: Bool
     
     let backgroundGradient = LinearGradient(
@@ -34,19 +53,21 @@ struct LoginView: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .blur(radius: spotify.isAuthorized ? 0 : 3)
+            .blur(radius: self.isAuthorized ? 0 : 3)
             .overlay(
                 ZStack {
-                    if !spotify.isAuthorized || Self.debugAlwaysShowing {
+                    if !self.isAuthorized || Self.debugAlwaysShowing {
                         Color.black.opacity(0.25)
                             .edgesIgnoringSafeArea(.all)
-                        if finishedViewLoadDelay || Self.debugAlwaysShowing {
+                        if self.finishedViewLoadDelay || Self.debugAlwaysShowing {
                             loginView
                         }
                     }
                 }
             )
             .onAppear {
+                // After the app first launches, add a short delay before
+                // showing this view so that the animation can be seen.
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     withAnimation(LoginView.animation) {
                         self.finishedViewLoadDelay = true
@@ -85,6 +106,10 @@ struct LoginView: ViewModifier {
         .shadow(radius: 5)
         // MARK: Authorize The Application
         .onTapGesture(perform: self.spotify.authorize)
+        // Prevent the user from trying to login again
+        // if a request to retrieve the access and refresh
+        // tokens is currently in progress.
+        .disabled(self.isRetrievingTokens)
     }
     
     var authenticatingView: some View {

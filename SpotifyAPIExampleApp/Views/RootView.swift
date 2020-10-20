@@ -29,7 +29,16 @@ struct RootView: View {
                 .navigationBarItems(trailing: logoutButton)
                 .disabled(!spotify.isAuthorized)
         }
-        .modifier(LoginView(isRetrievingTokens: $isRetrievingTokens))
+        // The login view is presented if `spotify.isAuthorized` == `false.
+        // When the login button is tapped, `spotify.authorize()` is called.
+        .modifier(
+            LoginView(
+                isAuthorized: $spotify.isAuthorized,
+                isRetrievingTokens: $isRetrievingTokens
+            )
+        )
+        // Presented if an error occurs during the process of authorizing
+        // with the user's Spotify account.
         .alert(isPresented: $alertIsPresented) {
             Alert(
                 title: Text(alertTitle),
@@ -40,43 +49,19 @@ struct RootView: View {
         
     }
     
-    var logoutButton: some View {
-        Button(action: {
-            // Calling this method will also cause
-            // `SpotifyAPI.authorizationManagerDidChange` to emit
-            // a signal.
-            spotify.api.authorizationManager.deauthorize()
-            
-            do {
-                // Remove the authorization information from the keychain.
-                try spotify.keychain.remove(KeychainKeys.authorizationManager)
-                
-            } catch {
-                print(
-                    "couldn't remove authorization manager " +
-                    "from keychain: \(error)"
-                )
-            }
-            
-        }, label: {
-            Text("Logout")
-                .foregroundColor(.white)
-                .padding(7)
-                .background(Color(#colorLiteral(red: 0.3923448698, green: 0.7200681584, blue: 0.19703095, alpha: 1)))
-                .cornerRadius(10)
-                .shadow(radius: 3)
-        
-        })
-    }
-
-    /// Handle the URL that Spotify redirects to after the user
-    /// Either authorizes or denies authorizaion for the application.
+    /**
+     Handle the URL that Spotify redirects to after the user
+     Either authorizes or denies authorizaion for the application.
+     
+     This method is called by the `onOpenURL(perform:)` view modifier
+     directly above.
+     */
     func handleURL(_ url: URL) {
         
         // **Always** validate URLs; they offer a potential attack
         // vector into your app.
         guard url.scheme == Spotify.loginCallbackURL.scheme else {
-            print("not opening URL: unexpected scheme: '\(url)'")
+            print("not handling URL: unexpected scheme: '\(url)'")
             return
         }
 
@@ -85,6 +70,8 @@ struct RootView: View {
         // are being retrieved.
         self.isRetrievingTokens = true
         
+        // Complete the authorization process by requesting the
+        // access and refresh tokens.
         spotify.api.authorizationManager.requestAccessAndRefreshTokens(
             redirectURIWithQuery: url,
             // This value must be the same as the one used to create the
@@ -93,7 +80,7 @@ struct RootView: View {
         )
         .receive(on: RunLoop.main)
         .sink(receiveCompletion: { completion in
-            // whether the request succeeded or not, we need to remove
+            // Whether the request succeeded or not, we need to remove
             // the activity indicator.
             self.isRetrievingTokens = false
             
@@ -124,8 +111,50 @@ struct RootView: View {
         })
         .store(in: &cancellables)
         
+        // MARK: IMPORTANT: generate a new value for the state parameter
+        // MARK: after each authorization request. This ensures an incoming
+        // MARK: redirect from Spotify was the result of a request made by
+        // MARK: this app, and not an attacker.
+        self.spotify.authorizationState = String.randomURLSafe(length: 32)
+        
     }
 
+    /// Removes the authorization information for the user.
+    var logoutButton: some View {
+        Button(action: {
+            // Calling this method will also cause
+            // `SpotifyAPI.authorizationManagerDidChange` to emit
+            // a signal.
+            spotify.api.authorizationManager.deauthorize()
+            
+            do {
+                /*
+                 Remove the authorization information from the keychain.
+                 
+                 If you don't do this, then the authorization information
+                 that you just removed from memory by calling `deauthorize()`
+                 will be retrieved again from persistent storage after this
+                 app is quit and relaunched.
+                 */
+                try spotify.keychain.remove(KeychainKeys.authorizationManager)
+                
+            } catch {
+                print(
+                    "couldn't remove authorization manager " +
+                    "from keychain: \(error)"
+                )
+            }
+            
+        }, label: {
+            Text("Logout")
+                .foregroundColor(.white)
+                .padding(7)
+                .background(Color(#colorLiteral(red: 0.3923448698, green: 0.7200681584, blue: 0.19703095, alpha: 1)))
+                .cornerRadius(10)
+                .shadow(radius: 3)
+        
+        })
+    }
 }
 
 struct RootView_Previews: PreviewProvider {
