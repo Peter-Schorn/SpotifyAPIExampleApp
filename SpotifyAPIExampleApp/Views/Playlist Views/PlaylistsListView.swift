@@ -56,8 +56,10 @@ struct PlaylistsListView: View {
                 List {
                     ForEach(playlists, id: \.uri) { playlist in
                         PlaylistCellView(playlist)
+                            .frame(maxWidth: .infinity)
                     }
                 }
+                .frame(maxWidth: .infinity)
                 .listStyle(PlainListStyle())
             }
         }

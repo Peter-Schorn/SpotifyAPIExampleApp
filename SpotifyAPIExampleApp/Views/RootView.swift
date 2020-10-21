@@ -87,7 +87,7 @@ struct RootView: View {
             /*
              After the access and refresh tokens are retrieved,
              `SpotifyAPI.authorizationManagerDidChange` will emit a
-             signal, causing `handleChangesToAuthorizationManager` to be
+             signal, causing `handleChangesToAuthorizationManager()` to be
              called, which will dismiss the loginView if the app was
              successfully authorized by setting the
              @Published `spotify.isAuthorized` property to `true`.

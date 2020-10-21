@@ -104,13 +104,16 @@ final class Spotify: ObservableObject {
                 /*
                  This assignment causes `authorizationManagerDidChange`
                  to emit a signal, meaning that
-                 `handleChangesToAuthorizationManager` will be called.
+                 `handleChangesToAuthorizationManager()` will be called.
                  
                  Note that if you had subscribed to
                  `authorizationManagerDidChange` after this line,
-                 then `handleChangesToAuthorizationManager` would not
+                 then `handleChangesToAuthorizationManager()` would not
                  have been called and the @Published `isAuthorized` property
                  would not have been properly updated.
+                 
+                 We do not need to update `isAuthorized` here because it
+                 is already done in `handleChangesToAuthorizationManager()`.
                  */
                 self.api.authorizationManager = authorizationManager
                 
@@ -131,7 +134,8 @@ final class Spotify: ObservableObject {
      You could also configure it to accept parameters for the authorization
      scopes.
      
-     This is called when the user taps the "Log in with Spotify" button.
+     This is called when the user taps the "Log in with Spotify" button
+     in `LoginView`.
      */
     func authorize() {
 
