@@ -20,6 +20,7 @@ struct ExamplesListView: View {
             
         }
         .listStyle(PlainListStyle())
+        .navigationBarTitle("Spotify Example App")
     }
 }
 
@@ -32,7 +33,9 @@ struct ExamplesListView_Previews: PreviewProvider {
     }()
     
     static var previews: some View {
-        ExamplesListView()
-            .environmentObject(spotify)
+        NavigationView {
+            ExamplesListView()
+                .environmentObject(spotify)
+        }
     }
 }

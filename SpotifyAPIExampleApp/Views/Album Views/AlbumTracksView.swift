@@ -28,14 +28,13 @@ struct AlbumTracksView: View {
     var album: Album
     var image: Image
     
-    /// The artist of the album and the number of tracks; e.g.,
-    /// "By Pink Floyd - 5 Tracks".
-    var artistTracksString: String {
-        let tracksString = "\(album.tracks?.total ?? 0) Tracks"
+    /// The album and artist name; e.g., "Abbey Road - The Beatles".
+    var albumAndArtistName: String {
+        var title = album.name
         if let artistName = album.artists?.first?.name {
-            return "By \(artistName) - \(tracksString)"
+            title += " - \(artistName)"
         }
-        return tracksString
+        return title
     }
     
     var body: some View {
@@ -50,26 +49,33 @@ struct AlbumTracksView: View {
                     playButton
                 }
                 .padding(30)
-                Text(artistTracksString)
+                Text(albumAndArtistName)
                 .font(.title)
                 .bold()
+                Text("\(album.tracks?.total ?? 0) Tracks")
+                    .foregroundColor(.secondary)
+                    .font(.title2)
+                    .padding(.top, 2)
                 if albumTracks.isEmpty {
-                    if isLoadingTracks {
-                        HStack {
-                            ActivityIndicator(
-                                isAnimating: .constant(true),
-                                style: .medium
-                            )
-                            Text("Loading Tracks")
+                    Group {
+                        if isLoadingTracks {
+                            HStack {
+                                ActivityIndicator(
+                                    isAnimating: .constant(true),
+                                    style: .medium
+                                )
+                                Text("Loading Tracks")
+                                    .font(.title)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        else if couldntLoadTracks {
+                            Text("Couldn't Load Tracks")
                                 .font(.title)
                                 .foregroundColor(.secondary)
                         }
                     }
-                    else if couldntLoadTracks {
-                        Text("Couldn't Load Tracks")
-                            .font(.title)
-                            .foregroundColor(.secondary)
-                    }
+                    .padding(.top, 20)
                 }
                 else {
                     ForEach(albumTracks.enumeratedArray(), id: \.index) { track in
@@ -82,7 +88,6 @@ struct AlbumTracksView: View {
                 }
             }
         }
-        .navigationTitle(album.name)
         .alert(isPresented: $alertIsPresented) {
             Alert(
                 title: Text(alertTitle),
@@ -99,7 +104,7 @@ struct AlbumTracksView: View {
                 print("missing album uri for '\(album.name)'")
                 return
             }
-            let playbackRequest = PlaybackRequest.init(
+            let playbackRequest = PlaybackRequest(
                 context: .contextURI(albumURI), offset: nil
             )
             print("playing album '\(album.name)'")

@@ -53,9 +53,6 @@ struct SavedAlbumsGridView: View {
                         .font(.title)
                         .foregroundColor(.secondary)
                 }
-                else {
-                    Text("DEBUG")
-                }
             }
             else {
                 ScrollView {
@@ -132,14 +129,15 @@ struct SavedAlbumsGridView: View {
                         .map(\.item)
                         /*
                          Remove albums that have `nil` for Id
-                         so it can be used as the id for the
+                         so that this property can be used as the id for the
                          ForEach above. (The id must be unique, otherwise
-                         the app will crash.) Using \.self is extremely
-                         expensive as this involves calculating the hash of
-                         the entire `Album` instance, which is very large.
+                         the app will crash.) In practice, the id should
+                         never be `nil` when the albums are retrieved using
+                         the `currentUserSavedAlbums()` endpoint.
                          
-                         The `currentUserSavedAlbums` endpoint should never
-                         return an Album with a `nil` Id.
+                         Using \.self is extremely expensive as this involves
+                         calculating the hash of the entire `Album` instance,
+                         which is very large.
                          */
                         .filter { $0.id != nil }
                     
@@ -161,8 +159,11 @@ struct SavedAlbumsView_Previews: PreviewProvider {
     ]
     
     static var previews: some View {
-        SavedAlbumsGridView(sampleAlbums: sampleAlbums)
-            .environmentObject(spotify)
+        
+        NavigationView {
+            SavedAlbumsGridView(sampleAlbums: sampleAlbums)
+                .environmentObject(spotify)
+        }
             
     }
     

@@ -35,6 +35,7 @@ struct SavedAlbumView: View {
             .onAppear(perform: loadImage)
         }
         .buttonStyle(PlainButtonStyle())
+        // .padding()
     }
     
     func loadImage() {
@@ -75,5 +76,6 @@ struct SavedAlbumView_Previews: PreviewProvider {
     static var previews: some View {
         SavedAlbumView(album: .jinx)
             .environmentObject(spotify)
+            .padding()
     }
 }

@@ -30,42 +30,42 @@ struct SearchForTracksView: View {
         VStack {
             searchBar
                 .padding([.top, .horizontal])
-            Text(
-                "Enter a query to search for tracks. " +
-                "Tap on a track to play it."
-            )
+            Text("Tap on a track to play it.")
             .font(.caption)
             .foregroundColor(.secondary)
             .padding(.horizontal)
-            List {
-                ForEach(tracks, id: \.self) { track in
-                    Button(self.trackDisplayName(track)) {
-                        self.playTrack(track)
+            
+            Spacer()
+            
+            if tracks.isEmpty {
+                if isSearching {
+                    HStack {
+                        ActivityIndicator(
+                            isAnimating: .constant(true),
+                            style: .medium
+                        )
+                        Text("Searching")
+                            .font(.title)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                else {
+                    Text("No Results")
+                        .font(.title)
+                        .foregroundColor(.secondary)
+                }
+            }
+            else {
+                List {
+                    ForEach(tracks, id: \.self) { track in
+                        Button(self.trackDisplayName(track)) {
+                            self.playTrack(track)
+                        }
                     }
                 }
             }
-            .overlay(
-                Group {
-                    if tracks.isEmpty {
-                        if isSearching {
-                            HStack {
-                                ActivityIndicator(
-                                    isAnimating: .constant(true),
-                                    style: .medium
-                                )
-                                Text("Searching")
-                                    .font(.title)
-                                    .foregroundColor(.secondary)
-                            }
-                        }
-                        else {
-                            Text("No Results")
-                                .font(.title)
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                }
-            )
+            
+            Spacer()
             
         }
         .navigationTitle("Search For Tracks")
@@ -78,15 +78,25 @@ struct SearchForTracksView: View {
     }
     
     /// A search bar. Essentially a textfield with a magnifying glass
-    /// overlayed in front of it.
+    /// and "x" button overlayed in front of it.
     var searchBar: some View {
         // `onCommit` is called when the user presses the return key.
         TextField("Search", text: $searchText, onCommit: search)
             .padding(.leading, 22)
             .overlay(
-                Image(systemName: "magnifyingglass")
-                    .foregroundColor(.secondary),
-                alignment: .leading
+                HStack {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundColor(.secondary)
+                    Spacer()
+                    if !searchText.isEmpty {
+                        // Clear the search text when the user taps
+                        // the "x" button.
+                        Button(action: { self.searchText = "" }, label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundColor(.secondary)
+                        })
+                    }
+                }
             )
             .padding(.vertical, 7)
             .padding(.horizontal, 7)
@@ -166,6 +176,7 @@ struct SearchView_Previews: PreviewProvider {
             SearchForTracksView()
                 .environmentObject(spotify)
         }
+        .preferredColorScheme(.light)
     }
 }
 

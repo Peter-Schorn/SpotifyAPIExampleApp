@@ -14,10 +14,10 @@ import SpotifyWebAPI
  */
 final class Spotify: ObservableObject {
     
-    private static let clientID: String = {
-        if let clientID = ProcessInfo.processInfo
+    private static let clientId: String = {
+        if let clientId = ProcessInfo.processInfo
                 .environment["client_id"] {
-            return clientID
+            return clientId
         }
         fatalError("Could not find 'client_id' in environment variables")
     }()
@@ -68,7 +68,7 @@ final class Spotify: ObservableObject {
     /// the Spotify web API.
     let api = SpotifyAPI(
         authorizationManager: AuthorizationCodeFlowManager(
-            clientId: Spotify.clientID, clientSecret: Spotify.clientSecret
+            clientId: Spotify.clientId, clientSecret: Spotify.clientSecret
         )
     )
     
@@ -99,7 +99,7 @@ final class Spotify: ObservableObject {
                     AuthorizationCodeFlowManager.self,
                     from: authManagerData
                 )
-                print("found authorization info in keychain")
+                print("found authorization information in keychain")
                 
                 /*
                  This assignment causes `authorizationManagerDidChange`
@@ -122,7 +122,7 @@ final class Spotify: ObservableObject {
             }
         }
         else {
-            print("did NOT find authorization info in keychain")
+            print("did NOT find authorization information in keychain")
         }
         
     }
