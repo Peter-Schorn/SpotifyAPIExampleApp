@@ -52,7 +52,7 @@ struct AlbumTracksView: View {
                 Text(albumAndArtistName)
                 .font(.title)
                 .bold()
-                .padding(.horizontal, 15)
+                .padding(.horizontal)
                 Text("\(album.tracks?.total ?? 0) Tracks")
                     .foregroundColor(.secondary)
                     .font(.title2)
