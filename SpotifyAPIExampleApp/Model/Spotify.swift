@@ -198,7 +198,10 @@ final class Spotify: ObservableObject {
             keychain[data: KeychainKeys.authorizationManager] = authManagerData
             
         } catch {
-            print("couldn't encode authorizationManager for storage:\n\(error)")
+            print(
+                "couldn't encode authorizationManager for storage " +
+                "in keychain:\n\(error)"
+            )
         }
         
     }
