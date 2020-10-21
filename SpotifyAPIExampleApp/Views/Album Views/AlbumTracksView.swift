@@ -52,6 +52,7 @@ struct AlbumTracksView: View {
                 Text(albumAndArtistName)
                 .font(.title)
                 .bold()
+                .padding(.horizontal, 15)
                 Text("\(album.tracks?.total ?? 0) Tracks")
                     .foregroundColor(.secondary)
                     .font(.title2)
@@ -88,6 +89,7 @@ struct AlbumTracksView: View {
                 }
             }
         }
+        .navigationBarTitle("", displayMode: .inline)
         .alert(isPresented: $alertIsPresented) {
             Alert(
                 title: Text(alertTitle),
@@ -171,12 +173,14 @@ struct AlbumTracksView: View {
 struct AlbumTracksView_Previews: PreviewProvider {
     
     static let spotify = Spotify()
-    static let album = Album.jinx
+    static let album = Album.darkSideOfTheMoon
     
     static var previews: some View {
-        AlbumTracksView(
-            album: album, image: Image(.spotifyAlbumPlaceholder)
-        )
-        .environmentObject(spotify)
+        NavigationView {
+            AlbumTracksView(
+                album: album, image: Image(.spotifyAlbumPlaceholder)
+            )
+            .environmentObject(spotify)
+        }
     }
 }

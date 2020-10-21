@@ -47,9 +47,9 @@ The next time the app is quit and relaunched, the authorization information will
 [2]:  https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/main/SpotifyAPIExampleApp/Views/ExamplesListView.swift
 [3]: https://github.com/Peter-Schorn/SpotifyAPI#authorizing-with-the-authorization-code-flow
 [4]: https://developer.apple.com/documentation/xcode/allowing_apps_and_websites_to_link_to_your_content/defining_a_custom_url_scheme_for_your_app
-[5]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/d6996e798fb2ef96d732298572c3ad6c81569172/SpotifyAPIExampleApp/Model/Spotify.swift#L127-L150
-[6]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/d6996e798fb2ef96d732298572c3ad6c81569172/SpotifyAPIExampleApp/Views/LoginView.swift#L87
-[7]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/d6996e798fb2ef96d732298572c3ad6c81569172/SpotifyAPIExampleApp/Views/RootView.swift#L39
-[8]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/d6996e798fb2ef96d732298572c3ad6c81569172/SpotifyAPIExampleApp/Model/Spotify.swift#L68-L75
-[9]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/d6996e798fb2ef96d732298572c3ad6c81569172/SpotifyAPIExampleApp/Model/Spotify.swift#L164
+[5]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/776073178343533b88a5718786bc35851701b4ff/SpotifyAPIExampleApp/Model/Spotify.swift#L140-L163
+[6]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/776073178343533b88a5718786bc35851701b4ff/SpotifyAPIExampleApp/Views/LoginView.swift#L108
+[7]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/776073178343533b88a5718786bc35851701b4ff/SpotifyAPIExampleApp/Views/RootView.swift#L47
+[8]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/776073178343533b88a5718786bc35851701b4ff/SpotifyAPIExampleApp/Model/Spotify.swift#L85-L90
+[9]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/776073178343533b88a5718786bc35851701b4ff/SpotifyAPIExampleApp/Model/Spotify.swift#L179-L207
 [10]: https://github.com/Peter-Schorn/SpotifyAPI/wiki/Saving-authorization-information-to-persistent-storage.
