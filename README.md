@@ -39,7 +39,7 @@ When the user presses "agree" or "cancel", the system redirects back to this app
 
 When the access and refresh tokens are successfully retrieved, the [`SpotifyAPI.authorizationManagerDidChange`][12] PassthroughSubject emits a signal. This subject is subscribed to in the [init method of `Spotify`][13]. The subscription calls [`Spotify.handleChangesToAuthorizationManager()`][14] everytime this subject emits. This method saves the authorization information to persistent storage in the keychain and updates the [`@Published var isAuthorized`][15] property of `Spotify`. Assuming the access and refresh tokens have been successfully retrieved, [`Spotify.isAuthorized`][15] is set to `true`, which dismisses `LoginView` and allows the user to interact with the rest of the app.
 
-Every time the authorization information changes (e.g., when the access token, which expires after an hour, gets refreshed), [`Spotify.handleChangesToAuthorizationManager()]`][14] is called so that the authorization information in the keychain can be updated. See the wiki page [Saving authorization information to persistent storage][16].
+Every time the authorization information changes (e.g., when the access token, which expires after an hour, gets refreshed), [`Spotify.handleChangesToAuthorizationManager()`][14] is called so that the authorization information in the keychain can be updated. See the wiki page [Saving authorization information to persistent storage][16].
 
 The next time the app is quit and relaunched, the authorization information will be retrieved from the keychain in the [init method of `Spotify`][17], which prevents the user from having to login again.
 
