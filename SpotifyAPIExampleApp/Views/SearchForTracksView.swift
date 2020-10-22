@@ -15,7 +15,7 @@ struct SearchForTracksView: View {
     
     @State private var isSearching = false
     
-    @State private var tracks: [Track] = []
+    @State var tracks: [Track] = []
 
     @State private var alertTitle = ""
     @State private var alertMessage = ""
@@ -23,20 +23,15 @@ struct SearchForTracksView: View {
     
     @State private var searchText = ""
     @State private var searchCancellable: AnyCancellable? = nil
-
-    @State private var playRequestCancellable: AnyCancellable? = nil
     
     var body: some View {
         VStack {
             searchBar
                 .padding([.top, .horizontal])
             Text("Tap on a track to play it.")
-            .font(.caption)
-            .foregroundColor(.secondary)
-            .padding(.horizontal)
-            
+                .font(.caption)
+                .foregroundColor(.secondary)
             Spacer()
-            
             if tracks.isEmpty {
                 if isSearching {
                     HStack {
@@ -58,15 +53,11 @@ struct SearchForTracksView: View {
             else {
                 List {
                     ForEach(tracks, id: \.self) { track in
-                        Button(self.trackDisplayName(track)) {
-                            self.playTrack(track)
-                        }
+                        TrackView(track: track)
                     }
                 }
             }
-            
             Spacer()
-            
         }
         .navigationTitle("Search For Tracks")
         .alert(isPresented: $alertIsPresented) {
@@ -78,7 +69,7 @@ struct SearchForTracksView: View {
     }
     
     /// A search bar. Essentially a textfield with a magnifying glass
-    /// and "x" button overlayed in front of it.
+    /// and an "x" button overlayed in front of it.
     var searchBar: some View {
         // `onCommit` is called when the user presses the return key.
         TextField("Search", text: $searchText, onCommit: search)
@@ -102,16 +93,6 @@ struct SearchForTracksView: View {
             .padding(.horizontal, 7)
             .background(Color(.secondarySystemBackground))
             .cornerRadius(10)
-    }
-    
-    /// Includes the name of the track and the name of artist.
-    /// E.g., "Time - Pink Floyd".
-    func trackDisplayName(_ track: Track) -> String {
-        var displayName = track.name
-        if let artistName = track.artists?.first?.name {
-            displayName += " - \(artistName)"
-        }
-        return displayName
     }
     
     /// Performs a search for tracks based on `searchText`.
@@ -141,30 +122,6 @@ struct SearchForTracksView: View {
         )
     }
     
-    /// Plays a track on the user's active device.
-    func playTrack(_ track: Track) {
-        
-        guard let trackURI = track.uri else {
-            self.alertTitle = "Couldn't Play '\(track.name)'"
-            self.alertMessage = "missing URI"
-            self.alertIsPresented = true
-            return
-        }
-        
-        // A request to play a single track.
-        let playbackRequest = PlaybackRequest(trackURI)
-        
-        self.playRequestCancellable = self.spotify.api.play(playbackRequest)
-            .sink(receiveCompletion: { completion in
-                if case .failure(let error) = completion {
-                    self.alertTitle = "Couldn't Play '\(track.name)'"
-                    self.alertMessage = error.localizedDescription
-                    self.alertIsPresented = true
-                }
-            })
-        
-    }
-    
 }
 
 struct SearchView_Previews: PreviewProvider {
@@ -178,5 +135,6 @@ struct SearchView_Previews: PreviewProvider {
         }
         .preferredColorScheme(.light)
     }
+    
 }
 

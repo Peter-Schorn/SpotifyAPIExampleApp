@@ -35,6 +35,7 @@ struct PlaylistCellView: View {
                 Text("\(playlist.name) - \(playlist.items.total) items")
                 Spacer()
             }
+            .contentShape(Rectangle())
         })
         .buttonStyle(PlainButtonStyle())
         .alert(isPresented: $alertIsPresented) {
@@ -53,7 +54,7 @@ struct PlaylistCellView: View {
         // We can't just check if `self.image == nil` because the image
         // might have already been requested, but not loaded yet.
         if self.didRequestImage {
-            // print("didRequestImage image for '\(playlist.name)'")
+            // print("already requested image for '\(playlist.name)'")
             return
         }
         self.didRequestImage = true
@@ -105,6 +106,8 @@ struct PlaylistCellView_Previews: PreviewProvider {
     static let playlist = Playlist.rockClassics
     
     static var previews: some View {
-        PlaylistCellView(playlist)
+        List {
+            PlaylistCellView(playlist)
+        }
     }
 }
