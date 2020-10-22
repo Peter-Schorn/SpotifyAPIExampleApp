@@ -44,6 +44,7 @@ struct RootView: View {
                 message: Text(alertMessage)
             )
         }
+        // Called when a redirect is received from Spotify.
         .onOpenURL(perform: handleURL(_:))
         
     }
@@ -95,6 +96,7 @@ struct RootView: View {
              show it to the user if one was received.
              */
             if case .failure(let error) = completion {
+                print("couldn't retrieve access and refresh tokens:\n\(error)")
                 if let authError = error as? SpotifyAuthorizationError,
                         authError.accessWasDenied {
                     self.alertTitle =
