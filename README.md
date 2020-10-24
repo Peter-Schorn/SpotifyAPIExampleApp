@@ -13,7 +13,7 @@ spotify-api-example-app://login-callback
 
 Next, add `client_id` and `client_secret` to the [environment variables][1] for your scheme:
 
-<a href="https://ibb.co/NxKXZfR"><img src="https://i.ibb.co/v1kbZf9/Screen-Shot-2020-09-20-at-12-43-11-AM.png" alt="Screen-Shot-2020-09-20-at-12-43-11-AM" border="0"></a>
+<a href="https://ibb.co/sy3ZtCq"><img src="https://i.ibb.co/dGKR7tD/Screen-Shot-2020-10-22-at-7-31-41-PM.png" alt="Screen-Shot-2020-10-22-at-7-31-41-PM" border="0"></a>
 
 
 

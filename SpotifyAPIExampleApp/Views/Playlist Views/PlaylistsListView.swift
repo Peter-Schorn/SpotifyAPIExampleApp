@@ -48,6 +48,11 @@ struct PlaylistsListView: View {
                         .font(.title)
                         .foregroundColor(.secondary)
                 }
+                else {
+                    Text("No Playlists Found")
+                        .font(.title)
+                        .foregroundColor(.secondary)
+                }
             }
             else {
                 Text("Tap on a Playlist to Play it")
