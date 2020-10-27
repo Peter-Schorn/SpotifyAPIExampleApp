@@ -39,7 +39,7 @@ When the user presses "agree" or "cancel", the system redirects back to this app
 
 When the access and refresh tokens are successfully retrieved, the [`SpotifyAPI.authorizationManagerDidChange`][12] PassthroughSubject emits a signal. This subject is subscribed to in the [init method of `Spotify`][13]. The subscription calls [`Spotify.handleChangesToAuthorizationManager()`][14] everytime this subject emits. This method saves the authorization information to persistent storage in the keychain and updates the [`@Published var isAuthorized`][15] property of [`Spotify`][19].  
 
-Assuming the access and refresh tokens have been successfully retrieved, [`Spotify.isAuthorized` is set to `true`][16], which dismisses `LoginView` and allows the user to interact with the rest of the app.
+Assuming the access and refresh tokens have been successfully retrieved, [`Spotify.isAuthorized` is set to `true`][16], which dismisses [`LoginView`][25] and allows the user to interact with the rest of the app.
 
 A subscription is also made to [`SpotifyAPI.authorizationManagerDidDeauthorize`][22], which emits every time [`AuthorizationCodeFlowManagerBase.deauthorize()`][23] is called.
 
@@ -74,3 +74,5 @@ The next time the app is quit and relaunched, the authorization information will
 [22]: https://peter-schorn.github.io/SpotifyAPI/Classes/SpotifyAPI.html#/s:13SpotifyWebAPI0aC0C34authorizationManagerDidDeauthorize7Combine18PassthroughSubjectCyyts5NeverOGvp
 [23]: https://peter-schorn.github.io/SpotifyAPI/Classes/AuthorizationCodeFlowManagerBase.html#/s:13SpotifyWebAPI32AuthorizationCodeFlowManagerBaseC11deauthorizeyyF
 [24]: https://peter-schorn.github.io/SpotifyAPI/Classes/AuthorizationCodeFlowManagerBase.html#/s:13SpotifyWebAPI32AuthorizationCodeFlowManagerBaseC11deauthorizeyyF
+[25]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/main/SpotifyAPIExampleApp/Views/LoginView.swift
+
