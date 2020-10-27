@@ -43,7 +43,7 @@ Assuming the access and refresh tokens have been successfully retrieved, [`Spoti
 
 A subscription is also made to [`SpotifyAPI.authorizationManagerDidDeauthorize`][22], which emits every time [`AuthorizationCodeFlowManagerBase.deauthorize()`][23] is called.
 
-Every time the authorization information changes (e.g., when the access token, which expires after an hour, gets refreshed), [`Spotify.handleChangesToAuthorizationManager()`][14] is called so that the authorization information in the keychain can be updated.  When the user taps the [`logoutButton`][21] in [`Rootview.swift`][10], [`AuthorizationCodeFlowManagerBase.deauthorize()`][24] is called, which causes [`SpotifyAPI.authorizationManagerDidDeauthorize`][22] to emit a signal, which, in turn, causes [``Spotify.removeAuthorizationManagerFromKeychain()`][20] to be called.
+Every time the authorization information changes (e.g., when the access token, which expires after an hour, gets refreshed), [`Spotify.handleChangesToAuthorizationManager()`][14] is called so that the authorization information in the keychain can be updated.  When the user taps the [`logoutButton`][21] in [`Rootview.swift`][10], [`AuthorizationCodeFlowManagerBase.deauthorize()`][24] is called, which causes [`SpotifyAPI.authorizationManagerDidDeauthorize`][22] to emit a signal, which, in turn, causes [`Spotify.removeAuthorizationManagerFromKeychain()`][20] to be called.
 
 See the wiki page [Saving authorization information to persistent storage][17].
 
