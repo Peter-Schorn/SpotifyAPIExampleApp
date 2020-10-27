@@ -37,9 +37,13 @@ The next step is to create the authorization URL using [`AuthorizationCodeFlowMa
 
 When the user presses "agree" or "cancel", the system redirects back to this app and calls the [`onOpenURL(perform:)`][9] view modifier in [`Rootview.swift`][10], which calls through to the `handleURL(_:)` method directly below. After validating the URL scheme, this method requests the access and refresh tokens using [`AuthorizationCodeFlowManager.requestAccessAndRefreshTokens(redirectURIWithQuery:state:)`][11], the final step in the authorization process.
 
-When the access and refresh tokens are successfully retrieved, the [`SpotifyAPI.authorizationManagerDidChange`][12] PassthroughSubject emits a signal. This subject is subscribed to in the [init method of `Spotify`][13]. The subscription calls [`Spotify.handleChangesToAuthorizationManager()`][14] everytime this subject emits. This method saves the authorization information to persistent storage in the keychain and updates the [`@Published var isAuthorized`][15] property of `Spotify`. Assuming the access and refresh tokens have been successfully retrieved, [`Spotify.isAuthorized` is set to `true`][16], which dismisses `LoginView` and allows the user to interact with the rest of the app.
+When the access and refresh tokens are successfully retrieved, the [`SpotifyAPI.authorizationManagerDidChange`][12] PassthroughSubject emits a signal. This subject is subscribed to in the [init method of `Spotify`][13]. The subscription calls [`Spotify.handleChangesToAuthorizationManager()`][14] everytime this subject emits. This method saves the authorization information to persistent storage in the keychain and updates the [`@Published var isAuthorized`][15] property of [`Spotify`][19].  A subscription is also made to `SpotifyAPI.authorizationManagerDidDeauthorize`, which emits every time `AuthorizationCodeFlowManagerBase.deauthorize()` is called.
 
-Every time the authorization information changes (e.g., when the access token, which expires after an hour, gets refreshed), [`Spotify.handleChangesToAuthorizationManager()`][14] is called so that the authorization information in the keychain can be updated. See the wiki page [Saving authorization information to persistent storage][17].
+ Assuming the access and refresh tokens have been successfully retrieved, [`Spotify.isAuthorized` is set to `true`][16], which dismisses `LoginView` and allows the user to interact with the rest of the app.
+
+Every time the authorization information changes (e.g., when the access token, which expires after an hour, gets refreshed), [`Spotify.handleChangesToAuthorizationManager()`][14] is called so that the authorization information in the keychain can be updated.  When the user taps the [`logoutButton`][21] in [`Rootview.swift`][10], `AuthorizationCodeFlowManagerBase.deauthorize()` is called, which causes `SpotifyAPI.authorizationManagerDidDeauthorize` to emit a signal, which, in turn, causes [``Spotify.removeAuthorizationManagerFromKeychain()`][20] to be called.
+
+See the wiki page [Saving authorization information to persistent storage][17].
 
 The next time the app is quit and relaunched, the authorization information will be retrieved from the keychain in the [init method of `Spotify`][18], which prevents the user from having to login again.
 
@@ -62,3 +66,6 @@ The next time the app is quit and relaunched, the authorization information will
 [17]: https://github.com/Peter-Schorn/SpotifyAPI/wiki/Saving-authorization-information-to-persistent-storage.
 [18]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/776073178343533b88a5718786bc35851701b4ff/SpotifyAPIExampleApp/Model/Spotify.swift#L92-L126
 
+[19]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/main/SpotifyAPIExampleApp/Model/Spotify.swift
+[20]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/9feaff27b4d64b0e25df65d38c0ea75656e38802/SpotifyAPIExampleApp/Model/Spotify.swift#L233-L257
+[21]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/9feaff27b4d64b0e25df65d38c0ea75656e38802/SpotifyAPIExampleApp/Views/RootView.swift#L116-L133
