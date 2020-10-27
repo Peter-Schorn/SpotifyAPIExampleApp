@@ -59,7 +59,8 @@ struct SavedAlbumsGridView: View {
                     LazyVGrid(columns: columns) {
                         // WARNING: do not use `\.self` for the id.
                         // This is extremely expensive and causes lag when
-                        // scrolling.
+                        // scrolling because the hash of the entire album
+                        // instance must be calculated.
                         ForEach(savedAlbums, id: \.id) { album in
                             SavedAlbumView(album: album)
                         }
@@ -135,9 +136,9 @@ struct SavedAlbumsGridView: View {
                          never be `nil` when the albums are retrieved using
                          the `currentUserSavedAlbums()` endpoint.
                          
-                         Using \.self is extremely expensive as this involves
-                         calculating the hash of the entire `Album` instance,
-                         which is very large.
+                         Using \.self in the ForEach is extremely expensive as
+                         this involves calculating the hash of the entire `Album`
+                         instance, which is very large.
                          */
                         .filter { $0.id != nil }
                     

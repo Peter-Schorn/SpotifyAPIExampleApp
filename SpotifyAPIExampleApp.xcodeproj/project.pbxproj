@@ -40,6 +40,7 @@
 		470813142515EBF800794934 /* ActivityIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIndicator.swift; sourceTree = "<group>"; };
 		4725249A253F8B9B00F3FD13 /* LoginView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		473F415D2516FF5C009E52C3 /* AlbumTracksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumTracksView.swift; sourceTree = "<group>"; };
+		4791618A2546A27A00D6B9EB /* SpotifyAPI */ = {isa = PBXFileReference; lastKnownFileType = folder; name = SpotifyAPI; path = ../../../Libraries/SpotifyAPI; sourceTree = "<group>"; };
 		47B9614F25169BEF0069E441 /* ExamplesListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamplesListView.swift; sourceTree = "<group>"; };
 		47B9615225169C030069E441 /* PlaylistsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistsListView.swift; sourceTree = "<group>"; };
 		47B961582516A6F50069E441 /* PlaylistCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistCellView.swift; sourceTree = "<group>"; };
@@ -68,6 +69,7 @@
 			children = (
 				470812EB2515E4D700794934 /* SpotifyAPIExampleApp */,
 				470812EA2515E4D700794934 /* Products */,
+				4791618A2546A27A00D6B9EB /* SpotifyAPI */,
 			);
 			sourceTree = "<group>";
 		};

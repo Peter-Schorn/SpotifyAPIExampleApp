@@ -15,9 +15,6 @@ struct RootView: View {
     
     @State private var cancellables: Set<AnyCancellable> = []
     
-    /// If `true`, then the app is retrieving access and refresh tokens.
-    @State private var isRetrievingTokens = false
-    
     @State private var alertTitle = ""
     @State private var alertMessage = ""
     @State private var alertIsPresented = false
@@ -28,14 +25,9 @@ struct RootView: View {
                 .navigationBarItems(trailing: logoutButton)
                 .disabled(!spotify.isAuthorized)
         }
-        // The login view is presented if `spotify.isAuthorized` == `false.
-        // When the login button is tapped, `spotify.authorize()` is called.
-        .modifier(
-            LoginView(
-                isAuthorized: $spotify.isAuthorized,
-                isRetrievingTokens: $isRetrievingTokens
-            )
-        )
+        // The login view is presented if `Spotify.isAuthorized` == `false.
+        // When the login button is tapped, `Spotify.authorize()` is called.
+        .modifier(LoginView())
         // Presented if an error occurs during the process of authorizing
         // with the user's Spotify account.
         .alert(isPresented: $alertIsPresented) {
@@ -68,7 +60,7 @@ struct RootView: View {
         // This property is used to display an activity indicator in
         // `LoginView` indicating that the access and refresh tokens
         // are being retrieved.
-        self.isRetrievingTokens = true
+        spotify.isRetrievingTokens = true
         
         // Complete the authorization process by requesting the
         // access and refresh tokens.
@@ -82,7 +74,7 @@ struct RootView: View {
         .sink(receiveCompletion: { completion in
             // Whether the request succeeded or not, we need to remove
             // the activity indicator.
-            self.isRetrievingTokens = false
+            self.spotify.isRetrievingTokens = false
             
             /*
              After the access and refresh tokens are retrieved,
@@ -90,7 +82,7 @@ struct RootView: View {
              signal, causing `handleChangesToAuthorizationManager()` to be
              called, which will dismiss the loginView if the app was
              successfully authorized by setting the
-             @Published `spotify.isAuthorized` property to `true`.
+             @Published `Spotify.isAuthorized` property to `true`.
 
              The only thing we need to do here is handle the error and
              show it to the user if one was received.
@@ -123,28 +115,11 @@ struct RootView: View {
     /// Removes the authorization information for the user.
     var logoutButton: some View {
         Button(action: {
-            // Calling this method will also cause
-            // `SpotifyAPI.authorizationManagerDidChange` to emit
-            // a signal.
+            // Calling this method will cause
+            // `SpotifyAPI.authorizationManagerDidDeauthorize` to emit
+            // a signal, which will cause
+            // `Spotify.removeAuthorizationManagerFromKeychain` to be called.
             spotify.api.authorizationManager.deauthorize()
-            
-            do {
-                /*
-                 Remove the authorization information from the keychain.
-                 
-                 If you don't do this, then the authorization information
-                 that you just removed from memory by calling `deauthorize()`
-                 will be retrieved again from persistent storage after this
-                 app is quit and relaunched.
-                 */
-                try spotify.keychain.remove(KeychainKeys.authorizationManager)
-                
-            } catch {
-                print(
-                    "couldn't remove authorization manager " +
-                    "from keychain: \(error)"
-                )
-            }
             
         }, label: {
             Text("Logout")

@@ -20,15 +20,6 @@
         }
       },
       {
-        "package": "SpotifyAPI",
-        "repositoryURL": "https://github.com/Peter-Schorn/SpotifyAPI.git",
-        "state": {
-          "branch": null,
-          "revision": "3fe09595e7f4c55b6d5c49d3c625bfb26b372b35",
-          "version": "0.8.1"
-        }
-      },
-      {
         "package": "swift-log",
         "repositoryURL": "https://github.com/apple/swift-log.git",
         "state": {

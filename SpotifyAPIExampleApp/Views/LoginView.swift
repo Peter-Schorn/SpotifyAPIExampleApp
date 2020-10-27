@@ -32,13 +32,6 @@ struct LoginView: ViewModifier {
     /// view so that the animation can be seen.
     @State private var finishedViewLoadDelay = false
     
-    @Binding var isAuthorized: Bool
-    
-    /// If `true`, a request to retrieve the access and refresh tokens
-    /// is currently in progress, in which case an activity indicator
-    /// is displayed.
-    @Binding var isRetrievingTokens: Bool
-    
     let backgroundGradient = LinearGradient(
         gradient: Gradient(
             colors: [Color(#colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)), Color(#colorLiteral(red: 0.1903857588, green: 0.8321116255, blue: 0.4365008013, alpha: 1))]
@@ -53,10 +46,10 @@ struct LoginView: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .blur(radius: self.isAuthorized ? 0 : 3)
+            .blur(radius: spotify.isAuthorized ? 0 : 3)
             .overlay(
                 ZStack {
-                    if !self.isAuthorized || Self.debugAlwaysShowing {
+                    if !spotify.isAuthorized || Self.debugAlwaysShowing {
                         Color.black.opacity(0.25)
                             .edgesIgnoringSafeArea(.all)
                         if self.finishedViewLoadDelay || Self.debugAlwaysShowing {
@@ -109,13 +102,13 @@ struct LoginView: ViewModifier {
         // Prevent the user from trying to login again
         // if a request to retrieve the access and refresh
         // tokens is currently in progress.
-        .disabled(self.isRetrievingTokens)
+        .disabled(spotify.isRetrievingTokens)
     }
     
     var authenticatingView: some View {
         VStack {
             Spacer()
-            if self.isRetrievingTokens {
+            if spotify.isRetrievingTokens {
                 HStack {
                     ActivityIndicator(
                         isAnimating: .constant(true),

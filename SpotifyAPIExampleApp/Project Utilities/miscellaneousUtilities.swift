@@ -1,14 +1,6 @@
 import Foundation
 import SwiftUI
 
-/// A namespace of keys in the keychain.
-enum KeychainKeys {
-    
-    /// The key for the authorization manager.
-    static let authorizationManager = "authorizationManager"
-
-}
-
 extension Sequence {
     
     /// Creates an array of tuples in which the first item

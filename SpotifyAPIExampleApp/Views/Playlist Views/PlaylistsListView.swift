@@ -98,7 +98,7 @@ struct PlaylistsListView: View {
         self.isLoadingPlaylists = true
         self.playlists = []
         spotify.api.currentUserPlaylists()
-            // gets all pages of playlists. By default, only 20 are
+            // Gets all pages of playlists. By default, only 20 are
             // returned per page.
             .extendPages(spotify.api)
             .receive(on: RunLoop.main)
