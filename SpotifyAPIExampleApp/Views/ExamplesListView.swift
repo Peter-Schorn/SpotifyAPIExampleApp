@@ -4,6 +4,7 @@ struct ExamplesListView: View {
     
     var body: some View {
         List {
+            
             NavigationLink(
                 "Playlists", destination: PlaylistsListView()
             )
@@ -12,6 +13,9 @@ struct ExamplesListView: View {
             )
             NavigationLink(
                 "Search For Tracks", destination: SearchForTracksView()
+            )
+            NavigationLink(
+                "Player Remote", destination: PlayerRemote()
             )
             
             // This is the location where you can add your own views to

@@ -43,13 +43,14 @@ struct TrackView: View {
     }
     
     func playTrack() {
-        
+
         guard let trackURI = track.uri else {
             self.alertTitle = "Couldn't Play '\(track.name)'"
             self.alertMessage = "missing URI"
             self.alertIsPresented = true
             return
         }
+        
         
         // A request to play a single track.
         let playbackRequest = PlaybackRequest(trackURI)
@@ -74,5 +75,6 @@ struct TrackView_Previews: PreviewProvider {
     static var previews: some View {
         TrackView(track: .because)
             .environmentObject(Spotify())
+            .padding()
     }
 }
