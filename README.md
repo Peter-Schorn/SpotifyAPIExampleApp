@@ -2,7 +2,7 @@
 
 
 
-**⚠️ This branch is experimental and this app does not work properly yet**
+**⚠️ This branch is experimental and this version of the app does not work properly yet**
 
 I'm trying to integrate `SpotifyAPI` with the Spotify iOS sdk.
 
