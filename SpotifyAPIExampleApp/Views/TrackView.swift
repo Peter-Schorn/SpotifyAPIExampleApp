@@ -74,5 +74,6 @@ struct TrackView_Previews: PreviewProvider {
     static var previews: some View {
         TrackView(track: .because)
             .environmentObject(Spotify())
+            .padding()
     }
 }

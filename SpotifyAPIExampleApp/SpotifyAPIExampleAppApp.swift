@@ -12,7 +12,7 @@ import SpotifyWebAPI
 @main
 struct SpotifyAPIExampleAppApp: App {
     
-    let spotify = Spotify()
+    @StateObject var spotify = Spotify()
 
     var body: some Scene {
         WindowGroup {

@@ -36,6 +36,8 @@ struct PlaylistCellView: View {
                 Text("\(playlist.name) - \(playlist.items.total) items")
                 Spacer()
             }
+            // Ensure the hitbox extends across the entire width
+            // of the frame. See https://bit.ly/2HqNk4S
             .contentShape(Rectangle())
         })
         .buttonStyle(PlainButtonStyle())
@@ -104,15 +106,15 @@ struct PlaylistCellView: View {
 struct PlaylistCellView_Previews: PreviewProvider {
 
     static let spotify = Spotify()
-    static let playlist = Playlist.rockClassics
     
     static var previews: some View {
         List {
-            PlaylistCellView(playlist)
-            PlaylistCellView(playlist)
-            PlaylistCellView(playlist)
-            PlaylistCellView(playlist)
-            PlaylistCellView(playlist)
+            PlaylistCellView(.thisIsMildHighClub)
+            PlaylistCellView(.thisIsRadiohead)
+            PlaylistCellView(.modernPsychedelia)
+            PlaylistCellView(.rockClassics)
+            PlaylistCellView(.menITrust)
         }
+        .environmentObject(spotify)
     }
 }
