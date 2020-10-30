@@ -32,6 +32,7 @@ struct PlaylistCellView: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 70, height: 70)
+                    .padding(.trailing, 5)
                 Text("\(playlist.name) - \(playlist.items.total) items")
                 Spacer()
             }
@@ -107,6 +108,10 @@ struct PlaylistCellView_Previews: PreviewProvider {
     
     static var previews: some View {
         List {
+            PlaylistCellView(playlist)
+            PlaylistCellView(playlist)
+            PlaylistCellView(playlist)
+            PlaylistCellView(playlist)
             PlaylistCellView(playlist)
         }
     }

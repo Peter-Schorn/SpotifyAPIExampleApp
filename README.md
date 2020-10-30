@@ -65,9 +65,7 @@ The next time the app is quit and relaunched, the authorization information will
 [14]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/ada70667e0f1b41ea3d872c258abd54a20028871/SpotifyAPIExampleApp/Model/Spotify.swift#L194-L225
 [15]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/ada70667e0f1b41ea3d872c258abd54a20028871/SpotifyAPIExampleApp/Model/Spotify.swift#L68
 [16]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/ada70667e0f1b41ea3d872c258abd54a20028871/SpotifyAPIExampleApp/Model/Spotify.swift#L200
-
 [17]: https://github.com/Peter-Schorn/SpotifyAPI/wiki/Saving-authorization-information-to-persistent-storage.
-
 [19]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/main/SpotifyAPIExampleApp/Model/Spotify.swift
 [20]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/9feaff27b4d64b0e25df65d38c0ea75656e38802/SpotifyAPIExampleApp/Model/Spotify.swift#L233-L257
 [21]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/9feaff27b4d64b0e25df65d38c0ea75656e38802/SpotifyAPIExampleApp/Views/RootView.swift#L116-L133
