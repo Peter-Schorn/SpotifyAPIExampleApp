@@ -44,7 +44,7 @@ final class Spotify: ObservableObject {
     /// than an incoming redirect from Spotify was the result of a request
     /// made by this app, and not an attacker. **This value is regenerated**
     /// **after each authorization process completes.**
-    var authorizationState = String.randomURLSafe(length: 32)
+    var authorizationState = String.randomURLSafe(length: 128)
  
     /**
      Whether or not the application has been authorized. If `true`,
@@ -164,6 +164,8 @@ final class Spotify: ObservableObject {
             scopes: [
                 .userReadPlaybackState,
                 .userModifyPlaybackState,
+                .playlistModifyPrivate,
+                .playlistModifyPublic,
                 .userLibraryRead,
                 .userLibraryModify,
                 .userReadEmail

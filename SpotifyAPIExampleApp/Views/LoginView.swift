@@ -20,8 +20,8 @@ struct LoginView: ViewModifier {
     /// Most importantly, this is useful for the preview provider.
     fileprivate static var debugAlwaysShowing = false
     
-    /// The animation that should be used for
-    /// presenting and dismissing this view.
+    /// The animation that should be used for presenting and dismissing
+    /// this view.
     static let animation = Animation.spring()
     
     @Environment(\.colorScheme) var colorScheme

@@ -31,10 +31,7 @@ struct RootView: View {
         // Presented if an error occurs during the process of authorizing
         // with the user's Spotify account.
         .alert(isPresented: $alertIsPresented) {
-            Alert(
-                title: Text(alertTitle),
-                message: Text(alertMessage)
-            )
+            Alert(title: Text(alertTitle), message: Text(alertMessage))
         }
         // Called when a redirect is received from Spotify.
         .onOpenURL(perform: handleURL(_:))
@@ -108,7 +105,7 @@ struct RootView: View {
         // MARK: after each authorization request. This ensures an incoming
         // MARK: redirect from Spotify was the result of a request made by
         // MARK: this app, and not an attacker.
-        self.spotify.authorizationState = String.randomURLSafe(length: 32)
+        self.spotify.authorizationState = String.randomURLSafe(length: 128)
         
     }
 

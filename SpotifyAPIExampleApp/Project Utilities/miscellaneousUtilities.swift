@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import SpotifyWebAPI
 
 extension Sequence {
     
@@ -17,11 +18,47 @@ extension Sequence {
 
 extension View {
     
-    /// Type erases self to `AnyView`.
-    /// Equivalent to `AnyView(self)`.
+    /// Type erases self to `AnyView`. Equivalent to `AnyView(self)`.
     func eraseToAnyView() -> AnyView {
         return AnyView(self)
     }
 
 }
 
+extension PlaylistItem {
+    
+    /// Returns `true` if this playlist item is probably the same as
+    /// `other` by comparing the name, artist/show name, and length.
+    func isProbablyTheSameAs(_ other: Self) -> Bool {
+        
+        if let uri = self.uri, let otherURI = other.uri {
+            return uri == otherURI
+        }
+        
+        switch (self, other) {
+            case (.track(let track), .track(let otherTrack)):
+                // if the name of the tracks and the name of the artists
+                // are the same, then the tracks are probably the same
+                if track.name == otherTrack.name &&
+                        track.artists?.first?.name ==
+                        otherTrack.artists?.first?.name {
+                    return true
+                }
+                return false
+                
+            case (.episode(let episode), .episode(let otherEpisode)):
+                // if the name of the episodes and the names of the
+                // shows they appear on are the same, then the episodes
+                // are probably the same.
+                if episode.name == otherEpisode.name &&
+                        episode.show?.name == otherEpisode.show?.name {
+                    return true
+                }
+                return false
+            default:
+                return false
+        }
+        
+    }
+    
+}
