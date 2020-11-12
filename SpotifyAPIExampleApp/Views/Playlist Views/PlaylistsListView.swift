@@ -34,10 +34,8 @@ struct PlaylistsListView: View {
             if playlists.isEmpty {
                 if isLoadingPlaylists {
                     HStack {
-                        ActivityIndicator(
-                            isAnimating: .constant(true),
-                            style: .medium
-                        )
+                        ProgressView()
+                                    .padding()
                         Text("Loading Playlists")
                             .font(.title)
                             .foregroundColor(.secondary)
@@ -57,8 +55,8 @@ struct PlaylistsListView: View {
             else {
                 Text(
                     """
-                    Tap on a playlist to play it. \
-                    Tap and hold on a Playlist to remove duplicates.
+                    Tap on a playlist to play it. Tap and hold \
+                    on a Playlist to remove duplicates.
                     """
                 )
                 .font(.caption)

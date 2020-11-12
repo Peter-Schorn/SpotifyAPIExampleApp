@@ -75,7 +75,7 @@ struct LoginView: ViewModifier {
             .padding(.vertical, 50)
             .background(Color(.secondarySystemBackground))
             .cornerRadius(20)
-            .overlay(authenticatingView)
+            .overlay(retrievingTokensView)
             .shadow(radius: 5)
             .transition(
                 AnyTransition.scale(scale: 1.2)
@@ -99,21 +99,20 @@ struct LoginView: ViewModifier {
         .shadow(radius: 5)
         // MARK: Authorize The Application
         .onTapGesture(perform: self.spotify.authorize)
+        .padding(.bottom, 5)
         // Prevent the user from trying to login again
         // if a request to retrieve the access and refresh
         // tokens is currently in progress.
         .disabled(spotify.isRetrievingTokens)
     }
     
-    var authenticatingView: some View {
+    var retrievingTokensView: some View {
         VStack {
             Spacer()
             if spotify.isRetrievingTokens {
                 HStack {
-                    ActivityIndicator(
-                        isAnimating: .constant(true),
-                        style: .medium
-                    )
+                    ProgressView()
+                        .padding()
                     Text("Authenticating")
                 }
                 .padding(.bottom, 20)
@@ -135,6 +134,7 @@ struct LoginView_Previews: PreviewProvider {
     
     static func onAppear() {
         spotify.isAuthorized = false
+        spotify.isRetrievingTokens = true
         LoginView.debugAlwaysShowing = true
     }
 

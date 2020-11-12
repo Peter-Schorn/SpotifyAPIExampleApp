@@ -123,6 +123,7 @@ struct PlaylistCellView: View {
         self.isDeduplicating = true
         
         var seenPlaylists: Set<PlaylistItem> = []
+        
         // The uri of an item in the playlist, along with its position in
         // the playlist.
         var duplicates: [(uri: SpotifyURIConvertible, position: Int)] = []
@@ -203,6 +204,7 @@ struct PlaylistCellView: View {
                 
     }
     
+    /// Remove the duplicates in the playlist.
     func removeDuplicates(
         _ duplicates: [(uri: SpotifyURIConvertible, position: Int)]
     ) {

@@ -50,9 +50,9 @@ struct AlbumTracksView: View {
                 }
                 .padding(30)
                 Text(albumAndArtistName)
-                .font(.title)
-                .bold()
-                .padding(.horizontal)
+                    .font(.title)
+                    .bold()
+                    .padding(.horizontal)
                 Text("\(album.tracks?.total ?? 0) Tracks")
                     .foregroundColor(.secondary)
                     .font(.title2)
@@ -61,10 +61,8 @@ struct AlbumTracksView: View {
                     Group {
                         if isLoadingTracks {
                             HStack {
-                                ActivityIndicator(
-                                    isAnimating: .constant(true),
-                                    style: .medium
-                                )
+                                ProgressView()
+                                    .padding()
                                 Text("Loading Tracks")
                                     .font(.title)
                                     .foregroundColor(.secondary)

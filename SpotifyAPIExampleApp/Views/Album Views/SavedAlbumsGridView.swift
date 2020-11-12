@@ -39,10 +39,8 @@ struct SavedAlbumsGridView: View {
             if savedAlbums.isEmpty {
                 if isLoadingAlbums {
                     HStack {
-                        ActivityIndicator(
-                            isAnimating: .constant(true),
-                            style: .medium
-                        )
+                        ProgressView()
+                            .padding()
                         Text("Loading Albums")
                             .font(.title)
                             .foregroundColor(.secondary)

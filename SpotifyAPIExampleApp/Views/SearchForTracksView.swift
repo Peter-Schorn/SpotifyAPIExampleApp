@@ -35,14 +35,13 @@ struct SearchForTracksView: View {
             if tracks.isEmpty {
                 if isSearching {
                     HStack {
-                        ActivityIndicator(
-                            isAnimating: .constant(true),
-                            style: .medium
-                        )
+                        ProgressView()
+                            .padding()
                         Text("Searching")
                             .font(.title)
                             .foregroundColor(.secondary)
                     }
+                    
                 }
                 else {
                     Text("No Results")
@@ -133,7 +132,6 @@ struct SearchView_Previews: PreviewProvider {
             SearchForTracksView()
                 .environmentObject(spotify)
         }
-        .preferredColorScheme(.light)
     }
     
 }
