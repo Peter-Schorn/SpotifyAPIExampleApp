@@ -24,6 +24,13 @@ struct SearchForTracksView: View {
     @State private var searchText = ""
     @State private var searchCancellable: AnyCancellable? = nil
     
+    /// Used by the preview provider to provide sample data.
+    fileprivate init(sampleTracks: [Track]) {
+        self._tracks = State(initialValue: sampleTracks)
+    }
+    
+    init() { }
+    
     var body: some View {
         VStack {
             searchBar
@@ -127,10 +134,17 @@ struct SearchView_Previews: PreviewProvider {
     
     static let spotify = Spotify()
     
+    static let tracks: [Track] = [
+        .because, .comeTogether, .odeToViceroy, .illWind,
+        .faces, .theEnd, .time, .theEnd, .reckoner
+    ]
+    
     static var previews: some View {
         NavigationView {
-            SearchForTracksView()
+            SearchForTracksView(sampleTracks: tracks)
+                .listStyle(PlainListStyle())
                 .environmentObject(spotify)
+                
         }
     }
     
