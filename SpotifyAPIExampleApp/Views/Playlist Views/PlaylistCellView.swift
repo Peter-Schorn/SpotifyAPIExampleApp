@@ -252,6 +252,8 @@ struct PlaylistCellView: View {
         print("finished removing duplicates from playlist")
         DispatchQueue.main.async {
             self.isDeduplicating = false
+            // Update the number of items in the playlist by subtracting
+            // the duplicates that were removed.
             self.totalItems = playlist.items.total - duplicates.count
             self.alertTitle =
                 "Removed \(duplicates.count) duplicates from \(playlist.name)"
