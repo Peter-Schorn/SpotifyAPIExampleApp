@@ -103,7 +103,7 @@ final class Spotify: ObservableObject {
         
         self.api.authorizationManagerDidDeauthorize
             .receive(on: RunLoop.main)
-            .sink(receiveValue: removeAuthorizationManagerFromKeychain)
+            .sink(receiveValue: authorizationManagerDidDeauthorize)
             .store(in: &cancellables)
         
         // Check to see if the authorization information is saved in
@@ -250,12 +250,14 @@ final class Spotify: ObservableObject {
      This method is called everytime `api.authorizationManager.deauthorize` is
      called.
      */
-    func removeAuthorizationManagerFromKeychain() {
+    func authorizationManagerDidDeauthorize() {
         
         withAnimation {
             self.isAuthorized = false
         }
         
+        self.currentUser = nil
+
         do {
             /*
              Remove the authorization information from the keychain.
