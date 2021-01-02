@@ -71,6 +71,8 @@ final class Spotify: ObservableObject {
     /// Used by `LoginView` to present an activity indicator.
     @Published var isRetrievingTokens = false
     
+    @Published var currentUser: SpotifyUser? = nil
+    
     /// The keychain to store the authorization information in.
     let keychain = Keychain(service: "com.Peter-Schorn.SpotifyAPIExampleApp")
     
@@ -206,6 +208,22 @@ final class Spotify: ObservableObject {
             "Spotify.handleChangesToAuthorizationManager: isAuthorized:",
             self.isAuthorized
         )
+        
+        if self.isAuthorized && self.currentUser == nil {
+            self.api.currentUserProfile()
+                .receive(on: RunLoop.main)
+                .sink(
+                    receiveCompletion: { completion in
+                        if case .failure(let error) = completion {
+                            print("couldn't retrieve current use: \(error)")
+                        }
+                    },
+                    receiveValue: { user in
+                        self.currentUser = user
+                    }
+                )
+                .store(in: &cancellables)
+        }
         
         do {
             // Encode the authorization information to data.

@@ -17,9 +17,7 @@ struct SearchForTracksView: View {
     
     @State var tracks: [Track] = []
 
-    @State private var alertTitle = ""
-    @State private var alertMessage = ""
-    @State private var alertIsPresented = false
+    @State private var alert: AlertItem? = nil
     
     @State private var searchText = ""
     @State private var searchCancellable: AnyCancellable? = nil
@@ -66,11 +64,8 @@ struct SearchForTracksView: View {
             Spacer()
         }
         .navigationTitle("Search For Tracks")
-        .alert(isPresented: $alertIsPresented) {
-            Alert(
-                title: Text(alertTitle),
-                message: Text(alertMessage)
-            )
+        .alert(item: $alert) { alert in
+            Alert(title: alert.title, message: alert.message)
         }
     }
     
@@ -116,9 +111,10 @@ struct SearchForTracksView: View {
             receiveCompletion: { completion in
                 self.isSearching = false
                 if case .failure(let error) = completion {
-                    self.alertTitle = "Couldn't Perform Search"
-                    self.alertMessage = error.localizedDescription
-                    self.alertIsPresented = true
+                    self.alert = AlertItem(
+                        title: "Couldn't Perform Search",
+                        message: error.localizedDescription
+                    )
                 }
             },
             receiveValue: { searchResults in

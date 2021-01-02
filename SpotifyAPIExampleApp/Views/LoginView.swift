@@ -104,6 +104,7 @@ struct LoginView: ViewModifier {
         // if a request to retrieve the access and refresh
         // tokens is currently in progress.
         .disabled(spotify.isRetrievingTokens)
+        
     }
     
     var retrievingTokensView: some View {

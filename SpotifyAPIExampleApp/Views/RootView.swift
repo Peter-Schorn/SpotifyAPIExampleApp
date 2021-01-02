@@ -15,10 +15,8 @@ struct RootView: View {
     
     @State private var cancellables: Set<AnyCancellable> = []
     
-    @State private var alertTitle = ""
-    @State private var alertMessage = ""
-    @State private var alertIsPresented = false
-    
+    @State private var alert: AlertItem? = nil
+
     var body: some View {
         NavigationView {
             ExamplesListView()
@@ -27,11 +25,14 @@ struct RootView: View {
         }
         // The login view is presented if `Spotify.isAuthorized` == `false.
         // When the login button is tapped, `Spotify.authorize()` is called.
+        // After the login process sucessfully completes, `Spotify.isAuthorized`
+        // will be set to `true` and `LoginView` will be dismissed, allowing
+        // the user to interact with the rest of the app.
         .modifier(LoginView())
         // Presented if an error occurs during the process of authorizing
         // with the user's Spotify account.
-        .alert(isPresented: $alertIsPresented) {
-            Alert(title: Text(alertTitle), message: Text(alertMessage))
+        .alert(item: $alert) { alert in
+            Alert(title: alert.title, message: alert.message)
         }
         // Called when a redirect is received from Spotify.
         .onOpenURL(perform: handleURL(_:))
@@ -86,17 +87,20 @@ struct RootView: View {
              */
             if case .failure(let error) = completion {
                 print("couldn't retrieve access and refresh tokens:\n\(error)")
+                let alertTitle: String
+                let alertMessage: String
                 if let authError = error as? SpotifyAuthorizationError,
                         authError.accessWasDenied {
-                    self.alertTitle =
+                    alertTitle =
                         "You Denied The Authorization Request :("
+                    alertMessage = ""
                 }
                 else {
-                    self.alertTitle =
+                    alertTitle =
                         "Couldn't Authorization With Your Account"
-                    self.alertMessage = error.localizedDescription
+                    alertMessage = error.localizedDescription
                 }
-                self.alertIsPresented = true
+                self.alert = AlertItem(title: alertTitle, message: alertMessage)
             }
         })
         .store(in: &cancellables)
@@ -111,14 +115,11 @@ struct RootView: View {
 
     /// Removes the authorization information for the user.
     var logoutButton: some View {
-        Button(action: {
-            // Calling this method will cause
-            // `SpotifyAPI.authorizationManagerDidDeauthorize` to emit
-            // a signal, which will cause
-            // `Spotify.removeAuthorizationManagerFromKeychain` to be called.
-            spotify.api.authorizationManager.deauthorize()
-            
-        }, label: {
+        // Calling `spotify.api.authorizationManager.deauthorize` will
+        // cause `SpotifyAPI.authorizationManagerDidDeauthorize` to emit
+        // a signal, which will cause
+        // `Spotify.removeAuthorizationManagerFromKeychain` to be called.
+        Button(action: spotify.api.authorizationManager.deauthorize, label: {
             Text("Logout")
                 .foregroundColor(.white)
                 .padding(7)

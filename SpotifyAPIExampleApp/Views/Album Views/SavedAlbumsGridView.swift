@@ -7,11 +7,9 @@ struct SavedAlbumsGridView: View {
     @EnvironmentObject var spotify: Spotify
     
     @State private var savedAlbums: [Album] = []
-    
-    @State private var alertTitle = ""
-    @State private var alertMessage = ""
-    @State private var alertIsPresented = false
-    
+
+    @State private var alert: AlertItem? = nil
+
     @State private var didRequestAlbums = false
     @State private var isLoadingAlbums = false
     @State private var couldntLoadAlbums = false
@@ -22,16 +20,11 @@ struct SavedAlbumsGridView: View {
         GridItem(.adaptive(minimum: 100, maximum: 200))
     ]
 
-    let debug: Bool
-    
-    init() {
-        self.debug = false
-    }
+    init() { }
     
     /// Used only by the preview provider to provide sample data.
     fileprivate init(sampleAlbums: [Album]) {
         self._savedAlbums = State(initialValue: sampleAlbums)
-        self.debug = true
     }
     
     var body: some View {
@@ -60,7 +53,7 @@ struct SavedAlbumsGridView: View {
                         // scrolling because the hash of the entire album
                         // instance must be calculated.
                         ForEach(savedAlbums, id: \.id) { album in
-                            SavedAlbumView(album: album)
+                            AlbumGridItemView(album: album)
                         }
                     }
                     .padding()
@@ -70,11 +63,8 @@ struct SavedAlbumsGridView: View {
         }
         .navigationTitle("Saved Albums")
         .navigationBarItems(trailing: refreshButton)
-        .alert(isPresented: $alertIsPresented) {
-            Alert(
-                title: Text(alertTitle),
-                message: Text(alertMessage)
-            )
+        .alert(item: $alert) { alert in
+            Alert(title: alert.title, message: alert.message)
         }
         .onAppear {
             if !self.didRequestAlbums {
@@ -95,10 +85,8 @@ struct SavedAlbumsGridView: View {
     
     func retrieveSavedAlbums() {
 
-        // If `debug` is `true`, then sample albums have been provided
-        // for testing purposes, so we shouldn't try to retrieve any from
-        // the Spotify web API.
-        if self.debug { return }
+        // Don't try to load any albums if we're in preview mode.
+        if ProcessInfo.processInfo.isPreviewing { return }
         
         self.didRequestAlbums = true
         self.isLoadingAlbums = true
@@ -118,9 +106,10 @@ struct SavedAlbumsGridView: View {
                             self.couldntLoadAlbums = false
                         case .failure(let error):
                             self.couldntLoadAlbums = true
-                            self.alertTitle = "Couldn't Retrieve Albums"
-                            self.alertMessage = error.localizedDescription
-                            self.alertIsPresented = true
+                            self.alert = AlertItem(
+                                title: "Couldn't Retrieve Albums",
+                                message: error.localizedDescription
+                            )
                     }
                 },
                 receiveValue: { savedAlbums in

@@ -11,6 +11,15 @@
         }
       },
       {
+        "package": "OpenCombine",
+        "repositoryURL": "https://github.com/OpenCombine/OpenCombine.git",
+        "state": {
+          "branch": null,
+          "revision": "9bba5081344163296ddf537048566b95513b8f39",
+          "version": "0.11.0"
+        }
+      },
+      {
         "package": "RegularExpressions",
         "repositoryURL": "https://github.com/Peter-Schorn/RegularExpressions.git",
         "state": {
@@ -24,8 +33,17 @@
         "repositoryURL": "https://github.com/Peter-Schorn/SpotifyAPI.git",
         "state": {
           "branch": null,
-          "revision": "cf330a63fa6f307a88ef915f23364d7619eda84b",
-          "version": "1.0.4"
+          "revision": "3c24fe694ccf08e6adeb8f834300a21170645f69",
+          "version": "1.2.1"
+        }
+      },
+      {
+        "package": "swift-crypto",
+        "repositoryURL": "https://github.com/apple/swift-crypto.git",
+        "state": {
+          "branch": null,
+          "revision": "8f4bfa5bc1951440c15710e9e893721aa4b2765c",
+          "version": "1.1.3"
         }
       },
       {

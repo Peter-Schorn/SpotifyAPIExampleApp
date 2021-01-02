@@ -10,23 +10,16 @@ struct PlaylistsListView: View {
     
     @State private var cancellables: Set<AnyCancellable> = []
     
-    @State private var alertTitle = ""
-    @State private var alertMessage = ""
-    @State private var alertIsPresented = false
-    
     @State private var isLoadingPlaylists = false
     @State private var couldntLoadPlaylists = false
     
-    let debug: Bool
-    
-    init() {
-        self.debug = false
-    }
+    @State private var alert: AlertItem? = nil
+
+    init() { }
     
     /// Used only by the preview provider to provide sample data.
     fileprivate init(samplePlaylists: [Playlist<PlaylistsItemsReference>]) {
         self._playlists = State(initialValue: samplePlaylists)
-        self.debug = true
     }
     
     var body: some View {
@@ -71,11 +64,8 @@ struct PlaylistsListView: View {
         }
         .navigationTitle("Playlists")
         .navigationBarItems(trailing: refreshButton)
-        .alert(isPresented: $alertIsPresented) {
-            Alert(
-                title: Text(alertTitle),
-                message: Text(alertMessage)
-            )
+        .alert(item: $alert) { alert in
+            Alert(title: alert.title, message: alert.message)
         }
         .onAppear(perform: retrievePlaylists)
         
@@ -93,16 +83,13 @@ struct PlaylistsListView: View {
     
     func retrievePlaylists() {
         
-        // If `debug` is `true`, then sample playlists have been provided
-        // for testing purposes, so we shouldn't try to retrieve any from
-        // the Spotify web API.
-        if self.debug { return }
+        // Don't try to load any playlists if we're in preview mode.
+        if ProcessInfo.processInfo.isPreviewing { return }
         
         self.isLoadingPlaylists = true
         self.playlists = []
-        spotify.api.currentUserPlaylists()
-            // Gets all pages of playlists. By default, only 20 are
-            // returned per page.
+        spotify.api.currentUserPlaylists(limit: 50)
+            // Gets all pages of playlists.
             .extendPages(spotify.api)
             .receive(on: RunLoop.main)
             .sink(
@@ -113,9 +100,10 @@ struct PlaylistsListView: View {
                             self.couldntLoadPlaylists = false
                         case .failure(let error):
                             self.couldntLoadPlaylists = true
-                            self.alertTitle = "Couldn't Retrieve Playlists"
-                            self.alertMessage = error.localizedDescription
-                            self.alertIsPresented = true
+                            self.alert = AlertItem(
+                                title: "Couldn't Retrieve Playlists",
+                                message: error.localizedDescription
+                            )
                     }
                 },
                 // We will receive a value for each page of playlists.
