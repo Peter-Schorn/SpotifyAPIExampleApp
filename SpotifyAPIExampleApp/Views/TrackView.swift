@@ -13,15 +13,16 @@ struct TrackView: View {
     let track: Track
     
     var body: some View {
-        HStack {
-            Text(trackDisplayName())
-            Spacer()
+        Button(action: playTrack) {
+            HStack {
+                Text(trackDisplayName())
+                Spacer()
+            }
+            // Ensure the hitbox extends across the entire width
+            // of the frame. See https://bit.ly/2HqNk4S
+            .contentShape(Rectangle())
         }
-        .frame(maxWidth: .infinity)
-        // Ensure the hitbox extends across the entire width
-        // of the frame. See https://bit.ly/2HqNk4S
-        .contentShape(Rectangle())
-        .onTapGesture(perform: playTrack)
+        .buttonStyle(PlainButtonStyle())
         .alert(item: $alert) { alert in
             Alert(title: alert.title, message: alert.message)
         }

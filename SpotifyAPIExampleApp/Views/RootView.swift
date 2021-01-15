@@ -7,7 +7,7 @@
 
 import SwiftUI
 import Combine
-@testable import SpotifyWebAPI
+import SpotifyWebAPI
 
 struct RootView: View {
     
@@ -57,30 +57,62 @@ struct RootView: View {
 
         print("received redirect from Spotify: '\(url)'")
         
-//        guard let parameters = spotify.appRemote
-//                .authorizationParameters(from: url) else {
-//            self.alert = AlertItem(
-//                title: "Couldn't get parameters from redirect URL",
-//                message: ""
-//            )
-//            return
-//        }
+        let queryDict = url.queryItemsDict
+        if queryDict["spotify_version"] != nil {
+            // redirected from the Spotify app
+            
+            guard let parameters = spotify.appRemote
+                    .authorizationParameters(from: url) else {
+                self.alert = AlertItem(
+                    title: "Couldn't get parameters from redirect URL",
+                    message: ""
+                )
+                return
+            }
+            
+            if let accessToken = parameters[SPTAppRemoteAccessTokenKey] {
+                print("got access token from Spotify App: \(accessToken)")
+//                var urlComponents = URLComponents()
+//                urlComponents.query = url.fragment
+//                guard
+//                    let expiresInString = url.queryItemsDict["expires_in"],
+//                    let expiresIn = Double(expiresInString)
+//                else {
+//                    self.alert = AlertItem(
+//                        title: "Couldn't connect to the Spotify App",
+//                        message: "An unknown error occurred"
+//                    )
+//                    return
+//                }
+//                let expirationDate = Date(timeInterval: expiresIn, since: Date())
 //
-//        if let accessToken = parameters[SPTAppRemoteAccessTokenKey] {
-//            self.spotify.api.authorizationManager._accessToken = accessToken
-//            // self.spotify.appRemote.del
-//            print("authorization process with Spotify succeeded")
+//                let authManager = self.spotify.api.authorizationManager
+//                self.spotify.api.authorizationManager = .init(
+//                    clientId: authManager.clientId,
+//                    clientSecret: authManager.clientSecret,
+//                    accessToken: accessToken,
+//                    expirationDate: expirationDate,
+//                    refreshToken: nil,
+//                    scopes: [.appRemoteControl],
+//                    networkAdaptor: authManager.networkAdaptor
+//                )
 //
-//        }
-//        else {
-//            let errorMessage = parameters[SPTAppRemoteErrorDescriptionKey]
-//                    ?? "An unknown error occurred"
-//            self.alert = AlertItem(
-//                title: "Couldn't authenticate with the Spotify App",
-//                message: errorMessage
-//            )
-//
-//        }
+//                print("authorization process with Spotify succeeded")
+                
+            }
+            else {
+                let errorMessage = parameters[SPTAppRemoteErrorDescriptionKey]
+                    ?? "An unknown error occurred"
+                self.alert = AlertItem(
+                    title: "Couldn't connect to the Spotify App",
+                    message: errorMessage
+                )
+                
+            }
+            return
+        }
+        // else: redirected from the Spotify web API
+
         
 //         This property is used to display an activity indicator in
 //         `LoginView` indicating that the access and refresh tokens

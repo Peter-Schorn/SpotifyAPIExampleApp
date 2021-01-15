@@ -14,17 +14,23 @@ struct SpotifyAPIExampleAppApp: App {
             RootView()
                 .environmentObject(spotify)
         }
-        // .onChange(of: scenePhase) { newScenePhase in
-        //     print("newScenePhase:", newScenePhase)
-        //     switch newScenePhase {
-        //         case .active:
-        //             spotify.appRemote.connect()
-        //         case .inactive:
-        //             spotify.appRemote.disconnect()
-        //         default:
-        //             break
-        //     }
-        // }
+        .onChange(
+            of: scenePhase,
+            perform: onChangeOfScenePhase(to:)
+        )
+        
+    }
+    
+    func onChangeOfScenePhase(to newPhase: ScenePhase) {
+        print("scene phase changed from \(scenePhase) to \(newPhase)")
+        switch newPhase {
+            case .active:
+                if !self.spotify.appRemote.isConnected {
+                    self.spotify.connectToAppRemote()
+                }
+            default:
+                break
+        }
         
     }
     

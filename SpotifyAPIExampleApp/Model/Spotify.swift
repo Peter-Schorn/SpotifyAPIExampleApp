@@ -46,6 +46,22 @@ final class Spotify: NSObject, ObservableObject {
     /// **after each authorization process completes.**
     var authorizationState = String.randomURLSafe(length: 128)
  
+    /// The keychain to store the authorization information in.
+    let keychain = Keychain(service: "com.Peter-Schorn.SpotifyAPIExampleApp")
+    
+    /// An instance of `SpotifyAPI` that you use to make requests to
+    /// the Spotify web API.
+    let api = SpotifyAPI(
+        authorizationManager: AuthorizationCodeFlowManager(
+            clientId: Spotify.clientId, clientSecret: Spotify.clientSecret
+        )
+    )
+
+    // MARK: Spotify App Remote
+    var appRemote: SPTAppRemote
+
+    // MARK: Published Properties
+
     /**
      Whether or not the application has been authorized. If `true`,
      then you can begin making requests to the Spotify web API
@@ -67,28 +83,29 @@ final class Spotify: NSObject, ObservableObject {
      */
     @Published var isAuthorized = false
 
+    @Published var appRemoteIsConnected = false
+
     /// If `true`, then the app is retrieving access and refresh tokens.
     /// Used by `LoginView` to present an activity indicator.
     @Published var isRetrievingTokens = false
     
     @Published var currentUser: SpotifyUser? = nil
     
-    /// The keychain to store the authorization information in.
-    let keychain = Keychain(service: "com.Peter-Schorn.SpotifyAPIExampleApp")
-    
-    /// An instance of `SpotifyAPI` that you use to make requests to
-    /// the Spotify web API.
-    let api = SpotifyAPI(
-        authorizationManager: AuthorizationCodeFlowManager(
-            clientId: Spotify.clientId, clientSecret: Spotify.clientSecret
-        )
-    )
-    
-    // MARK: Spotify App Remote
-    var appRemote: SPTAppRemote
-    
-    var cancellables: Set<AnyCancellable> = []
-    
+    // MARK: Publishers
+
+    let appRemoteDidEstablishConnection = PassthroughSubject<Void, Never>()
+
+    let appRemoteDidFailConnectionAttempt = PassthroughSubject<Error?, Never>()
+
+    let playerStateDidChange: AnyPublisher<SPTAppRemotePlayerState, Never>
+
+    // MARK: Private Properties
+
+    private let _playerStateDidChange =
+            PassthroughSubject<SPTAppRemotePlayerState, Never>()
+
+    private var cancellables: Set<AnyCancellable> = []
+
     // MARK: - Methods -
     
     override init() {
@@ -106,13 +123,19 @@ final class Spotify: NSObject, ObservableObject {
             configuration: configuration,
             logLevel: .debug
         )
-        self.appRemote.connectionParameters.accessToken =
-                self.api.authorizationManager.accessToken
         
+        self.playerStateDidChange = self._playerStateDidChange
+            .removeDuplicates(by: { $0 == $1 })
+            .debounce(for: 0.25, scheduler: RunLoop.main)
+            .eraseToAnyPublisher()
+
         super.init()
 
+//        #warning("debug")
+//        self.authorizationManagerDidDeauthorize()
+
         self.appRemote.delegate = self
-        self.appRemote.playerAPI?.delegate = self
+//        self.appRemote.playerAPI?.delegate = self
         print("configured delegates")
         
         // Configure the loggers.
@@ -133,6 +156,10 @@ final class Spotify: NSObject, ObservableObject {
             .sink(receiveValue: authorizationManagerDidDeauthorize)
             .store(in: &cancellables)
         
+        self.$appRemoteIsConnected.sink { isConnected in
+            print("appRemoteIsConnected: \(isConnected)")
+        }
+        .store(in: &self.cancellables)
         
         // MARK: Check to see if the authorization information is saved in
         // MARK: the keychain.
@@ -238,27 +265,19 @@ final class Spotify: NSObject, ObservableObject {
             "Spotify.handleChangesToAuthorizationManager: isAuthorized:",
             self.isAuthorized
         )
-        
-
-        if self.isAuthorized && self.currentUser == nil {
-            self.api.currentUserProfile()
-                .receive(on: RunLoop.main)
-                .sink(
-                    receiveCompletion: { completion in
-                        if case .failure(let error) = completion {
-                            print("couldn't retrieve current use: \(error)")
-                        }
-                    },
-                    receiveValue: { user in
-                        self.currentUser = user
-                    }
-                )
-                .store(in: &cancellables)
-        }
 
         // MARK: Update the Access Token for the App Remote
         self.appRemote.connectionParameters.accessToken =
-                self.api.authorizationManager.accessToken
+            self.api.authorizationManager.accessToken
+
+        // MARK: Try to connect to the App Remote
+        if !self.appRemote.isConnected {
+            print("handleChangesToAuthorizationManager: reconnectToAppRemote")
+            self.connectToAppRemote()
+        }
+
+        self.retrieveCurrentUser()
+
         
         do {
             // Encode the authorization information to data.
@@ -315,18 +334,120 @@ final class Spotify: NSObject, ObservableObject {
             )
         }
     }
+    
+    /**
+     Retrieve the current user.
+     
+     - Parameter onlyIfNil: Only retrieve the user if `self.currentUser`
+           is `nil`.
+     */
+    func retrieveCurrentUser(onlyIfNil: Bool = true) {
+        
+        if onlyIfNil && self.currentUser != nil {
+            return
+        }
+
+        guard self.isAuthorized else { return }
+
+        self.api.currentUserProfile()
+            .receive(on: RunLoop.main)
+            .sink(
+                receiveCompletion: { completion in
+                    if case .failure(let error) = completion {
+                        print("couldn't retrieve current use: \(error)")
+                    }
+                },
+                receiveValue: { user in
+                    self.currentUser = user
+                }
+            )
+            .store(in: &cancellables)
+        
+    }
+    
 }
 
 extension Spotify: SPTAppRemoteDelegate {
     
     // MARK: - SPTAppRemoteDelegate -
-
+    
     func appRemoteDidEstablishConnection(
         _ appRemote: SPTAppRemote
     ) {
-        print("appRemoteDidEstablishConnection: \(appRemote)")
+        print("appRemoteDidEstablishConnection")
         self.appRemote.playerAPI?.delegate = self
+        assert(self.appRemote.playerAPI != nil)
+        
+        self.subscribeToPlayerState()
+        self.appRemoteIsConnected = self.appRemote.isConnected
+        self.appRemoteDidEstablishConnection.send()
+        
+        
+    }
     
+    func appRemote(
+        _ appRemote: SPTAppRemote,
+        didFailConnectionAttemptWithError error: Error?
+    ) {
+        print("appRemote didFailConnectionAttemptWithError: \(error as Any)")
+        self.appRemoteIsConnected = self.appRemote.isConnected
+        self.appRemoteDidFailConnectionAttempt.send(error)
+    }
+    
+    func appRemote(
+        _ appRemote: SPTAppRemote,
+        didDisconnectWithError error: Error?
+    ) {
+        print("appRemove didDisconnectWithError: \(error as Any)")
+        self.appRemoteIsConnected = self.appRemote.isConnected
+
+        // the documentation says that the error will be `nil` if
+        // the disconnect was explicity initiated, in which case
+        // we shouldn't try to reconnect.
+        if error != nil {
+            self.connectToAppRemote()
+        }
+
+    }
+    
+    func shouldTryToReconnectToAppRemote() -> Future<Bool, Never> {
+        return Future { promise in
+            
+            if self.api.authorizationManager.accessToken == nil {
+                print(
+                    """
+                    shouldTryToReconnectToAppRemote: \
+                    acccess token is nil
+                    """
+                )
+                promise(.success(false))
+            }
+
+            SPTAppRemote.checkIfSpotifyAppIsActive { isActive in
+                print(
+                    """
+                    shouldTryToReconnectToAppRemote: \
+                    Spotify App is active: \(isActive)
+                    """
+                )
+                promise(.success(isActive))
+            }
+        }
+        
+    }
+    
+    func connectToAppRemote() {
+        self.shouldTryToReconnectToAppRemote()
+            .sink { shouldTry in
+                print("reconnectToAppRemote: will connect: \(shouldTry)")
+                if shouldTry {
+                    self.appRemote.connect()
+                }
+            }
+            .store(in: &self.cancellables)
+    }
+
+    func subscribeToPlayerState() {
         self.appRemote.playerAPI?.subscribe { _, error in
             if let error = error {
                 print(
@@ -335,23 +456,12 @@ extension Spotify: SPTAppRemoteDelegate {
                     \(error)
                     """
                 )
+                // trying to re-subscribe to the player API after receiving
+                // an error seems to never work, but connecting to the app
+                // remote again does.
+                self.connectToAppRemote()
             }
         }
-    
-    }
-    
-    func appRemote(
-        _ appRemote: SPTAppRemote,
-        didFailConnectionAttemptWithError error: Error?
-    ) {
-        print("appRemote didFailConnectionAttemptWithError: \(error as Any)")
-    }
-    
-    func appRemote(
-        _ appRemote: SPTAppRemote,
-        didDisconnectWithError error: Error?
-    ) {
-       print("appRemove didDisconnectWithError: \(error as Any)")
     }
     
 }
@@ -361,7 +471,8 @@ extension Spotify: SPTAppRemotePlayerStateDelegate {
     // MARK: - SPTAppRemotePlayerStateDelegate -
 
     func playerStateDidChange(_ playerState: SPTAppRemotePlayerState) {
-        print("playerStateDidChange: \(playerState)")
+        print("playerStateDidChange: '\(playerState.track.name)'")
+        self._playerStateDidChange.send(playerState)
     }
 
 }

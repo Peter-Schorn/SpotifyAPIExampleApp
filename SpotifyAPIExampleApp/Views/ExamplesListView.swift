@@ -15,7 +15,10 @@ struct ExamplesListView: View {
                 "Search For Tracks", destination: SearchForTracksView()
             )
             NavigationLink(
-                "Player Remote", destination: PlayerRemote()
+                "Play a URI", destination: PlayURIView()
+            )
+            NavigationLink(
+                "Player Controls", destination: PlayerControlsView()
             )
             
             // This is the location where you can add your own views to
