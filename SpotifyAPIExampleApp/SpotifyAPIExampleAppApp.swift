@@ -1,16 +1,11 @@
-//
-//  SpotifyAPIExampleAppApp.swift
-//  SpotifyAPIExampleApp
-//
-//  Created by Peter Schorn on 9/19/20.
-//
-
 import SwiftUI
 import Combine
 import SpotifyWebAPI
 
 @main
 struct SpotifyAPIExampleAppApp: App {
+
+    @Environment(\.scenePhase) var scenePhase
     
     @StateObject var spotify = Spotify()
 
@@ -19,6 +14,18 @@ struct SpotifyAPIExampleAppApp: App {
             RootView()
                 .environmentObject(spotify)
         }
+        // .onChange(of: scenePhase) { newScenePhase in
+        //     print("newScenePhase:", newScenePhase)
+        //     switch newScenePhase {
+        //         case .active:
+        //             spotify.appRemote.connect()
+        //         case .inactive:
+        //             spotify.appRemote.disconnect()
+        //         default:
+        //             break
+        //     }
+        // }
+        
     }
     
 }

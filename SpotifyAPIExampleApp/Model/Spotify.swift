@@ -12,7 +12,10 @@ import SpotifyWebAPI
  Its most important role is to handle changes to the authorzation
  information and save them to persistent storage in the keychain.
  */
-final class Spotify: ObservableObject {
+final class Spotify:
+    NSObject, ObservableObject,
+    SPTAppRemoteDelegate, SPTAppRemotePlayerStateDelegate
+{
     
     private static let clientId: String = {
         if let clientId = ProcessInfo.processInfo
@@ -84,9 +87,36 @@ final class Spotify: ObservableObject {
         )
     )
     
+    // MARK: Spotify App Remote
+    var appRemote: SPTAppRemote
+    
     var cancellables: Set<AnyCancellable> = []
     
-    init() {
+    // MARK: - Methods -
+    
+    override init() {
+        
+        print("\n--- initializing spotify ---\n")
+        
+        // MARK: Configure the App Remote
+        
+        let configuration = SPTConfiguration(
+            clientID: Self.clientId,
+            redirectURL: Self.loginCallbackURL
+        )
+        
+        self.appRemote = SPTAppRemote(
+            configuration: configuration,
+            logLevel: .debug
+        )
+        self.appRemote.connectionParameters.accessToken =
+                self.api.authorizationManager.accessToken
+        
+        super.init()
+
+        self.appRemote.delegate = self
+        self.appRemote.playerAPI?.delegate = self
+        print("configured delegates")
         
         // Configure the loggers.
         self.api.apiRequestLogger.logLevel = .trace
@@ -100,14 +130,15 @@ final class Spotify: ObservableObject {
             .receive(on: RunLoop.main)
             .sink(receiveValue: handleChangesToAuthorizationManager)
             .store(in: &cancellables)
-        
+
         self.api.authorizationManagerDidDeauthorize
             .receive(on: RunLoop.main)
             .sink(receiveValue: authorizationManagerDidDeauthorize)
             .store(in: &cancellables)
         
-        // Check to see if the authorization information is saved in
-        // the keychain.
+        
+        // MARK: Check to see if the authorization information is saved in
+        // MARK: the keychain.
         if let authManagerData = keychain[data: Self.authorizationManagerKey] {
             
             do {
@@ -142,6 +173,7 @@ final class Spotify: ObservableObject {
             print("did NOT find authorization information in keychain")
         }
         
+        
     }
     
     /**
@@ -170,7 +202,8 @@ final class Spotify: ObservableObject {
                 .playlistModifyPublic,
                 .userLibraryRead,
                 .userLibraryModify,
-                .userReadEmail
+                .userReadEmail,
+                .appRemoteControl
             ]
         )!
         
@@ -209,6 +242,7 @@ final class Spotify: ObservableObject {
             self.isAuthorized
         )
         
+
         if self.isAuthorized && self.currentUser == nil {
             self.api.currentUserProfile()
                 .receive(on: RunLoop.main)
@@ -224,6 +258,10 @@ final class Spotify: ObservableObject {
                 )
                 .store(in: &cancellables)
         }
+
+        // MARK: Update the Access Token for the App Remote
+        self.appRemote.connectionParameters.accessToken =
+                self.api.authorizationManager.accessToken
         
         do {
             // Encode the authorization information to data.
@@ -258,6 +296,9 @@ final class Spotify: ObservableObject {
         
         self.currentUser = nil
 
+        // MARK: Remove the Access Token from the App Remove
+        self.appRemote.connectionParameters.accessToken = nil
+        
         do {
             /*
              Remove the authorization information from the keychain.
@@ -278,4 +319,45 @@ final class Spotify: ObservableObject {
         }
     }
     
+    // MARK: - SPTAppRemoteDelegate Conformance -
+
+    func appRemoteDidEstablishConnection(
+        _ appRemote: SPTAppRemote
+    ) {
+        print("appRemoteDidEstablishConnection: \(appRemote)")
+        self.appRemote.playerAPI?.delegate = self
+    
+        self.appRemote.playerAPI?.subscribe { _, error in
+            if let error = error {
+                print(
+                    """
+                    received error from appRemote.playerAPI?.subscribe:
+                    \(error)
+                    """
+                )
+            }
+        }
+    
+    }
+    
+    func appRemote(
+        _ appRemote: SPTAppRemote,
+        didFailConnectionAttemptWithError error: Error?
+    ) {
+        print("appRemote didFailConnectionAttemptWithError: \(error as Any)")
+    }
+    
+    func appRemote(
+        _ appRemote: SPTAppRemote,
+        didDisconnectWithError error: Error?
+    ) {
+       print("appRemove didDisconnectWithError: \(error as Any)")
+    }
+    
+    // MARK: - SPTAppRemotePlayerStateDelegate Conformance -
+
+    func playerStateDidChange(_ playerState: SPTAppRemotePlayerState) {
+        print("playerStateDidChange: \(playerState)")
+    }
+
 }
