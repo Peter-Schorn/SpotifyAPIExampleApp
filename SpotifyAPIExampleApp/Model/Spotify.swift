@@ -12,10 +12,7 @@ import SpotifyWebAPI
  Its most important role is to handle changes to the authorzation
  information and save them to persistent storage in the keychain.
  */
-final class Spotify:
-    NSObject, ObservableObject,
-    SPTAppRemoteDelegate, SPTAppRemotePlayerStateDelegate
-{
+final class Spotify: NSObject, ObservableObject {
     
     private static let clientId: String = {
         if let clientId = ProcessInfo.processInfo
@@ -318,8 +315,11 @@ final class Spotify:
             )
         }
     }
+}
+
+extension Spotify: SPTAppRemoteDelegate {
     
-    // MARK: - SPTAppRemoteDelegate Conformance -
+    // MARK: - SPTAppRemoteDelegate -
 
     func appRemoteDidEstablishConnection(
         _ appRemote: SPTAppRemote
@@ -354,7 +354,11 @@ final class Spotify:
        print("appRemove didDisconnectWithError: \(error as Any)")
     }
     
-    // MARK: - SPTAppRemotePlayerStateDelegate Conformance -
+}
+
+extension Spotify: SPTAppRemotePlayerStateDelegate {
+    
+    // MARK: - SPTAppRemotePlayerStateDelegate -
 
     func playerStateDidChange(_ playerState: SPTAppRemotePlayerState) {
         print("playerStateDidChange: \(playerState)")
