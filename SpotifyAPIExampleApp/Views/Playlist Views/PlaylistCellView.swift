@@ -6,23 +6,24 @@ struct PlaylistCellView: View {
     
     @EnvironmentObject var spotify: Spotify
 
+    let playlist: Playlist<PlaylistsItemsReference>
+
     /// The cover image for the playlist.
     @State private var image = Image(.spotifyAlbumPlaceholder)
 
-    @State private var loadImageCancellable: AnyCancellable? = nil
-    @State private var didRequestImage = false
+    @ObservedObject var playlistDeduplicator: PlaylistDeduplicator
 
+    @State private var didRequestImage = false
+    
+    @State private var alert: AlertItem? = nil
+    
+    // MARK: Cancellables
+    @State private var loadImageCancellable: AnyCancellable? = nil
     @State private var playPlaylistCancellable: AnyCancellable? = nil
-    
-    @State private var alertTitle = ""
-    @State private var alertMessage = ""
-    @State private var alertIsPresented = false
-    
-    var playlist: Playlist<PlaylistsItemsReference>
     
     init(_ playlist: Playlist<PlaylistsItemsReference>) {
         self.playlist = playlist
-        // print("PlaylistCellView init for '\(playlist.name)'")
+        self.playlistDeduplicator = .init(playlist: playlist)
     }
     
     var body: some View {
@@ -33,21 +34,39 @@ struct PlaylistCellView: View {
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 70, height: 70)
                     .padding(.trailing, 5)
-                Text("\(playlist.name) - \(playlist.items.total) items")
+                Text("\(playlist.name) - \(playlistDeduplicator.totalItems) items")
+                if playlistDeduplicator.isDeduplicating {
+                    ProgressView()
+                        .padding(.leading, 5)
+                }
                 Spacer()
             }
             // Ensure the hitbox extends across the entire width
             // of the frame. See https://bit.ly/2HqNk4S
             .contentShape(Rectangle())
+            .contextMenu {
+                // you can only remove duplicates from a playlist
+                // you own
+                if let currentUserId = spotify.currentUser?.id,
+                        playlist.owner?.id == currentUserId {
+                    
+                    Button("Remove Duplicates") {
+                        playlistDeduplicator.findAndRemoveDuplicates(
+                            spotify: spotify
+                        )
+                    }
+                    .disabled(playlistDeduplicator.isDeduplicating)
+                }
+            }
         })
         .buttonStyle(PlainButtonStyle())
-        .alert(isPresented: $alertIsPresented) {
-            Alert(
-                title: Text(alertTitle),
-                message: Text(alertMessage)
-            )
+        .alert(item: $alert) { alert in
+            Alert(title: alert.title, message: alert.message)
         }
         .onAppear(perform: loadImage)
+        .onReceive(playlistDeduplicator.alertPublisher) { alert in
+            self.alert = alert
+        }
     }
     
     /// Loads the image for the playlist.
@@ -84,20 +103,22 @@ struct PlaylistCellView: View {
             )
     }
     
-    /// Plays the playlist on the user's active device.
     func playPlaylist() {
+        
         let playbackRequest = PlaybackRequest(
             context: .contextURI(playlist), offset: nil
         )
-        self.playPlaylistCancellable = self.spotify.api.play(playbackRequest)
-            .receive(on: RunLoop.main)
-            .sink(receiveCompletion: { completion in
-                if case .failure(let error) = completion {
-                    self.alertTitle = "Couldn't Play Playlist '\(playlist.name)'"
-                    self.alertMessage = error.localizedDescription
-                    self.alertIsPresented = true
-                }
-            })
+        self.playPlaylistCancellable =
+            self.spotify.api.getAvailableDeviceThenPlay(playbackRequest)
+                .receive(on: RunLoop.main)
+                .sink(receiveCompletion: { completion in
+                    if case .failure(let error) = completion {
+                        self.alert = AlertItem(
+                            title: "Couldn't Play Playlist \(playlist.name)",
+                            message: error.localizedDescription
+                        )
+                    }
+                })
             
     }
     

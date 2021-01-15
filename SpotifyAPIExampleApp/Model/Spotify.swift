@@ -47,7 +47,7 @@ final class Spotify:
     /// than an incoming redirect from Spotify was the result of a request
     /// made by this app, and not an attacker. **This value is regenerated**
     /// **after each authorization process completes.**
-    var authorizationState = String.randomURLSafe(length: 32)
+    var authorizationState = String.randomURLSafe(length: 128)
  
     /**
      Whether or not the application has been authorized. If `true`,
@@ -73,6 +73,8 @@ final class Spotify:
     /// If `true`, then the app is retrieving access and refresh tokens.
     /// Used by `LoginView` to present an activity indicator.
     @Published var isRetrievingTokens = false
+    
+    @Published var currentUser: SpotifyUser? = nil
     
     /// The keychain to store the authorization information in.
     let keychain = Keychain(service: "com.Peter-Schorn.SpotifyAPIExampleApp")
@@ -131,7 +133,7 @@ final class Spotify:
 
         self.api.authorizationManagerDidDeauthorize
             .receive(on: RunLoop.main)
-            .sink(receiveValue: removeAuthorizationManagerFromKeychain)
+            .sink(receiveValue: authorizationManagerDidDeauthorize)
             .store(in: &cancellables)
         
         
@@ -196,6 +198,8 @@ final class Spotify:
             scopes: [
                 .userReadPlaybackState,
                 .userModifyPlaybackState,
+                .playlistModifyPrivate,
+                .playlistModifyPublic,
                 .userLibraryRead,
                 .userLibraryModify,
                 .userReadEmail,
@@ -238,6 +242,23 @@ final class Spotify:
             self.isAuthorized
         )
         
+
+        if self.isAuthorized && self.currentUser == nil {
+            self.api.currentUserProfile()
+                .receive(on: RunLoop.main)
+                .sink(
+                    receiveCompletion: { completion in
+                        if case .failure(let error) = completion {
+                            print("couldn't retrieve current use: \(error)")
+                        }
+                    },
+                    receiveValue: { user in
+                        self.currentUser = user
+                    }
+                )
+                .store(in: &cancellables)
+        }
+
         // MARK: Update the Access Token for the App Remote
         self.appRemote.connectionParameters.accessToken =
                 self.api.authorizationManager.accessToken
@@ -267,12 +288,14 @@ final class Spotify:
      This method is called everytime `api.authorizationManager.deauthorize` is
      called.
      */
-    func removeAuthorizationManagerFromKeychain() {
+    func authorizationManagerDidDeauthorize() {
         
         withAnimation {
             self.isAuthorized = false
         }
         
+        self.currentUser = nil
+
         // MARK: Remove the Access Token from the App Remove
         self.appRemote.connectionParameters.accessToken = nil
         

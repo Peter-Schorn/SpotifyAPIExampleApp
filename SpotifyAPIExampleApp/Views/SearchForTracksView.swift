@@ -17,12 +17,17 @@ struct SearchForTracksView: View {
     
     @State var tracks: [Track] = []
 
-    @State private var alertTitle = ""
-    @State private var alertMessage = ""
-    @State private var alertIsPresented = false
+    @State private var alert: AlertItem? = nil
     
     @State private var searchText = ""
     @State private var searchCancellable: AnyCancellable? = nil
+    
+    /// Used by the preview provider to provide sample data.
+    fileprivate init(sampleTracks: [Track]) {
+        self._tracks = State(initialValue: sampleTracks)
+    }
+    
+    init() { }
     
     var body: some View {
         VStack {
@@ -35,14 +40,13 @@ struct SearchForTracksView: View {
             if tracks.isEmpty {
                 if isSearching {
                     HStack {
-                        ActivityIndicator(
-                            isAnimating: .constant(true),
-                            style: .medium
-                        )
+                        ProgressView()
+                            .padding()
                         Text("Searching")
                             .font(.title)
                             .foregroundColor(.secondary)
                     }
+                    
                 }
                 else {
                     Text("No Results")
@@ -60,11 +64,8 @@ struct SearchForTracksView: View {
             Spacer()
         }
         .navigationTitle("Search For Tracks")
-        .alert(isPresented: $alertIsPresented) {
-            Alert(
-                title: Text(alertTitle),
-                message: Text(alertMessage)
-            )
+        .alert(item: $alert) { alert in
+            Alert(title: alert.title, message: alert.message)
         }
     }
     
@@ -110,9 +111,10 @@ struct SearchForTracksView: View {
             receiveCompletion: { completion in
                 self.isSearching = false
                 if case .failure(let error) = completion {
-                    self.alertTitle = "Couldn't Perform Search"
-                    self.alertMessage = error.localizedDescription
-                    self.alertIsPresented = true
+                    self.alert = AlertItem(
+                        title: "Couldn't Perform Search",
+                        message: error.localizedDescription
+                    )
                 }
             },
             receiveValue: { searchResults in
@@ -128,12 +130,18 @@ struct SearchView_Previews: PreviewProvider {
     
     static let spotify = Spotify()
     
+    static let tracks: [Track] = [
+        .because, .comeTogether, .odeToViceroy, .illWind,
+        .faces, .theEnd, .time, .theEnd, .reckoner
+    ]
+    
     static var previews: some View {
         NavigationView {
-            SearchForTracksView()
+            SearchForTracksView(sampleTracks: tracks)
+                .listStyle(PlainListStyle())
                 .environmentObject(spotify)
+                
         }
-        .preferredColorScheme(.light)
     }
     
 }

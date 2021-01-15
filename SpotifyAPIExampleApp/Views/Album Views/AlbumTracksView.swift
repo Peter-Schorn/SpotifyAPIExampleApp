@@ -8,14 +8,13 @@
 import SwiftUI
 import Combine
 import SpotifyWebAPI
+import SpotifyExampleContent
 
 struct AlbumTracksView: View {
     
     @EnvironmentObject var spotify: Spotify
 
-    @State private var alertTitle = ""
-    @State private var alertMessage = ""
-    @State private var alertIsPresented = false
+    @State private var alert: AlertItem? = nil
     
     @State private var loadTracksCancellable: AnyCancellable? = nil
     @State private var playAlbumCancellable: AnyCancellable? = nil
@@ -23,11 +22,23 @@ struct AlbumTracksView: View {
     @State private var isLoadingTracks = false
     @State private var couldntLoadTracks = false
     
-    @State var albumTracks: [Track] = []
+    @State var allTracks: [Track] = []
 
     var album: Album
     var image: Image
     
+    init(album: Album, image: Image) {
+        self.album = album
+        self.image = image
+    }
+    
+    /// Used by the preview provider to provie sample data.
+    fileprivate init(album: Album, image: Image, tracks: [Track]) {
+        self.album = album
+        self.image = image
+        self._allTracks = State(initialValue: tracks)
+    }
+
     /// The album and artist name; e.g., "Abbey Road - The Beatles".
     var albumAndArtistName: String {
         var title = album.name
@@ -39,32 +50,24 @@ struct AlbumTracksView: View {
     
     var body: some View {
         ScrollView {
-            LazyVStack {
-                ZStack {
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .cornerRadius(20)
-                        .shadow(radius: 20)
-                    playButton
-                }
-                .padding(30)
+            LazyVStack(spacing: 0) {
+                albumImageWithPlayButton
+                    .padding(30)
                 Text(albumAndArtistName)
-                .font(.title)
-                .bold()
-                .padding(.horizontal)
+                    .font(.title)
+                    .bold()
+                    .padding(.horizontal)
+                    .padding(.top, -10)
                 Text("\(album.tracks?.total ?? 0) Tracks")
                     .foregroundColor(.secondary)
                     .font(.title2)
-                    .padding(.top, 2)
-                if albumTracks.isEmpty {
+                    .padding(.vertical, 10)
+                if allTracks.isEmpty {
                     Group {
                         if isLoadingTracks {
                             HStack {
-                                ActivityIndicator(
-                                    isAnimating: .constant(true),
-                                    style: .medium
-                                )
+                                ProgressView()
+                                    .padding()
                                 Text("Loading Tracks")
                                     .font(.title)
                                     .foregroundColor(.secondary)
@@ -79,94 +82,107 @@ struct AlbumTracksView: View {
                     .padding(.top, 20)
                 }
                 else {
-                    ForEach(albumTracks.enumeratedArray(), id: \.index) { track in
-                        HStack {
-                            Text("\(track.index + 1). \(track.element.name)")
-                            Spacer()
-                        }
-                        .padding()
+                    ForEach(
+                        Array(allTracks.enumerated()),
+                        id: \.offset
+                    ) { track in
+                        AlbumTrackCellView(
+                            index: track.offset,
+                            track: track.element,
+                            alert: $alert
+                        )
+                        Divider()
                     }
                 }
             }
         }
         .navigationBarTitle("", displayMode: .inline)
-        .alert(isPresented: $alertIsPresented) {
-            Alert(
-                title: Text(alertTitle),
-                message: Text(alertMessage)
-            )
+        .alert(item: $alert) { alert in
+            Alert(title: alert.title, message: alert.message)
         }
         .onAppear(perform: loadTracks)
     }
     
-    /// Plays the album when tapped.
-    var playButton: some View {
-        Button(action: {
-            guard let albumURI = album.uri else {
-                print("missing album uri for '\(album.name)'")
-                return
-            }
-            let playbackRequest = PlaybackRequest(
-                context: .contextURI(albumURI), offset: nil
-            )
-            print("playing album '\(album.name)'")
-            self.playAlbumCancellable = spotify.api
-                .play(playbackRequest)
-                .print("play album sink")
-                .receive(on: RunLoop.main)
-                .sink(receiveCompletion: { completion in
-                    print("Received play album completion")
-                    if case .failure(let error) = completion {
-                        self.alertTitle = "Couldn't Play Album"
-                        self.alertMessage = error.localizedDescription
-                        self.alertIsPresented = true
-                    }
-                })
-        }, label: {
-            Image(systemName: "play.circle")
+    var albumImageWithPlayButton: some View {
+        ZStack {
+            image
                 .resizable()
-                .background(Color.black.opacity(0.5))
-                .clipShape(Circle())
-                .frame(width: 100, height: 100)
-                
-        })
+                .aspectRatio(contentMode: .fit)
+                .cornerRadius(20)
+                .shadow(radius: 20)
+            Button(action: playAlbum, label: {
+                Image(systemName: "play.circle")
+                    .resizable()
+                    .background(Color.black.opacity(0.5))
+                    .clipShape(Circle())
+                    .frame(width: 100, height: 100)
+            })
+        }
     }
     
     /// Loads the album tracks.
     func loadTracks() {
         
-        guard let albumURI = album.uri else {
+        // Don't try to load any tracks if we're in preview mode
+        if ProcessInfo.processInfo.isPreviewing { return }
+
+        guard let tracks = self.album.tracks else {
             return
         }
+
+        // the `album` already contains the first page of tracks,
+        // but we need to load additional pages if they exist.
+        // the `extendPages` method immediately republishes the page
+        // that was passed in and then requests additional pages.
         
         self.isLoadingTracks = true
-        self.albumTracks = []
-        self.loadTracksCancellable = spotify.api.albumTracks(
-            albumURI, limit: 50
-        )
-        .extendPages(spotify.api)
-        .sink(
-            receiveCompletion: { completion in
-                self.isLoadingTracks = false
-                switch completion {
-                    case .finished:
-                        self.couldntLoadTracks = false
-                    case .failure(let error):
-                        self.couldntLoadTracks = true
-                        self.alertTitle = "Couldn't Load Tracks"
-                        self.alertMessage = error.localizedDescription
-                        self.alertIsPresented = true
+        self.allTracks = []
+        self.loadTracksCancellable = self.spotify.api.extendPages(tracks)
+            .map(\.items)
+            .receive(on: RunLoop.main)
+            .sink(
+                receiveCompletion: { completion in
+                    self.isLoadingTracks = false
+                    switch completion {
+                        case .finished:
+                            self.couldntLoadTracks = false
+                        case .failure(let error):
+                            self.couldntLoadTracks = true
+                            self.alert = AlertItem(
+                                title: "Couldn't Load Tracks",
+                                message: error.localizedDescription
+                            )
+                    }
+                },
+                receiveValue: { tracks in
+                    self.allTracks.append(contentsOf: tracks)
                 }
-            },
-            receiveValue: { albumTracks in
-                let tracks = albumTracks.items
-                self.albumTracks.append(contentsOf: tracks)
-            }
-        )
-                
-
+            )
+        
     }
     
+    func playAlbum() {
+        guard let albumURI = album.uri else {
+            print("missing album uri for '\(album.name)'")
+            return
+        }
+        let playbackRequest = PlaybackRequest(
+            context: .contextURI(albumURI), offset: nil
+        )
+        print("playing album '\(album.name)'")
+        self.playAlbumCancellable = spotify.api
+            .getAvailableDeviceThenPlay(playbackRequest)
+            .receive(on: RunLoop.main)
+            .sink(receiveCompletion: { completion in
+                print("Received play album completion")
+                if case .failure(let error) = completion {
+                    self.alert = AlertItem(
+                        title: "Couldn't Play Album",
+                        message: error.localizedDescription
+                    )
+                }
+            })
+    }
     
 }
 
@@ -174,11 +190,14 @@ struct AlbumTracksView_Previews: PreviewProvider {
     
     static let spotify = Spotify()
     static let album = Album.darkSideOfTheMoon
+    static let tracks: [Track] = album.tracks!.items
     
     static var previews: some View {
         NavigationView {
             AlbumTracksView(
-                album: album, image: Image(.spotifyAlbumPlaceholder)
+                album: album,
+                image: Image(.spotifyAlbumPlaceholder),
+                tracks: tracks
             )
             .environmentObject(spotify)
         }

@@ -1,27 +1,22 @@
 import Foundation
 import SwiftUI
-
-extension Sequence {
-    
-    /// Creates an array of tuples in which the first item
-    /// is the index of the element and the second is the element.
-    func enumeratedArray() -> [(index: Int, element: Element)] {
-        
-        return self.enumerated().map { item in
-            (index: item.0, element: item.1)
-        }
-        
-    }
-    
-}
+import SpotifyWebAPI
 
 extension View {
     
-    /// Type erases self to `AnyView`.
-    /// Equivalent to `AnyView(self)`.
+    /// Type erases self to `AnyView`. Equivalent to `AnyView(self)`.
     func eraseToAnyView() -> AnyView {
         return AnyView(self)
     }
 
 }
 
+extension ProcessInfo {
+    
+    /// Whether or not this process is running within the context of
+    /// a SwiftUI preview.
+    var isPreviewing: Bool {
+        return self.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
+    }
+
+}

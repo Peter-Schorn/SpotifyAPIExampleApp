@@ -3,7 +3,7 @@ import Combine
 import SpotifyWebAPI
 import SpotifyExampleContent
 
-struct SavedAlbumView: View {
+struct AlbumGridItemView: View {
     
     @EnvironmentObject var spotify: Spotify
     
@@ -35,7 +35,7 @@ struct SavedAlbumView: View {
             .onAppear(perform: loadImage)
         }
         .buttonStyle(PlainButtonStyle())
-        // .padding()
+        .padding(5)
     }
     
     func loadImage() {
@@ -69,12 +69,12 @@ struct SavedAlbumView: View {
 
 }
 
-struct SavedAlbumView_Previews: PreviewProvider {
+struct AlbumGridItemView_Previews: PreviewProvider {
 
     static let spotify = Spotify()
 
     static var previews: some View {
-        SavedAlbumView(album: .jinx)
+        AlbumGridItemView(album: .jinx)
             .environmentObject(spotify)
             .padding()
     }

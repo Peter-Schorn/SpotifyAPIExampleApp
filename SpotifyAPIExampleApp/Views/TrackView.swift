@@ -8,9 +8,7 @@ struct TrackView: View {
     
     @State private var playRequestCancellable: AnyCancellable? = nil
 
-    @State private var alertTitle = ""
-    @State private var alertMessage = ""
-    @State private var alertIsPresented = false
+    @State private var alert: AlertItem? = nil
     
     let track: Track
     
@@ -24,11 +22,8 @@ struct TrackView: View {
         // of the frame. See https://bit.ly/2HqNk4S
         .contentShape(Rectangle())
         .onTapGesture(perform: playTrack)
-        .alert(isPresented: $alertIsPresented) {
-            Alert(
-                title: Text(alertTitle),
-                message: Text(alertMessage)
-            )
+        .alert(item: $alert) { alert in
+            Alert(title: alert.title, message: alert.message)
         }
     }
     
@@ -43,11 +38,14 @@ struct TrackView: View {
     }
     
     func playTrack() {
+        
+        let alertTitle = "Couldn't Play \(track.name)"
 
         guard let trackURI = track.uri else {
-            self.alertTitle = "Couldn't Play '\(track.name)'"
-            self.alertMessage = "missing URI"
-            self.alertIsPresented = true
+            self.alert = AlertItem(
+                title: alertTitle,
+                message: "missing URI"
+            )
             return
         }
         
@@ -59,22 +57,33 @@ struct TrackView: View {
         // of cancellables, the previous request always gets
         // cancelled when a new request to play a track is
         // made.
-        self.playRequestCancellable = self.spotify.api.play(playbackRequest)
-            .sink(receiveCompletion: { completion in
-                if case .failure(let error) = completion {
-                    self.alertTitle = "Couldn't Play '\(track.name)'"
-                    self.alertMessage = error.localizedDescription
-                    self.alertIsPresented = true
-                }
-            })
+        self.playRequestCancellable =
+            self.spotify.api.getAvailableDeviceThenPlay(playbackRequest)
+                .receive(on: RunLoop.main)
+                .sink(receiveCompletion: { completion in
+                    if case .failure(let error) = completion {
+                        self.alert = AlertItem(
+                            title: alertTitle,
+                            message: error.localizedDescription
+                        )
+                    }
+                })
         
     }
 }
 
 struct TrackView_Previews: PreviewProvider {
+    
+    static let tracks: [Track] = [
+        .because, .comeTogether, .faces,
+        .illWind, .odeToViceroy, .reckoner,
+        .theEnd, .time
+    ]
+
     static var previews: some View {
-        TrackView(track: .because)
-            .environmentObject(Spotify())
-            .padding()
+        List(tracks, id: \.id) { track in
+            TrackView(track: track)
+        }
+        .environmentObject(Spotify())
     }
 }
