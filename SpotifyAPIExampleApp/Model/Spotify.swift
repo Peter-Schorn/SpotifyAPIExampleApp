@@ -148,7 +148,7 @@ final class Spotify: NSObject, ObservableObject {
             // We must receive on the main thread because we are
             // updating the @Published `isAuthorized` property.
             .receive(on: RunLoop.main)
-            .sink(receiveValue: handleChangesToAuthorizationManager)
+            .sink(receiveValue: authorizationManagerDidChange)
             .store(in: &cancellables)
 
         self.api.authorizationManagerDidDeauthorize
@@ -252,7 +252,7 @@ final class Spotify: NSObject, ObservableObject {
      
      [1]: https://peter-schorn.github.io/SpotifyAPI/Classes/SpotifyAPI.html#/s:13SpotifyWebAPI0aC0C29authorizationManagerDidChange7Combine18PassthroughSubjectCyyts5NeverOGvp
      */
-    func handleChangesToAuthorizationManager() {
+    func authorizationManagerDidChange() {
         
         withAnimation(LoginView.animation) {
             // Update the @Published `isAuthorized` property.
@@ -272,7 +272,7 @@ final class Spotify: NSObject, ObservableObject {
 
         // MARK: Try to connect to the App Remote
         if !self.appRemote.isConnected {
-            print("handleChangesToAuthorizationManager: reconnectToAppRemote")
+            print("handleChangesToAuthorizationManager: connectToAppRemote")
             self.connectToAppRemote()
         }
 
@@ -410,13 +410,13 @@ extension Spotify: SPTAppRemoteDelegate {
 
     }
     
-    func shouldTryToReconnectToAppRemote() -> Future<Bool, Never> {
+    func shouldTryToConnectToAppRemote() -> Future<Bool, Never> {
         return Future { promise in
             
             if self.api.authorizationManager.accessToken == nil {
                 print(
                     """
-                    shouldTryToReconnectToAppRemote: \
+                    shouldTryToConnectToAppRemote: \
                     acccess token is nil
                     """
                 )
@@ -426,7 +426,7 @@ extension Spotify: SPTAppRemoteDelegate {
             SPTAppRemote.checkIfSpotifyAppIsActive { isActive in
                 print(
                     """
-                    shouldTryToReconnectToAppRemote: \
+                    shouldTryToConnectToAppRemote: \
                     Spotify App is active: \(isActive)
                     """
                 )
@@ -437,9 +437,9 @@ extension Spotify: SPTAppRemoteDelegate {
     }
     
     func connectToAppRemote() {
-        self.shouldTryToReconnectToAppRemote()
+        self.shouldTryToConnectToAppRemote()
             .sink { shouldTry in
-                print("reconnectToAppRemote: will connect: \(shouldTry)")
+                print("connectToAppRemote: will connect: \(shouldTry)")
                 if shouldTry {
                     self.appRemote.connect()
                 }
@@ -458,7 +458,7 @@ extension Spotify: SPTAppRemoteDelegate {
                 )
                 // trying to re-subscribe to the player API after receiving
                 // an error seems to never work, but connecting to the app
-                // remote again does.
+                // remote again usually does.
                 self.connectToAppRemote()
             }
         }
