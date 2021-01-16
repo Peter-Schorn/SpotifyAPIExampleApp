@@ -6,7 +6,7 @@ struct ConnectToSpotifyModal: ViewModifier {
     /// Always show this view for debugging purposes.
     /// Most importantly, this is useful for the preview
     /// provider.
-    fileprivate static var debugAlwaysShowing = false
+    fileprivate static var debugAlwaysPresented = false
     
     /// The animation that should be used for presenting and
     /// dismissing this view.
@@ -55,7 +55,7 @@ struct ConnectToSpotifyModal: ViewModifier {
         }
         .onReceive(spotify.$appRemoteIsConnected) { isConnected in
             withAnimation {
-                if Self.debugAlwaysShowing {
+                if Self.debugAlwaysPresented {
                     self.isPresented = true
                 }
                 else {
@@ -99,7 +99,7 @@ struct ConntectToSpotifyModal_Previews: PreviewProvider {
     }
     
     static func onAppear() {
-        ConnectToSpotifyModal.debugAlwaysShowing = false
+        ConnectToSpotifyModal.debugAlwaysPresented = true
     }
 
 }
