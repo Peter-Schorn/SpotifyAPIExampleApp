@@ -59,7 +59,7 @@ struct RootView: View {
         
         let queryDict = url.queryItemsDict
         if queryDict["spotify_version"] != nil {
-            // redirected from the Spotify app
+            // then we're being redirected from the Spotify app
             
             guard let parameters = spotify.appRemote
                     .authorizationParameters(from: url) else {
@@ -72,32 +72,6 @@ struct RootView: View {
             
             if let accessToken = parameters[SPTAppRemoteAccessTokenKey] {
                 print("got access token from Spotify App: \(accessToken)")
-//                var urlComponents = URLComponents()
-//                urlComponents.query = url.fragment
-//                guard
-//                    let expiresInString = url.queryItemsDict["expires_in"],
-//                    let expiresIn = Double(expiresInString)
-//                else {
-//                    self.alert = AlertItem(
-//                        title: "Couldn't connect to the Spotify App",
-//                        message: "An unknown error occurred"
-//                    )
-//                    return
-//                }
-//                let expirationDate = Date(timeInterval: expiresIn, since: Date())
-//
-//                let authManager = self.spotify.api.authorizationManager
-//                self.spotify.api.authorizationManager = .init(
-//                    clientId: authManager.clientId,
-//                    clientSecret: authManager.clientSecret,
-//                    accessToken: accessToken,
-//                    expirationDate: expirationDate,
-//                    refreshToken: nil,
-//                    scopes: [.appRemoteControl],
-//                    networkAdaptor: authManager.networkAdaptor
-//                )
-//
-//                print("authorization process with Spotify succeeded")
                 
             }
             else {
@@ -111,6 +85,7 @@ struct RootView: View {
             }
             return
         }
+        
         // else: redirected from the Spotify web API
 
         
