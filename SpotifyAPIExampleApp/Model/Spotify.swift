@@ -214,21 +214,7 @@ final class Spotify: ObservableObject {
         )
         
         
-        if self.isAuthorized && self.currentUser == nil {
-            self.api.currentUserProfile()
-                .receive(on: RunLoop.main)
-                .sink(
-                    receiveCompletion: { completion in
-                        if case .failure(let error) = completion {
-                            print("couldn't retrieve current use: \(error)")
-                        }
-                    },
-                    receiveValue: { user in
-                        self.currentUser = user
-                    }
-                )
-                .store(in: &cancellables)
-        }
+        self.retrieveCurrentUser()
         
         do {
             // Encode the authorization information to data.
@@ -282,5 +268,35 @@ final class Spotify: ObservableObject {
             )
         }
     }
-    
+
+    /**
+     Retrieve the current user.
+     
+     - Parameter onlyIfNil: Only retrieve the user if `self.currentUser`
+           is `nil`.
+     */
+    func retrieveCurrentUser(onlyIfNil: Bool = true) {
+        
+        if onlyIfNil && self.currentUser != nil {
+            return
+        }
+
+        guard self.isAuthorized else { return }
+
+        self.api.currentUserProfile()
+            .receive(on: RunLoop.main)
+            .sink(
+                receiveCompletion: { completion in
+                    if case .failure(let error) = completion {
+                        print("couldn't retrieve current user: \(error)")
+                    }
+                },
+                receiveValue: { user in
+                    self.currentUser = user
+                }
+            )
+            .store(in: &cancellables)
+        
+    }
+
 }
