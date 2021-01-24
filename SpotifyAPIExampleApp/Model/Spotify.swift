@@ -175,7 +175,6 @@ final class Spotify: ObservableObject {
                 .userLibraryRead,
                 .userLibraryModify,
                 .userReadEmail,
-                .appRemoteControl
             ]
         )!
         

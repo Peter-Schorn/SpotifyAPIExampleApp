@@ -7,7 +7,7 @@
 
 import SwiftUI
 import Combine
-@testable import SpotifyWebAPI
+import SpotifyWebAPI
 
 struct RootView: View {
     
@@ -21,7 +21,7 @@ struct RootView: View {
         NavigationView {
             ExamplesListView()
                 .navigationBarItems(trailing: logoutButton)
-            // .disabled(!spotify.isAuthorized)
+                .disabled(!spotify.isAuthorized)
         }
         // The login view is presented if `Spotify.isAuthorized` == `false.
         // When the login button is tapped, `Spotify.authorize()` is called.
@@ -112,7 +112,7 @@ struct RootView: View {
         // MARK: after each authorization request. This ensures an incoming
         // MARK: redirect from Spotify was the result of a request made by
         // MARK: this app, and not an attacker.
-        self.spotify.authorizationState = String.randomURLSafe(length: 32)
+        self.spotify.authorizationState = String.randomURLSafe(length: 128)
         
     }
     
