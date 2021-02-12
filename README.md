@@ -43,34 +43,35 @@ Assuming the access and refresh tokens have been successfully retrieved, [`Spoti
 
 A subscription is also made to [`SpotifyAPI.authorizationManagerDidDeauthorize`][22], which emits every time [`AuthorizationCodeFlowManagerBase.deauthorize()`][23] is called.
 
-Every time the authorization information changes (e.g., when the access token, which expires after an hour, gets refreshed), [`Spotify.handleChangesToAuthorizationManager()`][14] is called so that the authorization information in the keychain can be updated.  When the user taps the [`logoutButton`][21] in [`Rootview.swift`][10], [`AuthorizationCodeFlowManagerBase.deauthorize()`][24] is called, which causes [`SpotifyAPI.authorizationManagerDidDeauthorize`][22] to emit a signal, which, in turn, causes [`Spotify.removeAuthorizationManagerFromKeychain()`][20] to be called.
+Every time the authorization information changes (e.g., when the access token, which expires after an hour, gets refreshed), [`Spotify.handleChangesToAuthorizationManager()`][14] is called so that the authorization information in the keychain can be updated.  When the user taps the [`logoutButton`][21] in [`Rootview.swift`][10], [`AuthorizationCodeFlowManagerBase.deauthorize()`][24] is called, which causes [`SpotifyAPI.authorizationManagerDidDeauthorize`][22] to emit a signal, which, in turn, causes [`Spotify.authorizationManagerDidDeauthorize()`][20] to be called.
 
 See the wiki page [Saving authorization information to persistent storage][17].
 
-The next time the app is quit and relaunched, the authorization information will be retrieved from the keychain in the [init method of `Spotify`][13], which prevents the user from having to login again.
+The next time the app is quit and relaunched, the authorization information will be retrieved from the keychain in the [init method of `Spotify`][26], which prevents the user from having to login again.
 
 [1]: https://help.apple.com/xcode/mac/11.4/index.html?localePath=en.lproj#/dev3ec8a1cb4
 [2]:  https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/main/SpotifyAPIExampleApp/Views/ExamplesListView.swift
 [3]: https://github.com/Peter-Schorn/SpotifyAPI#authorizing-with-the-authorization-code-flow
 [4]: https://developer.apple.com/documentation/xcode/allowing_apps_and_websites_to_link_to_your_content/defining_a_custom_url_scheme_for_your_app
 [5]: https://peter-schorn.github.io/SpotifyAPI/Classes/AuthorizationCodeFlowManager.html#/s:13SpotifyWebAPI28AuthorizationCodeFlowManagerC04makeD3URL11redirectURI10showDialog5state6scopes10Foundation0I0VSgAK_SbSSSgShyAA5ScopeOGtF
-[6]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/ada70667e0f1b41ea3d872c258abd54a20028871/SpotifyAPIExampleApp/Model/Spotify.swift#L155-L178
-[7]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/ada70667e0f1b41ea3d872c258abd54a20028871/SpotifyAPIExampleApp/Views/LoginView.swift#L101
+[6]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/dca33d638ec7bc61175573398e10503b790678ec/SpotifyAPIExampleApp/Model/Spotify.swift#L161-L186
+[7]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/dca33d638ec7bc61175573398e10503b790678ec/SpotifyAPIExampleApp/Views/LoginView.swift#L101
 [8]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/main/SpotifyAPIExampleApp/Views/LoginView.swift
-[9]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/ada70667e0f1b41ea3d872c258abd54a20028871/SpotifyAPIExampleApp/Views/RootView.swift#L40
+[9]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/dca33d638ec7bc61175573398e10503b790678ec/SpotifyAPIExampleApp/Views/RootView.swift#L38
 [10]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/main/SpotifyAPIExampleApp/Views/RootView.swift
 [11]: https://peter-schorn.github.io/SpotifyAPI/Classes/AuthorizationCodeFlowManager.html#/s:13SpotifyWebAPI28AuthorizationCodeFlowManagerC29requestAccessAndRefreshTokens20redirectURIWithQuery5state7Combine12AnyPublisherVyyts5Error_pG10Foundation3URLV_SSSgtF
 [12]: https://peter-schorn.github.io/SpotifyAPI/Classes/SpotifyAPI.html#/s:13SpotifyWebAPI0aC0C29authorizationManagerDidChange7Combine18PassthroughSubjectCyyts5NeverOGvp
-[13]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/ada70667e0f1b41ea3d872c258abd54a20028871/SpotifyAPIExampleApp/Model/Spotify.swift#L87-L143
-[14]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/ada70667e0f1b41ea3d872c258abd54a20028871/SpotifyAPIExampleApp/Model/Spotify.swift#L194-L225
-[15]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/ada70667e0f1b41ea3d872c258abd54a20028871/SpotifyAPIExampleApp/Model/Spotify.swift#L68
-[16]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/ada70667e0f1b41ea3d872c258abd54a20028871/SpotifyAPIExampleApp/Model/Spotify.swift#L200
+[13]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/dca33d638ec7bc61175573398e10503b790678ec/SpotifyAPIExampleApp/Model/Spotify.swift#L97-L104
+[14]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/dca33d638ec7bc61175573398e10503b790678ec/SpotifyAPIExampleApp/Model/Spotify.swift#L188-L236
+[15]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/dca33d638ec7bc61175573398e10503b790678ec/SpotifyAPIExampleApp/Model/Spotify.swift#L68
+[16]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/dca33d638ec7bc61175573398e10503b790678ec/SpotifyAPIExampleApp/Model/Spotify.swift#L208
 [17]: https://github.com/Peter-Schorn/SpotifyAPI/wiki/Saving-authorization-information-to-persistent-storage.
 [19]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/main/SpotifyAPIExampleApp/Model/Spotify.swift
-[20]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/9feaff27b4d64b0e25df65d38c0ea75656e38802/SpotifyAPIExampleApp/Model/Spotify.swift#L233-L257
-[21]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/9feaff27b4d64b0e25df65d38c0ea75656e38802/SpotifyAPIExampleApp/Views/RootView.swift#L116-L133
+[20]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/dca33d638ec7bc61175573398e10503b790678ec/SpotifyAPIExampleApp/Model/Spotify.swift#L238-L272
+[21]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/dca33d638ec7bc61175573398e10503b790678ec/SpotifyAPIExampleApp/Views/RootView.swift#L119-L135
 [22]: https://peter-schorn.github.io/SpotifyAPI/Classes/SpotifyAPI.html#/s:13SpotifyWebAPI0aC0C34authorizationManagerDidDeauthorize7Combine18PassthroughSubjectCyyts5NeverOGvp
 [23]: https://peter-schorn.github.io/SpotifyAPI/Classes/AuthorizationCodeFlowManagerBase.html#/s:13SpotifyWebAPI32AuthorizationCodeFlowManagerBaseC11deauthorizeyyF
 [24]: https://peter-schorn.github.io/SpotifyAPI/Classes/AuthorizationCodeFlowManagerBase.html#/s:13SpotifyWebAPI32AuthorizationCodeFlowManagerBaseC11deauthorizeyyF
 [25]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/main/SpotifyAPIExampleApp/Views/LoginView.swift
+[26]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/dca33d638ec7bc61175573398e10503b790678ec/SpotifyAPIExampleApp/Model/Spotify.swift#L114
 

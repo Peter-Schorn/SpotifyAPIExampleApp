@@ -121,7 +121,7 @@ struct RootView: View {
         // Calling `spotify.api.authorizationManager.deauthorize` will
         // cause `SpotifyAPI.authorizationManagerDidDeauthorize` to emit
         // a signal, which will cause
-        // `Spotify.removeAuthorizationManagerFromKeychain` to be called.
+        // `Spotify.authorizationManagerDidDeauthorize()` to be called.
         Button(action: spotify.api.authorizationManager.deauthorize, label: {
             Text("Logout")
                 .foregroundColor(.white)

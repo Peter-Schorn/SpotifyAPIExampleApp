@@ -62,7 +62,7 @@ final class Spotify: ObservableObject {
      
      This property is updated by `handleChangesToAuthorizationManager()`,
      which is called every time the authorization information changes,
-     and `removeAuthorizationManagerFromKeychain()`, which is called
+     and `authorizationManagerDidDeauthorize()`, which is called
      everytime `SpotifyAPI.authorizationManager.deauthorize()` is called.
      */
     @Published var isAuthorized = false
