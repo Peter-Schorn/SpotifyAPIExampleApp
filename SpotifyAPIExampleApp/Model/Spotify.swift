@@ -236,14 +236,15 @@ final class Spotify: ObservableObject {
     }
     
     /**
-     Removes `api.authorizationManager` from the keychain.
+     Removes `api.authorizationManager` from the keychain and sets
+     `currentUser` to `nil`.
      
      This method is called everytime `api.authorizationManager.deauthorize` is
      called.
      */
     func authorizationManagerDidDeauthorize() {
         
-        withAnimation {
+        withAnimation(LoginView.animation) {
             self.isAuthorized = false
         }
         
@@ -254,9 +255,10 @@ final class Spotify: ObservableObject {
              Remove the authorization information from the keychain.
              
              If you don't do this, then the authorization information
-             that you just removed from memory by calling `deauthorize()`
-             will be retrieved again from persistent storage after this
-             app is quit and relaunched.
+             that you just removed from memory by calling
+             `SpotifyAPI.authorizationManager.deauthorize()` will be
+             retrieved again from persistent storage after this app is
+             quit and relaunched.
              */
             try keychain.remove(Self.authorizationManagerKey)
             print("did remove authorization manager from keychain")
