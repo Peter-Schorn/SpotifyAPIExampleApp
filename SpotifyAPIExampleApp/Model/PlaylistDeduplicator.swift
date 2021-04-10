@@ -11,13 +11,13 @@ class PlaylistDeduplicator: ObservableObject {
     /// The total number of tracks/episodes in the playlist.
     @Published var totalItems: Int
 
-    let playlist: Playlist<PlaylistsItemsReference>
+    let playlist: Playlist<PlaylistItemsReference>
 
     let alertPublisher = PassthroughSubject<AlertItem, Never>()
 
     private var cancellables: Set<AnyCancellable> = []
 
-    init(playlist: Playlist<PlaylistsItemsReference>) {
+    init(playlist: Playlist<PlaylistItemsReference>) {
         self.playlist = playlist
         self._totalItems = Published(initialValue: playlist.items.total)
     }

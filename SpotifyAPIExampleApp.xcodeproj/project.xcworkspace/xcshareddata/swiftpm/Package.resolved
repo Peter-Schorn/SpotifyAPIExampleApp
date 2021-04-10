@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/kishikawakatsumi/KeychainAccess",
         "state": {
           "branch": null,
-          "revision": "654d52d30f3dd4592e944c3e0bccb53178c992f6",
-          "version": "4.2.1"
+          "revision": "84e546727d66f1adc5439debad16270d0fdd04e7",
+          "version": "4.2.2"
         }
       },
       {
@@ -15,8 +15,8 @@
         "repositoryURL": "https://github.com/OpenCombine/OpenCombine.git",
         "state": {
           "branch": null,
-          "revision": "9bba5081344163296ddf537048566b95513b8f39",
-          "version": "0.11.0"
+          "revision": "28993ae57de5a4ea7e164787636cafad442d568c",
+          "version": "0.12.0"
         }
       },
       {
@@ -33,8 +33,8 @@
         "repositoryURL": "https://github.com/Peter-Schorn/SpotifyAPI.git",
         "state": {
           "branch": null,
-          "revision": "d49036501b8fe8b2e92dfc73054d564fd158be16",
-          "version": "1.4.2"
+          "revision": "4bb4b220965692807c3561a4c398a578658bf9b8",
+          "version": "1.5.0"
         }
       },
       {
@@ -42,8 +42,8 @@
         "repositoryURL": "https://github.com/apple/swift-crypto.git",
         "state": {
           "branch": null,
-          "revision": "8f4bfa5bc1951440c15710e9e893721aa4b2765c",
-          "version": "1.1.3"
+          "revision": "3bea268b223651c4ab7b7b9ad62ef9b2d4143eb6",
+          "version": "1.1.6"
         }
       },
       {
@@ -51,8 +51,8 @@
         "repositoryURL": "https://github.com/apple/swift-log.git",
         "state": {
           "branch": null,
-          "revision": "173f567a2dfec11d74588eea82cecea555bdc0bc",
-          "version": "1.4.0"
+          "revision": "5d66f7ba25daf4f94100e7022febf3c75e37a6c7",
+          "version": "1.4.2"
         }
       }
     ]

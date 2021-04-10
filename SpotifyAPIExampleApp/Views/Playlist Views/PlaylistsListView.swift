@@ -6,7 +6,7 @@ struct PlaylistsListView: View {
     
     @EnvironmentObject var spotify: Spotify
 
-    @State private var playlists: [Playlist<PlaylistsItemsReference>] = []
+    @State private var playlists: [Playlist<PlaylistItemsReference>] = []
     
     @State private var cancellables: Set<AnyCancellable> = []
     
@@ -18,7 +18,7 @@ struct PlaylistsListView: View {
     init() { }
     
     /// Used only by the preview provider to provide sample data.
-    fileprivate init(samplePlaylists: [Playlist<PlaylistsItemsReference>]) {
+    fileprivate init(samplePlaylists: [Playlist<PlaylistItemsReference>]) {
         self._playlists = State(initialValue: samplePlaylists)
     }
     
@@ -125,7 +125,7 @@ struct PlaylistsListView_Previews: PreviewProvider {
     
     static let spotify = Spotify()
     
-    static let playlists: [Playlist<PlaylistsItemsReference>] = [
+    static let playlists: [Playlist<PlaylistItemsReference>] = [
         .menITrust, .modernPsychedelia, .menITrust,
         .lucyInTheSkyWithDiamonds, .rockClassics,
         .thisIsMFDoom, .thisIsSonicYouth, .thisIsMildHighClub,
