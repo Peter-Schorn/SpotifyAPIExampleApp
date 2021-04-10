@@ -4,14 +4,14 @@ import SpotifyWebAPI
 
 struct PlaylistCellView: View {
     
-    @EnvironmentObject var spotify: Spotify
+    @ObservedObject var spotify: Spotify
+
+    @ObservedObject var playlistDeduplicator: PlaylistDeduplicator
 
     let playlist: Playlist<PlaylistItemsReference>
 
     /// The cover image for the playlist.
     @State private var image = Image(.spotifyAlbumPlaceholder)
-
-    @ObservedObject var playlistDeduplicator: PlaylistDeduplicator
 
     @State private var didRequestImage = false
     
@@ -21,9 +21,12 @@ struct PlaylistCellView: View {
     @State private var loadImageCancellable: AnyCancellable? = nil
     @State private var playPlaylistCancellable: AnyCancellable? = nil
     
-    init(_ playlist: Playlist<PlaylistItemsReference>) {
+    init(spotify: Spotify, playlist: Playlist<PlaylistItemsReference>) {
+        self.spotify = spotify
         self.playlist = playlist
-        self.playlistDeduplicator = .init(playlist: playlist)
+        self.playlistDeduplicator = PlaylistDeduplicator(
+            spotify: spotify, playlist: playlist
+        )
     }
     
     var body: some View {
@@ -51,9 +54,7 @@ struct PlaylistCellView: View {
                         playlist.owner?.id == currentUserId {
                     
                     Button("Remove Duplicates") {
-                        playlistDeduplicator.findAndRemoveDuplicates(
-                            spotify: spotify
-                        )
+                        playlistDeduplicator.findAndRemoveDuplicates()
                     }
                     .disabled(playlistDeduplicator.isDeduplicating)
                 }
@@ -108,18 +109,18 @@ struct PlaylistCellView: View {
         let playbackRequest = PlaybackRequest(
             context: .contextURI(playlist), offset: nil
         )
-        self.playPlaylistCancellable =
-            self.spotify.api.getAvailableDeviceThenPlay(playbackRequest)
-                .receive(on: RunLoop.main)
-                .sink(receiveCompletion: { completion in
-                    if case .failure(let error) = completion {
-                        self.alert = AlertItem(
-                            title: "Couldn't Play Playlist \(playlist.name)",
-                            message: error.localizedDescription
-                        )
-                    }
-                })
-            
+        self.playPlaylistCancellable = self.spotify.api
+            .getAvailableDeviceThenPlay(playbackRequest)
+            .receive(on: RunLoop.main)
+            .sink(receiveCompletion: { completion in
+                if case .failure(let error) = completion {
+                    self.alert = AlertItem(
+                        title: "Couldn't Play Playlist \(playlist.name)",
+                        message: error.localizedDescription
+                    )
+                }
+            })
+        
     }
     
 }
@@ -130,12 +131,13 @@ struct PlaylistCellView_Previews: PreviewProvider {
     
     static var previews: some View {
         List {
-            PlaylistCellView(.thisIsMildHighClub)
-            PlaylistCellView(.thisIsRadiohead)
-            PlaylistCellView(.modernPsychedelia)
-            PlaylistCellView(.rockClassics)
-            PlaylistCellView(.menITrust)
+            PlaylistCellView(spotify: spotify, playlist: .thisIsMildHighClub)
+            PlaylistCellView(spotify: spotify, playlist: .thisIsRadiohead)
+            PlaylistCellView(spotify: spotify, playlist: .modernPsychedelia)
+            PlaylistCellView(spotify: spotify, playlist: .rockClassics)
+            PlaylistCellView(spotify: spotify, playlist: .menITrust)
         }
         .environmentObject(spotify)
     }
+    
 }

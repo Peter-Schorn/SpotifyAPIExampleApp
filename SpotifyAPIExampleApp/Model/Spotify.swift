@@ -73,6 +73,8 @@ final class Spotify: ObservableObject {
     
     @Published var currentUser: SpotifyUser? = nil
     
+    // MARK: Auto-Refresh Tokens
+    
     /// The keychain to store the authorization information in.
     let keychain = Keychain(service: "com.Peter-Schorn.SpotifyAPIExampleApp")
     
@@ -80,11 +82,16 @@ final class Spotify: ObservableObject {
     /// the Spotify web API.
     let api = SpotifyAPI(
         authorizationManager: AuthorizationCodeFlowManager(
-            clientId: Spotify.clientId, clientSecret: Spotify.clientSecret
+            clientId: Spotify.clientId,
+            clientSecret: Spotify.clientSecret
         )
     )
     
     var cancellables: Set<AnyCancellable> = []
+
+    var refreshTokensCancellable: AnyCancellable? = nil
+    
+    let refreshTokensQueue = DispatchQueue(label: "refreshTokens")
     
     // MARK: - Methods -
     
@@ -137,6 +144,24 @@ final class Spotify: ObservableObject {
                  */
                 self.api.authorizationManager = authorizationManager
                 
+                if !self.api.authorizationManager.accessTokenIsExpired() {
+                    self.autoRefreshTokensWhenExpired()
+                }
+                self.api.authorizationManager.refreshTokens(
+                    onlyIfExpired: true
+                )
+                .sink(receiveCompletion: { completion in
+                    switch completion {
+                        case .finished:
+                            break
+                        case .failure(let error):
+                            print(
+                                "Spotify.init: couldn't refresh tokens:\n\(error)"
+                            )
+                    }
+                })
+                .store(in: &self.cancellables)
+                
             } catch {
                 print("could not decode authorizationManager from data:\n\(error)")
             }
@@ -145,9 +170,42 @@ final class Spotify: ObservableObject {
             print("did NOT find authorization information in keychain")
         }
         
-        
     }
     
+    private func autoRefreshTokensWhenExpired() {
+
+        guard let expirationDate = self.api.authorizationManager
+                .expirationDate else {
+            return
+        }
+        
+        // subtract 1 minute and 55 from the expiration date
+        let refreshDate = expirationDate.addingTimeInterval(-115)
+        
+        // the difference between the current date and the date that the
+        // tokens should be refreshed, which represents the delay we must
+        // add to a timer for it to fire at the `refreshDate`.
+        let refreshDelay = refreshDate.timeIntervalSince1970 - Date().timeIntervalSince1970
+
+        self.refreshTokensCancellable = Result.Publisher(())
+            .delay(
+                for: .seconds(refreshDelay),
+                scheduler: self.refreshTokensQueue
+            )
+            .flatMap {
+                // this method should be called 1 minute and 55 seconds before
+                // the access token expires.
+                return self.api.authorizationManager.refreshTokens(
+                    onlyIfExpired: true
+                )
+            }
+            .sink(receiveCompletion: { completion in
+                print("autoRefreshTokensWhenExpired completion: \(completion)")
+            })
+
+        
+    }
+
     /**
      A convenience method that creates the authorization URL and opens it
      in the browser.
@@ -213,6 +271,7 @@ final class Spotify: ObservableObject {
             self.isAuthorized
         )
         
+        self.autoRefreshTokensWhenExpired()
         
         self.retrieveCurrentUser()
         
@@ -249,6 +308,7 @@ final class Spotify: ObservableObject {
         }
         
         self.currentUser = nil
+        self.refreshTokensCancellable = nil
         
         do {
             /*
