@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "closure #1 in SpotifyAccountView.body.getter:SpotifyAccountView.swift">
+      </ContextState>
+      <ContextState
+         contextName = "closure #1 in Spotify.requestAccessAndRefreshTokens(redirectURIWithQuery:):Spotify.swift">
+      </ContextState>
+      <ContextState
+         contextName = "closure #2 in SavedAlbumsGridView.retrieveSavedAlbums():SavedAlbumsGridView.swift">
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>

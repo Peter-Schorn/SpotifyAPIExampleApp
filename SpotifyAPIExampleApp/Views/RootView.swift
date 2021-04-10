@@ -12,31 +12,29 @@ import SpotifyWebAPI
 struct RootView: View {
     
     @EnvironmentObject var spotify: Spotify
-    
-    @State private var cancellables: Set<AnyCancellable> = []
-    
+
     @State private var alert: AlertItem? = nil
     
+    @State private var cancellables: Set<AnyCancellable> = []
+
     var body: some View {
         NavigationView {
             ExamplesListView()
-                .navigationBarItems(trailing: logoutButton)
                 .disabled(!spotify.isAuthorized)
+                .navigationBarItems(trailing: accountsButton)
+                .sheet(
+                    isPresented: $spotify.accountsListViewIsPresented
+                ) {
+                    SpotifyAccountsListView()
+                        .environmentObject(spotify)
+                }
+                // Presented if an error occurs during the process of authorizing
+                // with the user's Spotify account.
+                .alert(item: $alert) { alert in
+                    Alert(title: alert.title, message: alert.message)
+                }
+                .onOpenURL(perform: handleURL(_:))
         }
-        // The login view is presented if `Spotify.isAuthorized` == `false.
-        // When the login button is tapped, `Spotify.authorize()` is called.
-        // After the login process sucessfully completes, `Spotify.isAuthorized`
-        // will be set to `true` and `LoginView` will be dismissed, allowing
-        // the user to interact with the rest of the app.
-        .modifier(LoginView())
-        // Presented if an error occurs during the process of authorizing
-        // with the user's Spotify account.
-        .alert(item: $alert) { alert in
-            Alert(title: alert.title, message: alert.message)
-        }
-        // Called when a redirect is received from Spotify.
-        .onOpenURL(perform: handleURL(_:))
-        
     }
     
     /**
@@ -48,50 +46,40 @@ struct RootView: View {
      */
     func handleURL(_ url: URL) {
         
-        self.spotify.requestAccessAndRefreshTokens(url: url)
-            .sink(receiveCompletion: { completion in
-                /*
-                 After the access and refresh tokens are retrieved,
-                 `SpotifyAPI.authorizationManagerDidChange` will emit a
-                 signal, causing `Spotify.handleChangesToAuthorizationManager()`
-                 to be called, which will dismiss the loginView if the app was
-                 successfully authorized by setting the
-                 @Published `Spotify.isAuthorized` property to `true`.
-                 
-                 The only thing we need to do here is handle the error and
-                 show it to the user if one was received.
-                 */
-                if case .failure(let error) = completion {
-                    print("couldn't retrieve access and refresh tokens:\n\(error)")
-                    let alertTitle: String
-                    let alertMessage: String
-                    if let authError = error as? SpotifyAuthorizationError,
-                            authError.accessWasDenied {
-                        alertTitle = "You Denied The Authorization Request :("
-                        alertMessage = ""
-                    }
-                    else {
-                        alertTitle =
-                            "Couldn't Authorization With Your Account"
-                        alertMessage = error.localizedDescription
-                    }
-                    self.alert = AlertItem(
-                        title: alertTitle, message: alertMessage
-                    )
+        self.spotify.requestAccessAndRefreshTokens(
+            redirectURIWithQuery: url
+        )
+        .sink(receiveCompletion: { completion in
+            
+            if case .failure(let error) = completion {
+                print("couldn't retrieve access and refresh tokens:\n\(error)")
+                let alertTitle: String
+                let alertMessage: String
+                if let authError = error as? SpotifyAuthorizationError,
+                        authError.accessWasDenied {
+                    alertTitle = "You Denied The Authorization Request :("
+                    alertMessage = ""
                 }
-            })
-            .store(in: &self.cancellables)
+                else {
+                    alertTitle =
+                        "Couldn't Authorization With Your Account"
+                    alertMessage = error.localizedDescription
+                }
+                self.alert = AlertItem(
+                    title: alertTitle, message: alertMessage
+                )
+            }
+        })
+        .store(in: &self.cancellables)
         
     }
     
-    /// Removes the authorization information for the user.
-    var logoutButton: some View {
-        // Calling `spotify.api.authorizationManager.deauthorize` will
-        // cause `SpotifyAPI.authorizationManagerDidDeauthorize` to emit
-        // a signal, which will cause
-        // `Spotify.authorizationManagerDidDeauthorize()` to be called.
-        Button(action: spotify.api.authorizationManager.deauthorize, label: {
-            Text("Logout")
+    
+    var accountsButton: some View {
+        Button(action: {
+            self.spotify.accountsListViewIsPresented = true
+        }, label: {
+            Text("Accounts")
                 .foregroundColor(.white)
                 .padding(7)
                 .background(Color(#colorLiteral(red: 0.3923448698, green: 0.7200681584, blue: 0.19703095, alpha: 1)))

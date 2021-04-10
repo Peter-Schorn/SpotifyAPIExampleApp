@@ -113,10 +113,12 @@ struct PlaylistCellView: View {
                 .receive(on: RunLoop.main)
                 .sink(receiveCompletion: { completion in
                     if case .failure(let error) = completion {
+                        let title = "Couldn't Play Playlist \(playlist.name)"
                         self.alert = AlertItem(
-                            title: "Couldn't Play Playlist \(playlist.name)",
+                            title: title,
                             message: error.localizedDescription
                         )
+                        print("\(title):\n\(error)")
                     }
                 })
             

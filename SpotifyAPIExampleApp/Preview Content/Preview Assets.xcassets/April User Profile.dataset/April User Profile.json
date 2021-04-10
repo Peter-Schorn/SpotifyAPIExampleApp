@@ -1,0 +1,21 @@
+{
+    "display_name": "April",
+    "external_urls": {
+        "spotify": "https://open.spotify.com/user/p8gjjfbirm8ucyt82ycfi9zuu"
+    },
+    "followers": {
+        "href": null,
+        "total": 14
+    },
+    "href": "https://api.spotify.com/v1/users/p8gjjfbirm8ucyt82ycfi9zuu",
+    "id": "p8gjjfbirm8ucyt82ycfi9zuu",
+    "images": [
+        {
+            "height": null,
+            "url": "https://i.scdn.co/image/ab6775700000ee853b4c739f38aae7aef8620d89",
+            "width": null
+        }
+    ],
+    "type": "user",
+    "uri": "spotify:user:p8gjjfbirm8ucyt82ycfi9zuu"
+}

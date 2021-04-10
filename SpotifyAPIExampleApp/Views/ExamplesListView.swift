@@ -15,6 +15,10 @@ struct ExamplesListView: View {
                 "Search For Tracks", destination: SearchForTracksView()
             )
             
+            NavigationLink(
+                "Current User", destination: CurrentUserView()
+            )
+            
             // This is the location where you can add your own views to
             // test out your application. Each view receives an instance
             // of `Spotify` from the environment.

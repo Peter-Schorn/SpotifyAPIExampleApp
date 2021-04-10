@@ -1,0 +1,21 @@
+{
+    "display_name": "NickSchorn",
+    "external_urls": {
+        "spotify": "https://open.spotify.com/user/osa09uoqscl4p2m6rqnfwjotn"
+    },
+    "followers": {
+        "href": null,
+        "total": 3
+    },
+    "href": "https://api.spotify.com/v1/users/osa09uoqscl4p2m6rqnfwjotn",
+    "id": "osa09uoqscl4p2m6rqnfwjotn",
+    "images": [
+        {
+            "height": null,
+            "url": "https://i.scdn.co/image/ab6775700000ee85ce82cd730029d318b4891451",
+            "width": null
+        }
+    ],
+    "type": "user",
+    "uri": "spotify:user:osa09uoqscl4p2m6rqnfwjotn"
+}

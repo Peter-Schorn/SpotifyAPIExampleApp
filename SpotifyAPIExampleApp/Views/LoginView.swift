@@ -111,12 +111,12 @@ struct LoginView: ViewModifier {
         VStack {
             Spacer()
             if spotify.isRetrievingTokens {
-                HStack {
+                HStack(spacing: 10) {
                     ProgressView()
-                        .padding()
                     Text("Authenticating")
                 }
-                .padding(.bottom, 20)
+                .padding(.top, 20)
+                .padding(.bottom, 25)
             }
         }
     }
