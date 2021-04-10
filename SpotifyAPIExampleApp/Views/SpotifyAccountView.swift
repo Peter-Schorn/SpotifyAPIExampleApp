@@ -15,11 +15,10 @@ struct SpotifyAccountView: View {
 
     var body: some View {
         Button(action: {
-            #warning("DEBUG")
 //            self.spotify.assertAccountsMatchUsers()
-//            spotify.currentAccount = account
-//            spotify.api.authorizationManager = account.authorizationManager
-//            spotify.accountsListViewIsPresented = false
+            spotify.currentAccount = account
+            spotify.api.authorizationManager = account.authorizationManager
+            spotify.accountsListViewIsPresented = false
 //            self.spotify.assertAccountsMatchUsers()
         }, label: {
             HStack {

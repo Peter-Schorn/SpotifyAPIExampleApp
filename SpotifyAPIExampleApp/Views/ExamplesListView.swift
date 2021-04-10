@@ -14,9 +14,11 @@ struct ExamplesListView: View {
             NavigationLink(
                 "Search For Tracks", destination: SearchForTracksView()
             )
-            
             NavigationLink(
                 "Current User", destination: CurrentUserView()
+            )
+            NavigationLink(
+                "Debug", destination: DebugView()
             )
             
             // This is the location where you can add your own views to

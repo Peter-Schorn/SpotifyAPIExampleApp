@@ -16,7 +16,6 @@ struct SpotifyAccountsListView: View {
         
         NavigationView {
             Group {
-//                Text("DEBUG")
                 if spotify.accounts.isEmpty {
                     Text("No Accounts")
                         .font(.title)
