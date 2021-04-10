@@ -185,6 +185,59 @@ final class Spotify: ObservableObject {
         
     }
     
+    func requestAccessAndRefreshTokens(
+        url: URL
+    ) -> AnyPublisher<Void, Error> {
+        
+        // **Always** validate URLs; they offer a potential attack
+        // vector into your app.
+        guard url.scheme == Spotify.loginCallbackURL.scheme else {
+            return SpotifyLocalError.other(
+                "unexpected scheme in url: \(url)",
+                localizedDescription: "The redirect could not be handled"
+            )
+            .anyFailingPublisher()
+            
+        }
+        
+        print("received redirect from Spotify: '\(url)'")
+        
+        // This property is used to display an activity indicator in
+        // `LoginView` indicating that the access and refresh tokens
+        // are being retrieved.
+        self.isRetrievingTokens = true
+        
+        // MARK: IMPORTANT: generate a new value for the state parameter
+        // MARK: after each authorization request. This ensures an incoming
+        // MARK: redirect from Spotify was the result of a request made by
+        // MARK: this app, and not an attacker.
+        defer {
+            self.authorizationState = String.randomURLSafe(length: 128)
+        }
+        
+        // Complete the authorization process by requesting the
+        // access and refresh tokens.
+        return self.api.authorizationManager.requestAccessAndRefreshTokens(
+            redirectURIWithQuery: url,
+            // This value must be the same as the one used to create the
+            // authorization URL. Otherwise, an error will be thrown.
+            state: self.authorizationState
+        )
+        .flatMap(self.api.currentUserProfile)
+        .map { (user: SpotifyUser) -> Void in
+            
+        }
+        .handleEvents(receiveCompletion: { completion in
+            // Whether the request succeeded or not, we need to remove
+            // the activity indicator.
+            self.isRetrievingTokens = false
+        })
+        .receive(on: RunLoop.main)
+        .eraseToAnyPublisher()
+        
+
+    }
+
     /**
      Saves changes to `api.authorizationManager` to the keychain.
      
@@ -214,8 +267,13 @@ final class Spotify: ObservableObject {
         )
         
         
-        self.retrieveCurrentUser()
+        self.retrieveCurrentUser(onlyIfNil: true)
         
+        // Don't save the authorization manager to persistent storage here
+        // if we just retrieved the access and refresh tokens. Instead,
+        // we'll do that in `Spotify.requestAccessAndRefreshTokens(url:)`,
+        guard !self.isRetrievingTokens else { return }
+
         do {
             // Encode the authorization information to data.
             let authManagerData = try JSONEncoder().encode(
@@ -277,7 +335,7 @@ final class Spotify: ObservableObject {
      - Parameter onlyIfNil: Only retrieve the user if `self.currentUser`
            is `nil`.
      */
-    func retrieveCurrentUser(onlyIfNil: Bool = true) {
+    func retrieveCurrentUser(onlyIfNil: Bool) {
         
         if onlyIfNil && self.currentUser != nil {
             return
