@@ -62,18 +62,36 @@ struct ModalProgressView: ViewModifier {
 
 }
 
+extension View {
+    
+    func modalProgressView(
+        message: String,
+        isPresented: Binding<Bool>
+    ) -> some View {
+        self.modifier(
+            ModalProgressView(
+                message: message,
+                isPresented: isPresented
+            )
+        )
+    }
+    
+}
+
 struct ModalProgressView_Previews: PreviewProvider {
     
     static var previews: some View {
-        List(0..<10) { i in
-            Text("item \(i)")
-        }
-        .modifier(
-            ModalProgressView(
+        ForEach(ColorScheme.allCases, id: \.self) { colorScheme in
+            List(0..<10) { i in
+                Text("item \(i)")
+            }
+            .modalProgressView(
                 message: "Authenticating",
                 isPresented: .constant(true)
             )
-        )
+            .preferredColorScheme(colorScheme)
+            
+        }
         
     }
 

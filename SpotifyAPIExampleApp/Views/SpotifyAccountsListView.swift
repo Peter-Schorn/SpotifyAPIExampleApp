@@ -47,18 +47,10 @@ struct SpotifyAccountsListView: View {
             )
             
         }
-        .modifier(
-            ModalProgressView(
-                message: "Authenticating",
-                isPresented: $spotify.isRetrievingTokens
-            )
+        .modalProgressView(
+            message: "Authenticating",
+            isPresented: $spotify.isRetrievingTokens
         )
-        .onAppear {
-            // MARK: DEBUG
-//            spotify.accounts = SpotifyAccount.sampleAccounts
-//            spotify.currentAccount = spotify.accounts.first!
-
-        }
     }
     
     var addNewAccountView: some View {
@@ -66,8 +58,6 @@ struct SpotifyAccountsListView: View {
             Text("Add New Account")
         })
     }
-    
-    
 
 }
 

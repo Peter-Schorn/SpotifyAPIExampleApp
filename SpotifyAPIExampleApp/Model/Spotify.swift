@@ -85,25 +85,21 @@ final class Spotify: ObservableObject {
         )
     )
     
-    /// The Spotify accounts that the user has authorized with.
-//    var accounts: [SpotifyAccount] {
-//        get {
-////            self.assertAccountsMatchUsers()
-//            return self._accounts
-//        }
-//        set {
-//            self._accounts = newValue
-////            self.assertAccountsMatchUsers()
-//        }
-//    }
-    
     @Published var accounts: [SpotifyAccount] = []
+    
+    var currentAccountURI: String? {
+        get {
+            self.keychain[self.currentAccountKey]
+        }
+        set {
+            self.keychain[self.currentAccountKey] = newValue
+        }
+    }
 
     /// Gets and sets the current Spotify account from the keychain.
     var currentAccount: SpotifyAccount? {
         get {
-//            defer { self.objectWillChange.send() }
-            guard let currentAccountURI = self.keychain[self.currentAccountKey] else {
+            guard let currentAccountURI = self.currentAccountURI else {
                 return nil
             }
             return self.accounts.first(where: { account in
@@ -113,7 +109,7 @@ final class Spotify: ObservableObject {
         set(account) {
             self.objectWillChange.send()
             let currentAccountURI = account?.user.uri
-            self.keychain[self.currentAccountKey] = currentAccountURI
+            self.currentAccountURI = currentAccountURI
         }
     }
     
@@ -154,7 +150,7 @@ final class Spotify: ObservableObject {
                     [SpotifyAccount].self,
                     from: accountsData
                 )
-                if let currentAccount = self.currentAccount {
+                if var currentAccount = self.currentAccount {
                     self.api.authorizationManager = currentAccount.authorizationManager
                     self.accountsListViewIsPresented = false
                 }
@@ -240,13 +236,6 @@ final class Spotify: ObservableObject {
             self.authorizationState = String.randomURLSafe(length: 128)
         }
         
-//        self.assertAccountsMatchUsers()
-
-        self.api.authorizationManager = .init(
-            clientId: Self.clientId,
-            clientSecret: Self.clientSecret
-        )
-
         // Complete the authorization process by requesting the
         // access and refresh tokens.
         return self.api.authorizationManager.requestAccessAndRefreshTokens(
@@ -255,20 +244,16 @@ final class Spotify: ObservableObject {
             // authorization URL. Otherwise, an error will be thrown.
             state: self.authorizationState
         )
-        .flatMap { () -> AnyPublisher<SpotifyUser, Error> in
-            
-            self.api.currentUserProfile()
-        }
+        .flatMap(self.api.currentUserProfile)
         .receive(on: RunLoop.main)
         .map { (user: SpotifyUser) -> Void in
-            
-//            self.assertAccountsMatchUsers()
 
             let account = SpotifyAccount(
                 user: user,
                 authorizationManager: self.api.authorizationManager
             )
-            // removee the account if a prior version already exists
+            
+            // remove the account if a prior version already exists
             self.accounts.removeAll(where: { $0.user.uri == user.uri })
             
             self.accounts.append(account)
@@ -276,8 +261,6 @@ final class Spotify: ObservableObject {
             self.isAuthorized = true
             self.accountsListViewIsPresented = false
             self.updateAccountsInKeychain()
-//            self.assertAccountsMatchUsers()
-            
 
         }
         .handleEvents(receiveCompletion: { completion in
@@ -290,13 +273,14 @@ final class Spotify: ObservableObject {
 
     }
     
+    /// Saves `self.accounts` to the keychain.
     func updateAccountsInKeychain() {
         do {
-            
+
             let accountsData = try JSONEncoder().encode(self.accounts)
             self.keychain[data: self.spotifyAccountsKey] = accountsData
             print("did save accounts to keychain")
-            
+
         } catch {
             print(
                 "couldn't encode accounts for storage " +
@@ -339,10 +323,16 @@ final class Spotify: ObservableObject {
         // we'll do that in
         // `Spotify.requestAccessAndRefreshTokens(redirectURIWithQuery:)`
         guard !self.isRetrievingTokens else { return }
+        
+        print(
+            "Spotify.handleChangesToAuthorizationManager: NOT retrieving tokens"
+        )
 
         guard
-            let currentAccount = self.currentAccount,
-            let currentAccountIndex = self.accounts.firstIndex(of: currentAccount)
+            let currentAccountURI = self.currentAccountURI,
+            let currentAccountIndex = self.accounts.firstIndex(
+                where: { $0.user.uri == currentAccountURI }
+            )
         else {
             print(
                 "handleChangesToAuthorizationManager: couldn't get current account"
@@ -370,67 +360,17 @@ final class Spotify: ObservableObject {
             self.isAuthorized = false
         }
 
-        guard let currentAccount = self.currentAccount else {
+        guard let currentAccountURI = self.currentAccountURI else {
             print(
                 "authorizationManagerDidDeauthorize: couldn't get current account"
             )
             return
         }
 
-        self.accounts.removeAll(where: { $0 == currentAccount})
+        self.accounts.removeAll(where: { $0.user.uri == currentAccountURI })
 
         self.updateAccountsInKeychain()
         
-    }
-
-}
-
-// MARK: Debugging
-
-extension Spotify {
-    
-    func assertAccountsMatchUsers(
-        file: StaticString = #fileID,
-        function: StaticString = #function,
-        line: UInt32 = #line
-    ) {
-        
-//        let dispatchGroup = DispatchGroup()
-//
-//        for account in self._accounts {
-//            print("checking \(account.user.displayName ?? "nil")")
-//            dispatchGroup.enter()
-//            let spotifyAPI = SpotifyAPI(
-//                authorizationManager: account.authorizationManager
-//            )
-//            spotifyAPI.currentUserProfile()
-//                .sink(
-//                    receiveCompletion: { completion in
-//                        if case .failure(let error) = completion {
-//                            print("couldn't get current user: \(error)")
-//                        }
-//                        dispatchGroup.leave()
-//                    },
-//                    receiveValue: { user in
-//                        if user.uri != account.user.uri {
-//                            print(
-//                                """
-//                                user.uri != account.user.uri
-//                                \(user)
-//                                !=
-//                                \(account)
-//                                file: \(file)
-//                                function: \(function)
-//                                line: \(line)
-//                                """
-//                            )
-//                        }
-//                    }
-//                )
-//                .store(in: &cancellables)
-//        }
-//        dispatchGroup.wait()
-
     }
 
 }

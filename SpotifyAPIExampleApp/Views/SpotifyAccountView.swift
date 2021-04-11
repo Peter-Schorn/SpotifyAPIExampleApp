@@ -15,11 +15,10 @@ struct SpotifyAccountView: View {
 
     var body: some View {
         Button(action: {
-//            self.spotify.assertAccountsMatchUsers()
             spotify.currentAccount = account
-            spotify.api.authorizationManager = account.authorizationManager
+            var accountCopy = account
+            spotify.api.authorizationManager = accountCopy.authorizationManager
             spotify.accountsListViewIsPresented = false
-//            self.spotify.assertAccountsMatchUsers()
         }, label: {
             HStack {
                 Image(systemName: "checkmark")
@@ -28,11 +27,13 @@ struct SpotifyAccountView: View {
                     )
                 Text(account.user.displayName ?? account.user.id)
                     .contextMenu {
+                        #if DEBUG
                         Button(action: {
                             print(self.account)
                         }, label: {
                             Text("print to the console")
                         })
+                        #endif
                     }
             }
         })
