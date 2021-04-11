@@ -51,7 +51,6 @@
 		470813092515EA2800794934 /* Spotify.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Spotify.swift; sourceTree = "<group>"; };
 		4708130D2515EB6B00794934 /* ImageNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageNames.swift; sourceTree = "<group>"; };
 		4725249A253F8B9B00F3FD13 /* LoginView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
-		472885D126235FBD00B8852D /* SpotifyAPI */ = {isa = PBXFileReference; lastKnownFileType = folder; name = SpotifyAPI; path = ../../../../Libraries/SpotifyAPI; sourceTree = "<group>"; };
 		473F415D2516FF5C009E52C3 /* AlbumTracksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumTracksView.swift; sourceTree = "<group>"; };
 		47520ACA2622038B00C24441 /* ModalProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalProgressView.swift; sourceTree = "<group>"; };
 		47520AE926221F1700C24441 /* CurrentUserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentUserView.swift; sourceTree = "<group>"; };
@@ -89,7 +88,6 @@
 			children = (
 				470812EB2515E4D700794934 /* SpotifyAPIExampleApp */,
 				470812EA2515E4D700794934 /* Products */,
-				472885D126235FBD00B8852D /* SpotifyAPI */,
 			);
 			sourceTree = "<group>";
 		};
@@ -583,8 +581,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Peter-Schorn/SpotifyAPI.git";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.5.0;
+				kind = revision;
+				revision = b44e0359c4242575af442d724049c644b78a79b3;
 			};
 		};
 		470813012515E8A200794934 /* XCRemoteSwiftPackageReference "KeychainAccess" */ = {
