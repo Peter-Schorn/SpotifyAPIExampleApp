@@ -60,7 +60,7 @@ struct PlayerControlsView: View {
             
         }
         .navigationBarTitle("", displayMode: .inline)
-        .modifier(ConnectToSpotifyModal(action: authorizeAndPlay))
+        .modifier(ConnectToSpotifyModal())
         .onAppear {
             if self.spotify.appRemote.isConnected {
                 self.getPlayerState()
@@ -81,6 +81,9 @@ struct PlayerControlsView: View {
                 title: "Could not connect to the Spotify App",
                 message: errorMessage
             )
+        }
+        .alert(item: $alert) { alert in
+            Alert(title: alert.title, message: alert.message)
         }
     }
     
@@ -145,10 +148,6 @@ struct PlayerControlsView: View {
 
     func skipToNextTrack() {
         self.playerAPI?.skip(toNext: nil)
-    }
-
-    func authorizeAndPlay() {
-        self.spotify.appRemote.authorizeAndPlayURI("")
     }
 
 }

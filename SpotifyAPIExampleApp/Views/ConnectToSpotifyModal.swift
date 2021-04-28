@@ -18,8 +18,6 @@ struct ConnectToSpotifyModal: ViewModifier {
 
     @State private var isPresented = false
 
-    let action: () -> Void
-
     let backgroundGradient = LinearGradient(
         gradient: Gradient(
             colors: [Color(#colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)), Color(#colorLiteral(red: 0.1903857588, green: 0.8321116255, blue: 0.4365008013, alpha: 1))]
@@ -67,7 +65,9 @@ struct ConnectToSpotifyModal: ViewModifier {
     }
     
     var mainView: some View {
-        Button(action: action) {
+        Button(action: {
+            self.spotify.appRemote.authorizeAndPlayURI("")
+        }) {
             HStack {
                 Image(spotifyImage)
                     .resizable()
@@ -92,10 +92,10 @@ struct ConnectToSpotifyModal: ViewModifier {
 struct ConntectToSpotifyModal_Previews: PreviewProvider {
     
     static var previews: some View {
-//        Color.white
         PlayerControlsView()
-            .modifier(ConnectToSpotifyModal(action: { }))
+            .modifier(ConnectToSpotifyModal())
             .environmentObject(Spotify())
+            .onAppear(perform: Self.onAppear)
     }
     
     static func onAppear() {

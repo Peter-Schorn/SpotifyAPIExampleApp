@@ -14,48 +14,27 @@ struct PlayURIView: View {
             Text("Enter a URI")
             TextField("", text: $uri)
             Button("Play Content", action: playURI)
+                .disabled(uri.isEmpty)
         }
         .alert(item: $alert) { alert in
             Alert(title: alert.title, message: alert.message)
+        }
+        .onReceive(spotify.appRemoteDidFailConnectionAttempt) { error in
+            let errorMessage = error.map { $0.localizedDescription }
+                    ?? "An unknown error occurred"
+            self.alert = AlertItem(
+                title: "Could not connect to the Spotify App",
+                message: errorMessage
+            )
         }
 
     }
     
     func playURI() {
-        
-        if uri.isEmpty {
-            self.alert = AlertItem(
-                title: "Track URI must not be empty",
-                message: ""
-            )
-            return
-        }
-        
         print("app remote is connected: \(self.spotify.appRemote.isConnected)")
         
         self.spotify.appRemote.authorizeIfNeededAndPlay(uri: uri)
 
-//        if self.spotify.appRemote.isConnected {
-//            print("app remote is already connected")
-//
-//            self.spotify.appRemote.playerAPI?.play(
-//                trackURI
-//            ) { result, error in
-//                if let error = error {
-//                    print("error playing '\(trackURI)':\n\(error)")
-//                }
-//            }
-//
-//        }
-//        else {
-//            if self.spotify.appRemote.authorizeAndPlayURI(trackURI) {
-//                print("Spotify is installed")
-//            }
-//            else {
-//                print("Spotify is not installed")
-//            }
-//        }
-        
     }
     
 }

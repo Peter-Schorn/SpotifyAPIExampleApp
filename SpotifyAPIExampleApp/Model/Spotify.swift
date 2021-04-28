@@ -32,12 +32,18 @@ final class Spotify: NSObject, ObservableObject {
     
     /// The key in the keychain that is used to store the authorization
     /// information: "authorizationManager".
-    static let authorizationManagerKey = "authorizationManager"
+    let authorizationManagerKey = "authorizationManager"
     
     /// The URL that Spotify will redirect to after the user either
-    /// authorizes or denies authorization for your application.
-    static let loginCallbackURL = URL(
-        string: "spotify-api-example-app://login-callback"
+    /// authorizes or denies authorization for your application via
+    /// the Spotify web API.
+    let webAPICallbackURL = URL(
+        string: "peter-schorn-spotify-sdk-app://web-api-callback"
+    )!
+    
+    /// The URL that Spotify will redirect to after
+    let appRemoteCallbackURL = URL(
+        string: "peter-schorn-spotify-sdk-app://app-remote-callback"
     )!
     
     /// A cryptographically-secure random string used to ensure
@@ -116,7 +122,7 @@ final class Spotify: NSObject, ObservableObject {
         
         let configuration = SPTConfiguration(
             clientID: Self.clientId,
-            redirectURL: Self.loginCallbackURL
+            redirectURL: self.appRemoteCallbackURL
         )
         
         self.appRemote = SPTAppRemote(
@@ -163,7 +169,7 @@ final class Spotify: NSObject, ObservableObject {
         
         // MARK: Check to see if the authorization information is saved in
         // MARK: the keychain.
-        if let authManagerData = keychain[data: Self.authorizationManagerKey] {
+        if let authManagerData = keychain[data: self.authorizationManagerKey] {
             
             do {
                 // Try to decode the data.
@@ -213,7 +219,7 @@ final class Spotify: NSObject, ObservableObject {
     func authorize() {
 
         let url = api.authorizationManager.makeAuthorizationURL(
-            redirectURI: Self.loginCallbackURL,
+            redirectURI: self.webAPICallbackURL,
             showDialog: true,
             // This same value **MUST** be provided for the state parameter of
             // `authorizationManager.requestAccessAndRefreshTokens(redirectURIWithQuery:state:)`.
@@ -286,7 +292,7 @@ final class Spotify: NSObject, ObservableObject {
             )
             
             // Save the data to the keychain.
-            keychain[data: Self.authorizationManagerKey] = authManagerData
+            keychain[data: self.authorizationManagerKey] = authManagerData
             print("did save authorization manager to keychain")
             
         } catch {
@@ -324,7 +330,7 @@ final class Spotify: NSObject, ObservableObject {
              will be retrieved again from persistent storage after this
              app is quit and relaunched.
              */
-            try keychain.remove(Self.authorizationManagerKey)
+            try keychain.remove(self.authorizationManagerKey)
             print("did remove authorization manager from keychain")
             
         } catch {
@@ -413,7 +419,7 @@ extension Spotify: SPTAppRemoteDelegate {
     func shouldTryToConnectToAppRemote() -> Future<Bool, Never> {
         return Future { promise in
             
-            if self.api.authorizationManager.accessToken == nil {
+            if self.appRemote.connectionParameters.accessToken == nil {
                 print(
                     """
                     shouldTryToConnectToAppRemote: \
