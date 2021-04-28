@@ -15,8 +15,8 @@
         "repositoryURL": "https://github.com/OpenCombine/OpenCombine.git",
         "state": {
           "branch": null,
-          "revision": "9bba5081344163296ddf537048566b95513b8f39",
-          "version": "0.11.0"
+          "revision": "28993ae57de5a4ea7e164787636cafad442d568c",
+          "version": "0.12.0"
         }
       },
       {
@@ -32,9 +32,9 @@
         "package": "SpotifyAPI",
         "repositoryURL": "https://github.com/Peter-Schorn/SpotifyAPI.git",
         "state": {
-          "branch": null,
-          "revision": "d8b160c43a796d881854d8509eeb244cb466f2c8",
-          "version": "1.3.0"
+          "branch": "proxy-token-server",
+          "revision": "92696a21497a70994e179942453ccb75ecab7e84",
+          "version": null
         }
       },
       {

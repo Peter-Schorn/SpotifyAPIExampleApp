@@ -6,7 +6,7 @@ struct PlaylistCellView: View {
     
     @EnvironmentObject var spotify: Spotify
 
-    let playlist: Playlist<PlaylistsItemsReference>
+    let playlist: Playlist<PlaylistItemsReference>
 
     /// The cover image for the playlist.
     @State private var image = Image(.spotifyAlbumPlaceholder)
@@ -21,7 +21,7 @@ struct PlaylistCellView: View {
     @State private var loadImageCancellable: AnyCancellable? = nil
     @State private var playPlaylistCancellable: AnyCancellable? = nil
     
-    init(_ playlist: Playlist<PlaylistsItemsReference>) {
+    init(_ playlist: Playlist<PlaylistItemsReference>) {
         self.playlist = playlist
         self.playlistDeduplicator = .init(playlist: playlist)
     }
