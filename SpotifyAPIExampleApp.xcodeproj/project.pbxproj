@@ -426,7 +426,7 @@
 					"@executable_path/Frameworks",
 				);
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_BUNDLE_IDENTIFIER = "Peter-Schorn.SpotifyAPIExampleApp";
+				PRODUCT_BUNDLE_IDENTIFIER = "Peter-Schorn.SpotifySDKApp";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "SpotifyAPIExampleApp-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -454,7 +454,7 @@
 					"@executable_path/Frameworks",
 				);
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_BUNDLE_IDENTIFIER = "Peter-Schorn.SpotifyAPIExampleApp";
+				PRODUCT_BUNDLE_IDENTIFIER = "Peter-Schorn.SpotifySDKApp";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "SpotifyAPIExampleApp-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
