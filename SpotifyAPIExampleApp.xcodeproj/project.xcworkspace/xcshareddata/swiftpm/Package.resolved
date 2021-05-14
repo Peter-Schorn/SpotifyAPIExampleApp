@@ -32,8 +32,8 @@
         "package": "SpotifyAPI",
         "repositoryURL": "https://github.com/Peter-Schorn/SpotifyAPI.git",
         "state": {
-          "branch": null,
-          "revision": "b44e0359c4242575af442d724049c644b78a79b3",
+          "branch": "master",
+          "revision": "6ba2711c7ea80d870b93c0923379351640584bd7",
           "version": null
         }
       },
