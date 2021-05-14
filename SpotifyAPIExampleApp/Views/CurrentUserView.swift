@@ -24,7 +24,7 @@ struct CurrentUserView: View {
                     Text(currentUser.displayName ?? "nil")
                     Text(currentUser.id)
                     Text(currentUser.product ?? "nil")
-                    Text(currentUser.href)
+                    Text(currentUser.href.absoluteString)
                 }
             }
             else {

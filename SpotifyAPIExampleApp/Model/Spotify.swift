@@ -213,7 +213,7 @@ final class Spotify: ObservableObject {
         // **Always** validate URLs; they offer a potential attack
         // vector into your app.
         guard redirectURIWithQuery.scheme == self.loginCallbackURL.scheme else {
-            return SpotifyLocalError.other(
+            return SpotifyGeneralError.other(
                 "unexpected scheme in url: \(redirectURIWithQuery)",
                 localizedDescription: "The redirect could not be handled"
             )
