@@ -13,7 +13,7 @@ struct RecentlyPlayedView: View {
 
     @State private var alert: AlertItem? = nil
 
-    @State private var nextPageHref: String? = nil
+    @State private var nextPageHref: URL? = nil
     @State private var isLoadingPage = false
 
     init() {
@@ -25,32 +25,23 @@ struct RecentlyPlayedView: View {
     }
 
     var body: some View {
-        GeometryReader { geometry in
-            CustomScrollView(
-                width: geometry.size.width,
-                height: geometry.size.height
-            ) {
-                LazyVStack {
-                    ForEach(
-                        Array(recentlyPlayed.enumerated()),
-                        id: \.offset
-                    ) { item in
-                        
-                        TrackView(track: item.element)
-                            .padding(5)
-                            // Each track in the list will be loaded lazily.
-                            // We take advantage of this feature in order
-                            // to detect when the user has scrolled to the bottom
-                            // of the list
-                            .onAppear {
-                                self.loadNextPageIfNeeded(offset: item.offset)
-                            }
-                        Divider()
-                        
-                    }  // ForEach
-                }  // LazyVStack
-            }  // CustomScrollView
-        }  // GeometryReader
+        List {
+            ForEach(
+                Array(recentlyPlayed.enumerated()),
+                id: \.offset
+            ) { item in
+                
+                TrackView(track: item.element)
+                    // Each track in the list will be loaded lazily. We take
+                    // advantage of this feature in order to detect when the
+                    // user has scrolled to *near* the bottom of the list based
+                    // on the offset of this item.
+                    .onAppear {
+                        self.loadNextPageIfNeeded(offset: item.offset)
+                    }
+              
+            }
+        }
         .onAppear(perform: loadRecentlyPlayed)
         .alert(item: $alert) { alert in
             Alert(title: alert.title, message: alert.message)
@@ -66,14 +57,18 @@ struct RecentlyPlayedView: View {
 
 extension RecentlyPlayedView {
     
+    // Normally, you would extract these methods into a separate model class.
+    
+    /// Determines whether or not to load the next page based on the offset of
+    /// the just-loaded item in the list.
     func loadNextPageIfNeeded(offset: Int) {
         
         let threshold = self.recentlyPlayed.count - 5
         
         print("loadNextPageIfNeeded threshold: \(threshold); offset: \(offset)")
         
-        // load the next page if this track is the fifth from the bottom of
-        // of list
+        // load the next page if this track is the fifth from the bottom of the
+        // list
         guard offset == threshold else {
             return
         }
@@ -92,7 +87,8 @@ extension RecentlyPlayedView {
 
     }
     
-    func loadNextPage(href: String) {
+    /// Loads the next page of results from the provided URL.
+    func loadNextPage(href: URL) {
     
         print("loading next page")
         self.isLoadingPage = true
