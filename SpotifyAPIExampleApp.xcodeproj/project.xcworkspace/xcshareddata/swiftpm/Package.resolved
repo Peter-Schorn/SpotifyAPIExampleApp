@@ -32,8 +32,8 @@
         "package": "SpotifyAPI",
         "repositoryURL": "https://github.com/Peter-Schorn/SpotifyAPI.git",
         "state": {
-          "branch": "proxy-token-server",
-          "revision": "92696a21497a70994e179942453ccb75ecab7e84",
+          "branch": "master",
+          "revision": "6ba2711c7ea80d870b93c0923379351640584bd7",
           "version": null
         }
       },
