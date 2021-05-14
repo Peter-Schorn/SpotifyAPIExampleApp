@@ -126,7 +126,7 @@ class PlaylistDeduplicator: ObservableObject {
         
         let sempahore = DispatchSemaphore(value: 0)
         for (index, container) in urisWithPositionsContainers.enumerated() {
-            spotify.api.removeSpecificOccurencesFromPlaylist(
+            spotify.api.removeSpecificOccurrencesFromPlaylist(
                 playlist.uri, of: container
             )
             .sink(
