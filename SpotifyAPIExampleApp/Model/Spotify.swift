@@ -9,14 +9,14 @@ import SpotifyWebAPI
  A helper class that wraps around an instance of `SpotifyAPI`
  and provides convenience methods for authorizing your application.
  
- Its most important role is to handle changes to the authorzation
+ Its most important role is to handle changes to the authorization
  information and save them to persistent storage in the keychain.
  */
 final class Spotify: NSObject, ObservableObject {
     
     private static let clientId: String = {
         if let clientId = ProcessInfo.processInfo
-                .environment["client_id"] {
+                .environment["CLIENT_ID"] {
             return clientId
         }
         fatalError("Could not find 'client_id' in environment variables")
@@ -24,7 +24,7 @@ final class Spotify: NSObject, ObservableObject {
     
     private static let clientSecret: String = {
         if let clientSecret = ProcessInfo.processInfo
-                .environment["client_secret"] {
+                .environment["CLIENT_SECRET"] {
             return clientSecret
         }
         fatalError("Could not find 'client_secret' in environment variables")
