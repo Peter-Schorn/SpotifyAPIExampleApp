@@ -124,9 +124,9 @@ class PlaylistDeduplicator: ObservableObject {
             urisWithSinglePosition: duplicates
         )
         
-        let sempahore = DispatchSemaphore(value: 0)
+        let semaphore = DispatchSemaphore(value: 0)
         for (index, container) in urisWithPositionsContainers.enumerated() {
-            spotify.api.removeSpecificOccurencesFromPlaylist(
+            spotify.api.removeSpecificOccurrencesFromPlaylist(
                 playlist.uri, of: container
             )
             .sink(
@@ -134,7 +134,7 @@ class PlaylistDeduplicator: ObservableObject {
                     print("completion for request \(index): \(completion)")
                     switch completion {
                         case .finished:
-                            sempahore.signal()
+                            semaphore.signal()
                         case .failure(let error):
                             print(
                                 "\(index): couldn't remove duplicates\n\(error)"
@@ -156,7 +156,7 @@ class PlaylistDeduplicator: ObservableObject {
             )
             .store(in: &cancellables)
             
-            sempahore.wait()
+            semaphore.wait()
             
         }
         print("finished removing duplicates from playlist")
