@@ -16,6 +16,10 @@ struct PlayerControlsView: View {
         self.playerState?.isPaused ?? true
     }
     
+    var shuffleIsOn: Bool {
+        self.playerState?.playbackOptions.isShuffling ?? false
+    }
+
     var playerAPI: SPTAppRemotePlayerAPI? {
         if let playerAPI = self.spotify.appRemote.playerAPI {
             return playerAPI
@@ -37,6 +41,7 @@ struct PlayerControlsView: View {
             .padding(.vertical, 5)
             .padding(.horizontal, 15)
             
+            // MARK: Previous, Play/Pause, Next
             HStack(spacing: 30) {
                 Button(action: skipToPreviousTrack, label: {
                     Image(systemName: "backward.fill")
@@ -52,12 +57,13 @@ struct PlayerControlsView: View {
             .font(.largeTitle)
             .padding()
 
-            Text(
-                verbatim: "App Remote is connected: " +
-                           "\(self.spotify.appRemoteIsConnected)"
-            )
-            .padding(5)
-            
+            // MARK: Shuffle, Repeat Mode
+            HStack(spacing: 40) {
+                repeatModeButton
+                shuffleButton
+            }
+            .font(.largeTitle)
+
         }
         .navigationBarTitle("", displayMode: .inline)
         .modifier(ConnectToSpotifyModal())
@@ -72,7 +78,7 @@ struct PlayerControlsView: View {
                 "\(playerState.track.name)"
             )
             self.playerState = playerState
-            self.loadAlbumImageIfNedded()
+            self.loadAlbumImageIfNeeded()
         }
         .onReceive(spotify.appRemoteDidFailConnectionAttempt) { error in
             let errorMessage = error.map { $0.localizedDescription }
@@ -87,6 +93,62 @@ struct PlayerControlsView: View {
         }
     }
     
+    var repeatModeButton: some View {
+        Button(action: {
+            let nextRepeatMode: SPTAppRemotePlaybackOptionsRepeatMode
+            switch self.playerState?.playbackOptions.repeatMode {
+                case .context:
+                    nextRepeatMode = .track
+                case .track:
+                    nextRepeatMode = .off
+                default:
+                    nextRepeatMode = .context
+            }
+            self.playerAPI?.setRepeatMode(nextRepeatMode) { _, error in
+                if let error = error {
+                    self.alert = AlertItem(
+                        title: "Couldn't change repeat mode",
+                        message: error.localizedDescription
+                    )
+                }
+                
+            }
+        }, label: {
+            switch self.playerState?.playbackOptions.repeatMode {
+                case .context:
+                    Image(systemName: "repeat")
+                        .foregroundColor(.green)
+                case .track:
+                    Image(systemName: "repeat.1")
+                        .foregroundColor(.green)
+                default:
+                    Image(systemName: "repeat")
+            }
+        })
+        .font(.largeTitle)
+        .buttonStyle(PlainButtonStyle())
+    }
+    
+    var shuffleButton: some View {
+        Button(action: {
+            let nextShuffleMode = !self.shuffleIsOn
+            self.playerAPI?.setShuffle(nextShuffleMode) { _, error in
+                if let error = error {
+                    self.alert = AlertItem(
+                        title: "Couldn't change shuffle mode",
+                        message: error.localizedDescription
+                    )
+                }
+            }
+        }, label: {
+            Image(systemName: "shuffle")
+                .foregroundColor(shuffleIsOn ? .green : .primary)
+            
+        })
+        .font(.largeTitle)
+        .buttonStyle(PlainButtonStyle())
+    }
+
     func getPlayerState() {
         print("will get player state")
         self.playerAPI?.getPlayerState { result, error in
@@ -97,13 +159,13 @@ struct PlayerControlsView: View {
                 let playerState = result as! SPTAppRemotePlayerState
                 print("got player state: \(playerState)")
                 self.playerState = playerState
-                self.loadAlbumImageIfNedded()
+                self.loadAlbumImageIfNeeded()
             }
             
         }
     }
     
-    func loadAlbumImageIfNedded() {
+    func loadAlbumImageIfNeeded() {
         guard let track = self.playerState?.track else {
             return
         }
