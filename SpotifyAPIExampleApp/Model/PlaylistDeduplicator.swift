@@ -44,7 +44,7 @@ class PlaylistDeduplicator: ObservableObject {
             .receive(on: DispatchQueue.main)
             .sink(
                 receiveCompletion: { completion in
-                    print("received compltion:", completion)
+                    print("received completion:", completion)
                     switch completion {
                         case .finished:
                             // We've finished finding the duplicates;
