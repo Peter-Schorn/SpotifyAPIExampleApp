@@ -1,0 +1,19 @@
+name: Swift
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  build:
+
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build
+      run: |
+        env DEVELOPER_DIR="/Applications/Xcode_12.4.app" xcrun \
+        xcodebuild \
+        -scheme SpotifyAPIExampleApp \
+        -destination "platform=iOS Simulator,name=iPhone 12,OS=14.4" \
+        build
+      
