@@ -9,7 +9,7 @@ extension SpotifyAPI where AuthorizationManager: SpotifyScopeAuthorizationManage
      active device if one exists. Else, plays content on the first available
      device.
      
-     See [Using the Player Endpints][1].
+     See [Using the Player Endpoints][1].
 
      - Parameter playbackRequest: A request to play content.
 
