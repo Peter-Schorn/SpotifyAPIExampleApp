@@ -41,15 +41,16 @@ final class Spotify: NSObject, ObservableObject {
         string: "peter-schorn-spotify-sdk-app://web-api-callback"
     )!
     
-    /// The URL that Spotify will redirect to after
+    /// The URL that Spotify will redirect to after you connect to the app
+    /// remote
     let appRemoteCallbackURL = URL(
         string: "peter-schorn-spotify-sdk-app://app-remote-callback"
     )!
     
-    /// A cryptographically-secure random string used to ensure
-    /// than an incoming redirect from Spotify was the result of a request
-    /// made by this app, and not an attacker. **This value is regenerated**
-    /// **after each authorization process completes.**
+    /// A cryptographically-secure random string used to ensure that an incoming
+    /// redirect from Spotify was the result of a request made by this app, and
+    /// not an attacker. **This value is regenerated after each authorization**
+    /// **process completes.**
     var authorizationState = String.randomURLSafe(length: 128)
  
     /// The keychain to store the authorization information in.
@@ -69,23 +70,22 @@ final class Spotify: NSObject, ObservableObject {
     // MARK: Published Properties
 
     /**
-     Whether or not the application has been authorized. If `true`,
-     then you can begin making requests to the Spotify web API
-     using the `api` property of this class, which contains an instance
-     of `SpotifyAPI`.
-     
-     When `false`, `LoginView` is presented, which prompts the user to
-     login. When this is set to `true`, `LoginView` is dismissed.
-     
-     This property provides a convenient way for the user interface
-     to be updated based on whether the user has logged in with their
-     Spotify account yet. For example, you could use this property disable
-     UI elements that require the user to be logged in.
-     
-     This property is updated by `handleChangesToAuthorizationManager()`,
-     which is called every time the authorization information changes,
-     and `removeAuthorizationManagerFromKeychain()`, which is called
-     everytime `SpotifyAPI.authorizationManager.deauthorize()` is called.
+     Whether or not the application has been authorized. If `true`, then you can
+     begin making requests to the Spotify web API using the `api` property of
+     this class, which contains an instance of `SpotifyAPI`.
+
+     When `false`, `LoginView` is presented, which prompts the user to login.
+     When this is set to `true`, `LoginView` is dismissed.
+
+     This property provides a convenient way for the user interface to be
+     updated based on whether the user has logged in with their Spotify account
+     yet. For example, you could use this property disable UI elements that
+     require the user to be logged in.
+
+     This property is updated by `handleChangesToAuthorizationManager()`, which
+     is called every time the authorization information changes, and
+     `removeAuthorizationManagerFromKeychain()`, which is called every-time
+     `SpotifyAPI.authorizationManager.deauthorize()` is called.
      */
     @Published var isAuthorized = false
 
@@ -307,7 +307,7 @@ final class Spotify: NSObject, ObservableObject {
     /**
      Removes `api.authorizationManager` from the keychain.
      
-     This method is called everytime `api.authorizationManager.deauthorize` is
+     This method is called every time `api.authorizationManager.deauthorize` is
      called.
      */
     func authorizationManagerDidDeauthorize() {
@@ -408,7 +408,7 @@ extension Spotify: SPTAppRemoteDelegate {
         self.appRemoteIsConnected = self.appRemote.isConnected
 
         // the documentation says that the error will be `nil` if
-        // the disconnect was explicity initiated, in which case
+        // the disconnect was explicitly initiated, in which case
         // we shouldn't try to reconnect.
         if error != nil {
             self.connectToAppRemote()
@@ -423,7 +423,7 @@ extension Spotify: SPTAppRemoteDelegate {
                 print(
                     """
                     shouldTryToConnectToAppRemote: \
-                    acccess token is nil
+                    access token is nil
                     """
                 )
                 promise(.success(false))
