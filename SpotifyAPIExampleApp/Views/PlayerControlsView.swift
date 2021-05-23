@@ -66,7 +66,7 @@ struct PlayerControlsView: View {
 
         }
         .navigationBarTitle("", displayMode: .inline)
-        .modifier(ConnectToSpotifyModal())
+        .modifier(ConnectToSpotifyModal(alert: $alert))
         .onAppear {
             if self.spotify.appRemote.isConnected {
                 self.getPlayerState()

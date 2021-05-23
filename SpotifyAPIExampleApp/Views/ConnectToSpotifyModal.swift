@@ -18,6 +18,8 @@ struct ConnectToSpotifyModal: ViewModifier {
 
     @State private var isPresented = false
 
+    @Binding var alert: AlertItem?
+
     let backgroundGradient = LinearGradient(
         gradient: Gradient(
             colors: [Color(#colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)), Color(#colorLiteral(red: 0.1903857588, green: 0.8321116255, blue: 0.4365008013, alpha: 1))]
@@ -66,7 +68,12 @@ struct ConnectToSpotifyModal: ViewModifier {
     
     var mainView: some View {
         Button(action: {
-            self.spotify.appRemote.authorizeAndPlayURI("")
+            if !self.spotify.appRemote.authorizeAndPlayURI("") {
+                self.alert = AlertItem(
+                    title: "The Spotify App is not Installed on this Device",
+                    message: ""
+                )
+            }
         }) {
             HStack {
                 Image(spotifyImage)
@@ -85,15 +92,19 @@ struct ConnectToSpotifyModal: ViewModifier {
         .background(Color(.secondarySystemBackground))
         .cornerRadius(20)
         .shadow(radius: 5)
+        .alert(item: $alert) { alert in
+            Alert(title: alert.title, message: alert.message)
+        }
+
     }
     
 }
 
-struct ConntectToSpotifyModal_Previews: PreviewProvider {
+struct ConnectToSpotifyModal_Previews: PreviewProvider {
     
     static var previews: some View {
         PlayerControlsView()
-            .modifier(ConnectToSpotifyModal())
+            .modifier(ConnectToSpotifyModal(alert: .constant(nil)))
             .environmentObject(Spotify())
             .onAppear(perform: Self.onAppear)
     }

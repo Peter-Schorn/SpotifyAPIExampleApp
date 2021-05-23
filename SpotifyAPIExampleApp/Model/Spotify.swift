@@ -4,6 +4,7 @@ import UIKit
 import SwiftUI
 import KeychainAccess
 import SpotifyWebAPI
+import WebKit
 
 /**
  A helper class that wraps around an instance of `SpotifyAPI`
@@ -30,16 +31,34 @@ final class Spotify: NSObject, ObservableObject {
         fatalError("Could not find 'client_secret' in environment variables")
     }()
     
+    private static let tokensURL: URL = {
+        if let tokensURLString = ProcessInfo.processInfo
+            .environment["TOKENS_URL"] {
+            if let tokensURL = URL(string: tokensURLString) {
+                return tokensURL
+            }
+            fatalError("could not convert to URL: '\(tokensURLString)'")
+        }
+        fatalError("Could not find 'TOKENS_URL' in environment variables")
+    }()
+    
+    private static let tokenRefreshURL: URL = {
+        if let tokensURLString = ProcessInfo.processInfo
+            .environment["TOKENS_REFRESH_URL"] {
+            if let tokensURL = URL(string: tokensURLString) {
+                return tokensURL
+            }
+            fatalError("could not convert to URL: '\(tokensURLString)'")
+        }
+        fatalError("Could not find 'TOKENS_REFRESH_URL' in environment variables")
+    }()
+    
     /// The key in the keychain that is used to store the authorization
     /// information: "authorizationManager".
     let authorizationManagerKey = "authorizationManager"
     
-    /// The URL that Spotify will redirect to after the user either
-    /// authorizes or denies authorization for your application via
-    /// the Spotify web API.
-    let webAPICallbackURL = URL(
-        string: "peter-schorn-spotify-sdk-app://web-api-callback"
-    )!
+    /// The key in the keychain that is used to store the session: "session".
+    let sessionKey = "session"
     
     /// The URL that Spotify will redirect to after you connect to the app
     /// remote
@@ -47,25 +66,30 @@ final class Spotify: NSObject, ObservableObject {
         string: "peter-schorn-spotify-sdk-app://app-remote-callback"
     )!
     
-    /// A cryptographically-secure random string used to ensure that an incoming
-    /// redirect from Spotify was the result of a request made by this app, and
-    /// not an attacker. **This value is regenerated after each authorization**
-    /// **process completes.**
-    var authorizationState = String.randomURLSafe(length: 128)
- 
+    // MARK: Keychain
+
     /// The keychain to store the authorization information in.
     let keychain = Keychain(service: "com.Peter-Schorn.SpotifyAPIExampleApp")
     
+    // MARK: API
+
     /// An instance of `SpotifyAPI` that you use to make requests to
     /// the Spotify web API.
     let api = SpotifyAPI(
-        authorizationManager: AuthorizationCodeFlowManager(
-            clientId: Spotify.clientId, clientSecret: Spotify.clientSecret
+        authorizationManager: AuthorizationCodeFlowBackendManager(
+            backend: AuthorizationCodeFlowProxyBackend(
+                clientId: Spotify.clientId,
+                tokensURL: Spotify.tokensURL,
+                tokenRefreshURL: Spotify.tokenRefreshURL,
+                decodeServerError: VaporServerError.decodeFromNetworkResponse(data:response:)
+            )
         )
     )
 
-    // MARK: Spotify App Remote
+    // MARK: Spotify SDK
+    
     var appRemote: SPTAppRemote
+    let sessionManager: SPTSessionManager
 
     // MARK: Published Properties
 
@@ -84,7 +108,7 @@ final class Spotify: NSObject, ObservableObject {
 
      This property is updated by `handleChangesToAuthorizationManager()`, which
      is called every time the authorization information changes, and
-     `removeAuthorizationManagerFromKeychain()`, which is called every-time
+     `authorizationManagerDidDeauthorize()`, which is called every-time
      `SpotifyAPI.authorizationManager.deauthorize()` is called.
      */
     @Published var isAuthorized = false
@@ -103,6 +127,10 @@ final class Spotify: NSObject, ObservableObject {
 
     let appRemoteDidFailConnectionAttempt = PassthroughSubject<Error?, Never>()
 
+    /// Emits every time `Spotify.sessionManager(manager:didFailWith:)` is
+    /// called.
+    let sessionManagerDidFailWithError = PassthroughSubject<Error, Never>()
+
     let playerStateDidChange: AnyPublisher<SPTAppRemotePlayerState, Never>
 
     // MARK: Private Properties
@@ -117,7 +145,7 @@ final class Spotify: NSObject, ObservableObject {
     override init() {
         
         print("\n--- initializing spotify ---\n")
-        
+
         // MARK: Configure the App Remote
         
         let configuration = SPTConfiguration(
@@ -125,9 +153,17 @@ final class Spotify: NSObject, ObservableObject {
             redirectURL: self.appRemoteCallbackURL
         )
         
+        configuration.tokenSwapURL = Self.tokensURL
+        configuration.tokenRefreshURL = Self.tokenRefreshURL
+
         self.appRemote = SPTAppRemote(
             configuration: configuration,
             logLevel: .debug
+        )
+        
+        self.sessionManager = SPTSessionManager(
+            configuration: configuration,
+            delegate: nil
         )
         
         self.playerStateDidChange = self._playerStateDidChange
@@ -136,17 +172,19 @@ final class Spotify: NSObject, ObservableObject {
             .eraseToAnyPublisher()
 
         super.init()
+        
+        if CommandLine.arguments.contains("Xcode-UI-testing") {
+            self.configureForUITesting()
+        }
 
-//        #warning("debug")
-//        self.authorizationManagerDidDeauthorize()
-
+        self.sessionManager.delegate = self
         self.appRemote.delegate = self
-//        self.appRemote.playerAPI?.delegate = self
         print("configured delegates")
         
         // Configure the loggers.
+//        self.api.setupDebugging()
         self.api.apiRequestLogger.logLevel = .trace
-        // self.api.logger.logLevel = .trace
+         self.api.logger.logLevel = .trace
         
         // MARK: Important: Subscribe to `authorizationManagerDidChange` BEFORE
         // MARK: retrieving `authorizationManager` from persistent storage
@@ -168,15 +206,19 @@ final class Spotify: NSObject, ObservableObject {
         .store(in: &self.cancellables)
         
         // MARK: Check to see if the authorization information is saved in
-        // MARK: the keychain.
-        if let authManagerData = keychain[data: self.authorizationManagerKey] {
+        // MARK: the keychain
+        if let authManagerData = self.keychain[data: self.authorizationManagerKey] {
             
             do {
                 // Try to decode the data.
                 let authorizationManager = try JSONDecoder().decode(
-                    AuthorizationCodeFlowManager.self,
+                    AuthorizationCodeFlowBackendManager<AuthorizationCodeFlowProxyBackend>.self,
                     from: authManagerData
                 )
+                // this property is NOT serialized to data; therefore, it must
+                // be assigned after deserialization.
+                authorizationManager.backend.decodeServerError =
+                    VaporServerError.decodeFromNetworkResponse(data:response:)
                 print("found authorization information in keychain")
                 
                 /*
@@ -194,15 +236,44 @@ final class Spotify: NSObject, ObservableObject {
                  is already done in `handleChangesToAuthorizationManager()`.
                  */
                 self.api.authorizationManager = authorizationManager
-                
+
             } catch {
-                print("could not decode authorizationManager from data:\n\(error)")
+                print(
+                    "could not decode authorization manager from " +
+                    "data:\n\(error)"
+                )
             }
         }
         else {
             print("did NOT find authorization information in keychain")
         }
         
+        // MARK: Decode the session from the keychain
+        if let sessionData = self.keychain[data: self.sessionKey] {
+            do {
+                
+                let object = try NSKeyedUnarchiver
+                        .unarchiveTopLevelObjectWithData(sessionData)
+                
+                if let session = object as? SPTSession {
+                    self.sessionManager.session = session
+                    print(
+                        "decoded session from data and assigned to " +
+                        "session manager"
+                    )
+                }
+                else {
+                    print(
+                        "could not cast unarchived object to `SPTSession`:\n" +
+                        "\(object as Any)"
+                    )
+                }
+                
+
+            } catch {
+                print("could not decode session from data:\n\(error)")
+            }
+        }
         
     }
     
@@ -217,31 +288,20 @@ final class Spotify: NSObject, ObservableObject {
      in `LoginView`.
      */
     func authorize() {
+        
+        let scopes: SPTScope = [
+            .userReadPlaybackState,
+            .userModifyPlaybackState,
+            .playlistModifyPrivate,
+            .playlistModifyPublic,
+            .userLibraryRead,
+            .userLibraryModify,
+            .userReadEmail,
+            .appRemoteControl
+        ]
+        
+        self.sessionManager.initiateSession(with: scopes, options: .default)
 
-        let url = api.authorizationManager.makeAuthorizationURL(
-            redirectURI: self.webAPICallbackURL,
-            showDialog: true,
-            // This same value **MUST** be provided for the state parameter of
-            // `authorizationManager.requestAccessAndRefreshTokens(redirectURIWithQuery:state:)`.
-            // Otherwise, an error will be thrown.
-            state: authorizationState,
-            scopes: [
-                .userReadPlaybackState,
-                .userModifyPlaybackState,
-                .playlistModifyPrivate,
-                .playlistModifyPublic,
-                .userLibraryRead,
-                .userLibraryModify,
-                .userReadEmail,
-                .appRemoteControl
-            ]
-        )!
-        
-        // You can open the URL however you like. For example, you could open
-        // it in a web view instead of the browser.
-        // See https://developer.apple.com/documentation/webkit/wkwebview
-        UIApplication.shared.open(url)
-        
     }
     
     /**
@@ -268,7 +328,7 @@ final class Spotify: NSObject, ObservableObject {
         }
         
         print(
-            "Spotify.handleChangesToAuthorizationManager: isAuthorized:",
+            "Spotify.authorizationManagerDidChange: isAuthorized: ",
             self.isAuthorized
         )
 
@@ -278,27 +338,35 @@ final class Spotify: NSObject, ObservableObject {
 
         // MARK: Try to connect to the App Remote
         if !self.appRemote.isConnected {
-            print("handleChangesToAuthorizationManager: connectToAppRemote")
+            print("Spotify.authorizationManagerDidChange: connectToAppRemote")
             self.connectToAppRemote()
         }
 
         self.retrieveCurrentUser()
 
-        
         do {
-            // Encode the authorization information to data.
+            // encode the authorization information to data
             let authManagerData = try JSONEncoder().encode(
                 self.api.authorizationManager
             )
+            self.keychain[data: self.authorizationManagerKey] = authManagerData
+            print("did save authorization manager to the keychain")
             
-            // Save the data to the keychain.
-            keychain[data: self.authorizationManagerKey] = authManagerData
-            print("did save authorization manager to keychain")
+            // encode the `SPTSession` to data if it is non-`nil`.
+            if let session = self.sessionManager.session {
+                let sessionData = try NSKeyedArchiver.archivedData(
+                    withRootObject: session,
+                    requiringSecureCoding: false
+                )
+                self.keychain[data: self.sessionKey] = sessionData
+                print("did save session to the keychain")
+                
+            }
             
         } catch {
             print(
-                "couldn't encode authorizationManager for storage " +
-                "in keychain:\n\(error)"
+                "couldn't encode authorizationManager or session for " +
+                "storage in keychain:\n\(error)"
             )
         }
         
@@ -316,6 +384,7 @@ final class Spotify: NSObject, ObservableObject {
             self.isAuthorized = false
         }
         
+        self.isRetrievingTokens = false
         self.currentUser = nil
 
         // MARK: Remove the Access Token from the App Remove
@@ -330,13 +399,15 @@ final class Spotify: NSObject, ObservableObject {
              will be retrieved again from persistent storage after this
              app is quit and relaunched.
              */
-            try keychain.remove(self.authorizationManagerKey)
+            try self.keychain.remove(self.authorizationManagerKey)
             print("did remove authorization manager from keychain")
+            try self.keychain.remove(self.sessionKey)
+            print("did remove session from keychain")
             
         } catch {
             print(
-                "couldn't remove authorization manager " +
-                "from keychain: \(error)"
+                "couldn't remove authorization manager or session from " +
+                "keychain:\n\(error)"
             )
         }
     }
@@ -371,11 +442,31 @@ final class Spotify: NSObject, ObservableObject {
         
     }
     
+    /// Called in the initializer if this app has been launched for a UI test.
+    func configureForUITesting() {
+        
+        if CommandLine.arguments.contains("reset-authorization") {
+            do {
+                print("will remove all keychain items")
+                // remove the authorization information and make the user
+                // log in again
+                try self.keychain.removeAll()
+                
+            } catch {
+                // don't continue the UI tests if we catch an error here
+                fatalError("could not remove all items from keychain: \(error)")
+            }
+        }
+
+        self.sessionManager.alwaysShowAuthorizationDialog = true
+
+    }
+
 }
 
+// MARK: - SPTAppRemoteDelegate -
+
 extension Spotify: SPTAppRemoteDelegate {
-    
-    // MARK: - SPTAppRemoteDelegate -
     
     func appRemoteDidEstablishConnection(
         _ appRemote: SPTAppRemote
@@ -421,10 +512,7 @@ extension Spotify: SPTAppRemoteDelegate {
             
             if self.appRemote.connectionParameters.accessToken == nil {
                 print(
-                    """
-                    shouldTryToConnectToAppRemote: \
-                    access token is nil
-                    """
+                    "shouldTryToConnectToAppRemote: access token is nil"
                 )
                 promise(.success(false))
             }
@@ -462,9 +550,9 @@ extension Spotify: SPTAppRemoteDelegate {
                     \(error)
                     """
                 )
-                // trying to re-subscribe to the player API after receiving
-                // an error seems to never work, but connecting to the app
-                // remote again usually does.
+                // trying to re-subscribe to the player API after receiving an
+                // error seems to never work, but connecting to the app remote
+                // again usually does.
                 self.connectToAppRemote()
             }
         }
@@ -472,13 +560,108 @@ extension Spotify: SPTAppRemoteDelegate {
     
 }
 
+// MARK: - SPTAppRemotePlayerStateDelegate -
+
 extension Spotify: SPTAppRemotePlayerStateDelegate {
     
-    // MARK: - SPTAppRemotePlayerStateDelegate -
-
     func playerStateDidChange(_ playerState: SPTAppRemotePlayerState) {
-        print("playerStateDidChange: '\(playerState.track.name)'")
-        self._playerStateDidChange.send(playerState)
+        DispatchQueue.main.async {
+            print("playerStateDidChange: '\(playerState.track.name)'")
+            self._playerStateDidChange.send(playerState)
+        }
+    }
+
+}
+
+// MARK: - SPTSessionManagerDelegate -
+
+extension Spotify: SPTSessionManagerDelegate {
+    
+    func sessionManager(manager: SPTSessionManager, didInitiate session: SPTSession) {
+        let currentDate = Date()
+        DispatchQueue.main.async {
+            
+            print("Spotify.sessionManager(manager:didInitiate:) \(session)")
+            
+            self.isRetrievingTokens = false
+
+            let actualExpirationDate: Date
+
+            let currentTimestamp = currentDate.timeIntervalSince1970
+            let sessionExpirationTimestamp =
+                    session.expirationDate.timeIntervalSince1970
+            
+            /*
+             There is a bug with the Spotify iOS SDK in which
+             `session.expirationDate` (the expiration date of the access token)
+             is set to the date that the access token was retrieved, when it
+             should be set to one hour after the access token was retrieved.
+             
+             If `session.expirationDate` is equal to the current date within a
+             tolerance of 5 minutes, then we assume it's wrong and use the
+             current date + one hour as the expiration date.
+             */
+            if abs(sessionExpirationTimestamp - currentTimestamp) <= 300 {
+                actualExpirationDate = currentDate.addingTimeInterval(3_600)
+            }
+            else {
+                actualExpirationDate = session.expirationDate
+            }
+            
+            // assigning a new authorization manager to this property causes
+            // `authorizationManagerDidChange` to be called, which will assign
+            // the new access token to the app remote and make sure the new
+            // authorization manager gets saved to persistent storage
+            self.api.authorizationManager = .init(
+                backend: self.api.authorizationManager.backend,
+                accessToken: session.accessToken,
+                expirationDate: actualExpirationDate,
+                refreshToken: session.refreshToken,
+                scopes: Scope.fromSPTScope(session.scope)
+            )
+            
+        }
+        
+    }
+ 
+    /// Called after the access token has been refreshed.
+    func sessionManager(manager: SPTSessionManager, didRenew session: SPTSession) {
+        DispatchQueue.main.async {
+            print("Spotify.sessionManager(manager:didRenew:) \(session)")
+            
+            // assigning a new authorization manager to this property causes
+            // `authorizationManagerDidChange` to be called, which will assign
+            // the new access token to the app remote and make sure the new
+            // authorization manager gets saved to persistent storage
+            self.api.authorizationManager = .init(
+                backend: self.api.authorizationManager.backend,
+                accessToken: session.accessToken,
+                expirationDate: session.expirationDate,
+                refreshToken: session.refreshToken,
+                scopes: Scope.fromSPTScope(session.scope)
+            )
+            
+        }
+    }
+
+    func sessionManager(manager: SPTSessionManager, didFailWith error: Error) {
+        DispatchQueue.main.async {
+            print("Spotify.sessionManager(manager:didFailWith:) \(error)")
+            self.api.authorizationManager.deauthorize()
+            self.sessionManagerDidFailWithError.send(error)
+        }
+    }
+
+    func sessionManager(
+        manager: SPTSessionManager,
+        shouldRequestAccessTokenWith code: String
+    ) -> Bool {
+        // We only use this method to be notified of when the authorization code
+        // is received. The Spotify iOS SDK can request the access token.
+        DispatchQueue.main.async {
+            self.isRetrievingTokens = true
+        }
+        return true
     }
 
 }

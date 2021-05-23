@@ -31,7 +31,9 @@ struct LoginView: ViewModifier {
     /// After the app first launches, add a short delay before showing this
     /// view so that the animation can be seen.
     @State private var finishedViewLoadDelay = false
-    
+
+    @State private var alert: AlertItem? = nil
+
     let backgroundGradient = LinearGradient(
         gradient: Gradient(
             colors: [Color(#colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)), Color(#colorLiteral(red: 0.1903857588, green: 0.8321116255, blue: 0.4365008013, alpha: 1))]
@@ -102,11 +104,12 @@ struct LoginView: ViewModifier {
             .clipShape(Capsule())
             .shadow(radius: 5)
         }
+        .accessibility(identifier: "Log in with Spotify Identifier")
         .buttonStyle(PlainButtonStyle())
         // Prevent the user from trying to login again
         // if a request to retrieve the access and refresh
         // tokens is currently in progress.
-        .disabled(spotify.isRetrievingTokens)
+        .allowsHitTesting(!spotify.isRetrievingTokens)
         .padding(.bottom, 5)
         
     }

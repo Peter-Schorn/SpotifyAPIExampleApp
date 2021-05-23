@@ -57,6 +57,7 @@ struct SavedAlbumsGridView: View {
                         }
                     }
                     .padding()
+                    .accessibility(identifier: "Saved Albums Grid")
                 }
             }
             
@@ -116,10 +117,10 @@ struct SavedAlbumsGridView: View {
                     let albums = savedAlbums.items
                         .map(\.item)
                         /*
-                         Remove albums that have `nil` for Id
+                         Remove albums that have a `nil` id
                          so that this property can be used as the id for the
                          ForEach above. (The id must be unique, otherwise
-                         the app will crash.) In practice, the id should
+                         the app will crash.) In theory, the id should
                          never be `nil` when the albums are retrieved using
                          the `currentUserSavedAlbums()` endpoint.
                          

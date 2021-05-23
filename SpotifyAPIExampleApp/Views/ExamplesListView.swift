@@ -20,6 +20,9 @@ struct ExamplesListView: View {
             NavigationLink(
                 "Player Controls", destination: PlayerControlsView()
             )
+            NavigationLink(
+                "Debug Menu", destination: DebugMenuView()
+            )
             
             // This is the location where you can add your own views to
             // test out your application. Each view receives an instance

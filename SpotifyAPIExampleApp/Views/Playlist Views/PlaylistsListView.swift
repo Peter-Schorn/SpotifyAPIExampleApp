@@ -60,6 +60,7 @@ struct PlaylistsListView: View {
                     }
                 }
                 .listStyle(PlainListStyle())
+                .accessibility(identifier: "Playlists List View")
             }
         }
         .navigationTitle("Playlists")
