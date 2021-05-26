@@ -44,19 +44,19 @@ extension XCUIElement {
         return true
     }
     
-    /// Waits for an element to not exist. Useful when it's blocking another
-    /// element that needs to be interacted with.
-    func waitUntilDisappears(
-        _ testCase: XCTestCase,
-        timeout: TimeInterval
-    ) {
+    /// Waits for an element to not exist. Useful when this element is blocking
+    /// another element that needs to be interacted with.
+    func waitUntilDisappears(timeout: TimeInterval) {
         let doesNotExistPredicate = NSPredicate(format: "exists == FALSE")
-        let doesNotExistExpectation = testCase.expectation(
-            for: doesNotExistPredicate,
-            evaluatedWith: self
-        )
-        testCase.wait(for: [doesNotExistExpectation], timeout: timeout)
         
+        let doesNotExistExpectation = XCTNSPredicateExpectation(
+            predicate: doesNotExistPredicate,
+            object: self
+        )
+
+        let waiter = XCTWaiter()
+        waiter.wait(for: [doesNotExistExpectation], timeout: timeout)
+
     }
     
 }

@@ -79,7 +79,7 @@ class SpotifyAPIExampleAppTests: XCTestCase {
         func waitForLoginButtonToDisappear() {
             // a network request must be made to retrieve the tokens after the
             // agree button is tapped
-            loginButton.waitUntilDisappears(self, timeout: 60)
+            loginButton.waitUntilDisappears(timeout: 60)
         }
         
 
@@ -107,7 +107,6 @@ class SpotifyAPIExampleAppTests: XCTestCase {
         sleep(5)  // wait for sign in alert to show up
         self.app.tap()  // trigger interruption monitor
         self.removeUIInterruptionMonitor(signInAlertHandler)
-        
 
         let usernameField = self.app.webViews.webViews.webViews.textFields[
             "Email address or username"
@@ -134,7 +133,7 @@ class SpotifyAPIExampleAppTests: XCTestCase {
                 self.app.typeText(password)
                 self.app.dismissKeyboard()
                 
-                // uncheck "Remember me" checkbox (checked by default)
+                // uncheck the "Remember me" checkbox (checked by default)
                 self.app.webViews.webViews.webViews.switches["1"].tap()
                 
                 self.app.webViews.webViews.webViews.buttons["LOG IN"].tap()
@@ -148,7 +147,7 @@ class SpotifyAPIExampleAppTests: XCTestCase {
             }
         }
 
-        XCTFail("could not find agree button or username field")
+        XCTFail("could not find the agree button or username field")
 
     }
     
