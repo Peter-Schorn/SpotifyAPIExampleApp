@@ -9,7 +9,7 @@ import SpotifyWebAPI
  A helper class that wraps around an instance of `SpotifyAPI`
  and provides convenience methods for authorizing your application.
  
- Its most important role is to handle changes to the authorzation
+ Its most important role is to handle changes to the authorization
  information and save them to persistent storage in the keychain.
  */
 final class Spotify: ObservableObject {
@@ -63,7 +63,7 @@ final class Spotify: ObservableObject {
      This property is updated by `handleChangesToAuthorizationManager()`,
      which is called every time the authorization information changes,
      and `authorizationManagerDidDeauthorize()`, which is called
-     everytime `SpotifyAPI.authorizationManager.deauthorize()` is called.
+     every time `SpotifyAPI.authorizationManager.deauthorize()` is called.
      */
     @Published var isAuthorized = false
     
@@ -89,10 +89,6 @@ final class Spotify: ObservableObject {
     
     var cancellables: Set<AnyCancellable> = []
 
-    var refreshTokensCancellable: AnyCancellable? = nil
-    
-    let refreshTokensQueue = DispatchQueue(label: "refreshTokens")
-    
     // MARK: - Methods -
     
     init() {
@@ -144,24 +140,6 @@ final class Spotify: ObservableObject {
                  */
                 self.api.authorizationManager = authorizationManager
                 
-                if !self.api.authorizationManager.accessTokenIsExpired() {
-                    self.autoRefreshTokensWhenExpired()
-                }
-                self.api.authorizationManager.refreshTokens(
-                    onlyIfExpired: true
-                )
-                .sink(receiveCompletion: { completion in
-                    switch completion {
-                        case .finished:
-                            break
-                        case .failure(let error):
-                            print(
-                                "Spotify.init: couldn't refresh tokens:\n\(error)"
-                            )
-                    }
-                })
-                .store(in: &self.cancellables)
-                
             } catch {
                 print("could not decode authorizationManager from data:\n\(error)")
             }
@@ -172,40 +150,6 @@ final class Spotify: ObservableObject {
         
     }
     
-    private func autoRefreshTokensWhenExpired() {
-
-        guard let expirationDate = self.api.authorizationManager
-                .expirationDate else {
-            return
-        }
-        
-        // subtract 1 minute and 55 from the expiration date
-        let refreshDate = expirationDate.addingTimeInterval(-115)
-        
-        // the difference between the current date and the date that the
-        // tokens should be refreshed, which represents the delay we must
-        // add to a timer for it to fire at the `refreshDate`.
-        let refreshDelay = refreshDate.timeIntervalSince1970 - Date().timeIntervalSince1970
-
-        self.refreshTokensCancellable = Result.Publisher(())
-            .delay(
-                for: .seconds(refreshDelay),
-                scheduler: self.refreshTokensQueue
-            )
-            .flatMap {
-                // this method should be called 1 minute and 55 seconds before
-                // the access token expires.
-                return self.api.authorizationManager.refreshTokens(
-                    onlyIfExpired: true
-                )
-            }
-            .sink(receiveCompletion: { completion in
-                print("autoRefreshTokensWhenExpired completion: \(completion)")
-            })
-
-        
-    }
-
     /**
      A convenience method that creates the authorization URL and opens it
      in the browser.
@@ -271,8 +215,6 @@ final class Spotify: ObservableObject {
             self.isAuthorized
         )
         
-        self.autoRefreshTokensWhenExpired()
-        
         self.retrieveCurrentUser()
         
         do {
@@ -298,7 +240,7 @@ final class Spotify: ObservableObject {
      Removes `api.authorizationManager` from the keychain and sets
      `currentUser` to `nil`.
      
-     This method is called everytime `api.authorizationManager.deauthorize` is
+     This method is called every time `api.authorizationManager.deauthorize` is
      called.
      */
     func authorizationManagerDidDeauthorize() {
@@ -308,7 +250,6 @@ final class Spotify: ObservableObject {
         }
         
         self.currentUser = nil
-        self.refreshTokensCancellable = nil
         
         do {
             /*
