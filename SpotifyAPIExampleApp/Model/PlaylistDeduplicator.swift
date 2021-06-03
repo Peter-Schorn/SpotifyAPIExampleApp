@@ -194,54 +194,6 @@ class PlaylistDeduplicator: ObservableObject {
             
         }
         
-        let semaphore = DispatchSemaphore(value: 0)
-        for (index, container) in urisWithPositionsContainers.enumerated() {
-            spotify.api.removeSpecificOccurrencesFromPlaylist(
-                playlist.uri, of: container
-            )
-            .sink(
-                receiveCompletion: { completion in
-                    print("completion for request \(index): \(completion)")
-                    switch completion {
-                        case .finished:
-                            semaphore.signal()
-                        case .failure(let error):
-                            print(
-                                "\(index): couldn't remove duplicates\n\(error)"
-                            )
-                            DispatchQueue.main.async {
-                                self.alertPublisher.send(.init(
-                                    title: "Couldn't Remove Duplicates from " +
-                                           "\(self.playlist.name)",
-                                    message: error.localizedDescription
-                                ))
-                            }
-                            // Do not try to remove any more duplicates
-                            // from the playlist if we get an error because
-                            // the indices of the items may be invalid.
-                            break
-                    }
-                },
-                receiveValue: { _ in }
-            )
-            .store(in: &cancellables)
-            
-            semaphore.wait()
-            
-        }
-        print("finished removing duplicates from playlist")
-        DispatchQueue.main.async {
-            self.isDeduplicating = false
-            // Update the number of items in the playlist by subtracting
-//             the duplicates that were removed.
-            self.totalItems = self.playlist.items.total - duplicates.count
-            self.alertPublisher.send(.init(
-                title: "Removed \(duplicates.count) duplicates from " +
-                       "\(self.playlist.name)",
-                message: ""
-            ))
-        }
-
     }
 
 }
