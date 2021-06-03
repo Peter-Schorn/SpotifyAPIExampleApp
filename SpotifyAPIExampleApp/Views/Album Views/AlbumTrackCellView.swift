@@ -11,6 +11,7 @@ struct AlbumTrackCellView: View {
 
     let index: Int
     let track: Track
+    let album: Album
     
     @Binding var alert: AlertItem?
 
@@ -37,7 +38,11 @@ struct AlbumTrackCellView: View {
             return
         }
         
-        let playbackRequest = PlaybackRequest(uri)
+        var playbackRequest = PlaybackRequest(uri)
+        if let albumURI = self.album.uri {
+            playbackRequest.context = .contextURI(albumURI)
+        }
+
         self.playTrackCancellable = self.spotify.api
             .getAvailableDeviceThenPlay(playbackRequest)
             .receive(on: RunLoop.main)
@@ -57,6 +62,7 @@ struct AlbumTrackCellView: View {
 
 struct AlbumTrackCellView_Previews: PreviewProvider {
 
+    static let album = Album.abbeyRoad
     static let tracks = Album.abbeyRoad.tracks!.items
 
     static var previews: some View {
@@ -66,6 +72,7 @@ struct AlbumTrackCellView_Previews: PreviewProvider {
                     AlbumTrackCellView(
                         index: track.offset,
                         track: track.element,
+                        album: album,
                         alert: .constant(nil)
                     )
                     Divider()

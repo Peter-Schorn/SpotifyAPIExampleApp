@@ -15,6 +15,9 @@ struct ExamplesListView: View {
                 "Search For Tracks", destination: SearchForTracksView()
             )
             NavigationLink(
+                "Recently Played Tracks", destination: RecentlyPlayedView()
+            )
+            NavigationLink(
                 "Current User", destination: CurrentUserView()
             )
             NavigationLink(
@@ -27,7 +30,7 @@ struct ExamplesListView: View {
             
         }
         .listStyle(PlainListStyle())
-        .navigationBarTitle("Spotify Example App")
+        
     }
 }
 

@@ -20,6 +20,7 @@ struct RootView: View {
     var body: some View {
         NavigationView {
             ExamplesListView()
+                .navigationBarTitle("Spotify Example App")
                 .disabled(!spotify.isAuthorized)
                 .navigationBarItems(trailing: accountsButton)
                 .sheet(
@@ -39,7 +40,7 @@ struct RootView: View {
     
     /**
      Handle the URL that Spotify redirects to after the user
-     Either authorizes or denies authorizaion for the application.
+     Either authorizes or denies authorization for the application.
      
      This method is called by the `onOpenURL(perform:)` view modifier
      directly above.
