@@ -306,12 +306,10 @@ final class Spotify: ObservableObject {
      */
     func authorizationManagerDidChange() {
         
-        withAnimation(LoginView.animation) {
-            // Update the @Published `isAuthorized` property.
-            // When set to `true`, `LoginView` is dismissed, allowing the
-            // user to interact with the rest of the app.
-            self.isAuthorized = self.api.authorizationManager.isAuthorized()
-        }
+        // Update the @Published `isAuthorized` property.
+        // When set to `true`, `LoginView` is dismissed, allowing the
+        // user to interact with the rest of the app.
+        self.isAuthorized = self.api.authorizationManager.isAuthorized()
 
         print(
             "Spotify.authorizationManagerDidChange: isAuthorized:",
@@ -356,9 +354,7 @@ final class Spotify: ObservableObject {
      */
     func authorizationManagerDidDeauthorize() {
         
-        withAnimation(LoginView.animation) {
-            self.isAuthorized = false
-        }
+        self.isAuthorized = false
 
         guard let currentAccountURI = self.currentAccountURI else {
             print(
