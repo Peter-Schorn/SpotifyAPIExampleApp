@@ -28,8 +28,51 @@ struct DebugView: View {
                     to: Date()
                 )
             }
+            Button("Print Current Account", action: printCurrentAccount)
         }
     }
+    
+    func printCurrentAccount() {
+        
+        if let account = self.spotify.currentAccount {
+            print(
+                """
+                --- current account ---
+                \(account)
+                -----------------------
+                """
+            )
+        }
+        else {
+            print("current account is nil")
+        }
+        
+        self.spotify.api.currentUserProfile()
+            .receive(on: RunLoop.main)
+            .sink(
+                receiveCompletion: { completion in
+                    if case .failure(let error) = completion {
+                        print(
+                            "couldn't retrieve current user " +
+                            "profile: \(error)"
+                        )
+                    }
+                },
+                receiveValue: { currentUser in
+                    print(
+                        """
+                        --- current user profile ---
+                        \(currentUser)
+                        ----------------------------
+                        """
+                    )
+
+                }
+            )
+            .store(in: &self.cancellables)
+        
+    }
+
 }
 
 struct DebugView_Previews: PreviewProvider {

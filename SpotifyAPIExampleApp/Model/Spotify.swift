@@ -14,7 +14,7 @@ import SpotifyWebAPI
  */
 final class Spotify: ObservableObject {
     
-    private static let clientId: String = {
+    static let clientId: String = {
         if let clientId = ProcessInfo.processInfo
                 .environment["CLIENT_ID"] {
             return clientId
@@ -22,7 +22,7 @@ final class Spotify: ObservableObject {
         fatalError("Could not find 'CLIENT_ID' in environment variables")
     }()
     
-    private static let clientSecret: String = {
+    static let clientSecret: String = {
         if let clientSecret = ProcessInfo.processInfo
                 .environment["CLIENT_SECRET"] {
             return clientSecret
@@ -88,7 +88,9 @@ final class Spotify: ObservableObject {
     
     @Published var accounts: [SpotifyAccount] = []
     
-    var currentAccountURI: String? {
+    /// This will be set when `self.currentAccount` is set and should not be
+    /// set directly anywhere else; therefore, its setter is private.
+    private(set) var currentAccountURI: String? {
         get {
             self.keychain[self.currentAccountKey]
         }
@@ -97,7 +99,8 @@ final class Spotify: ObservableObject {
         }
     }
 
-    /// Gets and sets the current Spotify account from the keychain.
+    /// Gets and sets the current Spotify account. Will also
+    /// update `self.currentAccountURI` accordingly.
     var currentAccount: SpotifyAccount? {
         get {
             guard let currentAccountURI = self.currentAccountURI else {
@@ -109,8 +112,15 @@ final class Spotify: ObservableObject {
         }
         set(account) {
             self.objectWillChange.send()
-            let currentAccountURI = account?.user.uri
-            self.currentAccountURI = currentAccountURI
+            if var accountCopy = account {
+                self.api.authorizationManager = accountCopy.authorizationManager
+                self.currentAccountURI = accountCopy.user.uri
+            }
+            else {
+                self.currentAccountURI = nil
+                
+            }
+            
         }
     }
     
@@ -123,8 +133,6 @@ final class Spotify: ObservableObject {
     // MARK: - Methods -
     
     init() {
-        
-//        try! self.keychain.removeAll()
         
         // Configure the loggers.
 //        self.api.apiRequestLogger.logLevel = .trace
@@ -283,8 +291,7 @@ final class Spotify: ObservableObject {
 
         } catch {
             print(
-                "couldn't encode accounts for storage " +
-                "in keychain:\n\(error)"
+                "couldn't encode accounts for storage in keychain:\n\(error)"
             )
         }
     }
@@ -337,7 +344,7 @@ final class Spotify: ObservableObject {
             )
             return
         }
-
+        
         self.accounts[currentAccountIndex].authorizationManager =
                 self.api.authorizationManager
 
@@ -346,27 +353,15 @@ final class Spotify: ObservableObject {
     }
     
     /**
-     Removes `api.authorizationManager` from the keychain and sets
-     `currentUser` to `nil`.
-     
+     Sets `self.isAuthorized` to` `false`.
+    
      This method is called every time `api.authorizationManager.deauthorize` is
      called.
      */
     func authorizationManagerDidDeauthorize() {
-        
+    
         self.isAuthorized = false
-
-        guard let currentAccountURI = self.currentAccountURI else {
-            print(
-                "authorizationManagerDidDeauthorize: couldn't get current account"
-            )
-            return
-        }
-
-        self.accounts.removeAll(where: { $0.user.uri == currentAccountURI })
-
-        self.updateAccountsInKeychain()
-        
+    
     }
 
 }

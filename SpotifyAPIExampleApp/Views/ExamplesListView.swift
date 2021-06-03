@@ -18,9 +18,6 @@ struct ExamplesListView: View {
                 "Recently Played Tracks", destination: RecentlyPlayedView()
             )
             NavigationLink(
-                "Current User", destination: CurrentUserView()
-            )
-            NavigationLink(
                 "Debug", destination: DebugView()
             )
             

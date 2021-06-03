@@ -30,7 +30,7 @@ struct ModalProgressView: ViewModifier {
         ZStack {
             content
                 .disabled(isPresented)
-                .blur(radius: isPresented ? 2 : 0)
+                .blur(radius: isPresented ? 1 : 0)
             
             if isPresented {
                 Color.black
