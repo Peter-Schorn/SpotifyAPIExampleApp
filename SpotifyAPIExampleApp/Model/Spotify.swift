@@ -19,7 +19,7 @@ final class Spotify: ObservableObject {
                 .environment["CLIENT_ID"] {
             return clientId
         }
-        fatalError("Could not find 'client_id' in environment variables")
+        fatalError("Could not find 'CLIENT_ID' in environment variables")
     }()
     
     private static let clientSecret: String = {
@@ -27,7 +27,7 @@ final class Spotify: ObservableObject {
                 .environment["CLIENT_SECRET"] {
             return clientSecret
         }
-        fatalError("Could not find 'client_secret' in environment variables")
+        fatalError("Could not find 'CLIENT_SECRET' in environment variables")
     }()
     
     /// The key in the keychain that is used to store the authorization

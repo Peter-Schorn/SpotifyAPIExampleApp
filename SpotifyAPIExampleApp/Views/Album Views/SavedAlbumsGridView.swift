@@ -48,15 +48,16 @@ struct SavedAlbumsGridView: View {
             else {
                 ScrollView {
                     LazyVGrid(columns: columns) {
-                        // WARNING: do not use `\.self` for the id.
-                        // This is extremely expensive and causes lag when
-                        // scrolling because the hash of the entire album
-                        // instance must be calculated.
+                        // WARNING: do not use `\.self` for the id. This is
+                        // extremely expensive and causes lag when scrolling
+                        // because the hash of the entire album instance, which
+                        // is very large, must be calculated.
                         ForEach(savedAlbums, id: \.id) { album in
                             AlbumGridItemView(album: album)
                         }
                     }
                     .padding()
+                    .accessibility(identifier: "Saved Albums Grid")
                 }
             }
             
@@ -116,16 +117,16 @@ struct SavedAlbumsGridView: View {
                     let albums = savedAlbums.items
                         .map(\.item)
                         /*
-                         Remove albums that have `nil` for Id
-                         so that this property can be used as the id for the
-                         ForEach above. (The id must be unique, otherwise
-                         the app will crash.) In practice, the id should
-                         never be `nil` when the albums are retrieved using
-                         the `currentUserSavedAlbums()` endpoint.
-                         
+                         Remove albums that have a `nil` id so that this
+                         property can be used as the id for the ForEach above.
+                         (The id must be unique, otherwise the app will crash.)
+                         In theory, the id should never be `nil` when the albums
+                         are retrieved using the `currentUserSavedAlbums()`
+                         endpoint.
+
                          Using \.self in the ForEach is extremely expensive as
-                         this involves calculating the hash of the entire `Album`
-                         instance, which is very large.
+                         this involves calculating the hash of the entire
+                         `Album` instance, which is very large.
                          */
                         .filter { $0.id != nil }
                     

@@ -3,16 +3,15 @@ import Combine
 
 /**
  A view that presents a button to login with Spotify.
- 
+
  It is presented when `isAuthorized` is `false`.
- 
+
  When the user taps the button, the authorization URL is opened in the browser,
  which prompts them to login with their Spotify account and authorize this
  application.
- 
- After Spotify redirects back to this app and the access and refresh
- tokens have been retrieved, dismiss this view by setting `isAuthorized`
- to `true`.
+
+ After Spotify redirects back to this app and the access and refresh tokens have
+ been retrieved, dismiss this view by setting `isAuthorized` to `true`.
  */
 struct LoginView: ViewModifier {
 
@@ -20,16 +19,16 @@ struct LoginView: ViewModifier {
     /// Most importantly, this is useful for the preview provider.
     fileprivate static var debugAlwaysShowing = false
     
-    /// The animation that should be used for presenting and dismissing
-    /// this view.
+    /// The animation that should be used for presenting and dismissing this
+    /// view.
     static let animation = Animation.spring()
     
     @Environment(\.colorScheme) var colorScheme
 
     @EnvironmentObject var spotify: Spotify
 
-    /// After the app first launches, add a short delay before showing this
-    /// view so that the animation can be seen.
+    /// After the app first launches, add a short delay before showing this view
+    /// so that the animation can be seen.
     @State private var finishedViewLoadDelay = false
     
     let backgroundGradient = LinearGradient(
