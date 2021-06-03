@@ -24,15 +24,15 @@ struct AlbumTracksView: View {
     
     @State var allTracks: [Track] = []
 
-    var album: Album
-    var image: Image
+    let album: Album
+    let image: Image
     
     init(album: Album, image: Image) {
         self.album = album
         self.image = image
     }
     
-    /// Used by the preview provider to provie sample data.
+    /// Used by the preview provider to provide sample data.
     fileprivate init(album: Album, image: Image, tracks: [Track]) {
         self.album = album
         self.image = image
@@ -89,6 +89,7 @@ struct AlbumTracksView: View {
                         AlbumTrackCellView(
                             index: track.offset,
                             track: track.element,
+                            album: album,
                             alert: $alert
                         )
                         Divider()

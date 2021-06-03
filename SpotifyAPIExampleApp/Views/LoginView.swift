@@ -46,7 +46,9 @@ struct LoginView: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .blur(radius: spotify.isAuthorized ? 0 : 3)
+            .blur(
+                radius: spotify.isAuthorized && !Self.debugAlwaysShowing ? 0 : 3
+            )
             .overlay(
                 ZStack {
                     if !spotify.isAuthorized || Self.debugAlwaysShowing {
@@ -84,26 +86,29 @@ struct LoginView: ViewModifier {
     }
     
     var spotifyButton: some View {
-        HStack {
-            Image(spotifyLogo)
-                .interpolation(.high)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(height: 40)
-            Text("Log in with Spotify")
-                .font(.title)
+
+        Button(action: spotify.authorize) {
+            HStack {
+                Image(spotifyLogo)
+                    .interpolation(.high)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(height: 40)
+                Text("Log in with Spotify")
+                    .font(.title)
+            }
+            .padding()
+            .background(backgroundGradient)
+            .clipShape(Capsule())
+            .shadow(radius: 5)
         }
-        .padding()
-        .background(backgroundGradient)
-        .clipShape(Capsule())
-        .shadow(radius: 5)
-        // MARK: Authorize The Application
-        .onTapGesture(perform: self.spotify.authorize)
-        .padding(.bottom, 5)
+        .accessibility(identifier: "Log in with Spotify Identifier")
+        .buttonStyle(PlainButtonStyle())
         // Prevent the user from trying to login again
         // if a request to retrieve the access and refresh
         // tokens is currently in progress.
-        .disabled(spotify.isRetrievingTokens)
+        .allowsHitTesting(!spotify.isRetrievingTokens)
+        .padding(.bottom, 5)
         
     }
     
