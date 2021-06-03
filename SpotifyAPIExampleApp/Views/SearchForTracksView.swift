@@ -83,7 +83,10 @@ struct SearchForTracksView: View {
                     if !searchText.isEmpty {
                         // Clear the search text when the user taps
                         // the "x" button.
-                        Button(action: { self.searchText = "" }, label: {
+                        Button(action: {
+                            self.searchText = ""
+                            self.tracks = []
+                        }, label: {
                             Image(systemName: "xmark.circle.fill")
                                 .foregroundColor(.secondary)
                         })
@@ -99,12 +102,15 @@ struct SearchForTracksView: View {
     /// Performs a search for tracks based on `searchText`.
     func search() {
 
-        print("searching with query '\(searchText)'")
-        self.isSearching = true
         self.tracks = []
         
+        if self.searchText.isEmpty { return }
+
+        print("searching with query '\(self.searchText)'")
+        self.isSearching = true
+        
         self.searchCancellable = spotify.api.search(
-            query: searchText, categories: [.track]
+            query: self.searchText, categories: [.track]
         )
         .receive(on: RunLoop.main)
         .sink(

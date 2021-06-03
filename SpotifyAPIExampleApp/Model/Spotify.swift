@@ -4,7 +4,6 @@ import UIKit
 import SwiftUI
 import KeychainAccess
 import SpotifyWebAPI
-import WebKit
 
 /**
  A helper class that wraps around an instance of `SpotifyAPI`
@@ -20,7 +19,7 @@ final class Spotify: NSObject, ObservableObject {
                 .environment["CLIENT_ID"] {
             return clientId
         }
-        fatalError("Could not find 'client_id' in environment variables")
+        fatalError("Could not find 'CLIENT_ID' in environment variables")
     }()
     
     private static let clientSecret: String = {
@@ -28,12 +27,12 @@ final class Spotify: NSObject, ObservableObject {
                 .environment["CLIENT_SECRET"] {
             return clientSecret
         }
-        fatalError("Could not find 'client_secret' in environment variables")
+        fatalError("Could not find 'CLIENT_SECRET' in environment variables")
     }()
     
     private static let tokensURL: URL = {
         if let tokensURLString = ProcessInfo.processInfo
-            .environment["TOKENS_URL"] {
+                .environment["TOKENS_URL"] {
             if let tokensURL = URL(string: tokensURLString) {
                 return tokensURL
             }
@@ -44,7 +43,7 @@ final class Spotify: NSObject, ObservableObject {
     
     private static let tokenRefreshURL: URL = {
         if let tokensURLString = ProcessInfo.processInfo
-            .environment["TOKENS_REFRESH_URL"] {
+                .environment["TOKENS_REFRESH_URL"] {
             if let tokensURL = URL(string: tokensURLString) {
                 return tokensURL
             }
@@ -194,7 +193,7 @@ final class Spotify: NSObject, ObservableObject {
             .receive(on: RunLoop.main)
             .sink(receiveValue: authorizationManagerDidChange)
             .store(in: &cancellables)
-
+        
         self.api.authorizationManagerDidDeauthorize
             .receive(on: RunLoop.main)
             .sink(receiveValue: authorizationManagerDidDeauthorize)
@@ -224,16 +223,16 @@ final class Spotify: NSObject, ObservableObject {
                 /*
                  This assignment causes `authorizationManagerDidChange`
                  to emit a signal, meaning that
-                 `handleChangesToAuthorizationManager()` will be called.
+                 `authorizationManagerDidChange()` will be called.
                  
                  Note that if you had subscribed to
                  `authorizationManagerDidChange` after this line,
-                 then `handleChangesToAuthorizationManager()` would not
+                 then `authorizationManagerDidChange()` would not
                  have been called and the @Published `isAuthorized` property
                  would not have been properly updated.
                  
                  We do not need to update `isAuthorized` here because it
-                 is already done in `handleChangesToAuthorizationManager()`.
+                 is already done in `authorizationManagerDidChange()`.
                  */
                 self.api.authorizationManager = authorizationManager
 
@@ -395,9 +394,10 @@ final class Spotify: NSObject, ObservableObject {
              Remove the authorization information from the keychain.
              
              If you don't do this, then the authorization information
-             that you just removed from memory by calling `deauthorize()`
-             will be retrieved again from persistent storage after this
-             app is quit and relaunched.
+             that you just removed from memory by calling
+             `SpotifyAPI.authorizationManager.deauthorize()` will be
+             retrieved again from persistent storage after this app is
+             quit and relaunched.
              */
             try self.keychain.remove(self.authorizationManagerKey)
             print("did remove authorization manager from keychain")
@@ -431,7 +431,7 @@ final class Spotify: NSObject, ObservableObject {
             .sink(
                 receiveCompletion: { completion in
                     if case .failure(let error) = completion {
-                        print("couldn't retrieve current use: \(error)")
+                        print("couldn't retrieve current user: \(error)")
                     }
                 },
                 receiveValue: { user in

@@ -16,10 +16,11 @@ struct RootView: View {
     @State private var cancellables: Set<AnyCancellable> = []
     
     @State private var alert: AlertItem? = nil
-
+    
     var body: some View {
         NavigationView {
             ExamplesListView()
+                .navigationBarTitle("Spotify Example App")
                 .navigationBarItems(trailing: logoutButton)
                 .disabled(!spotify.isAuthorized)
         }
@@ -85,13 +86,13 @@ struct RootView: View {
         )
         
     }
-
+    
     /// Removes the authorization information for the user.
     var logoutButton: some View {
         // Calling `spotify.api.authorizationManager.deauthorize` will
         // cause `SpotifyAPI.authorizationManagerDidDeauthorize` to emit
         // a signal, which will cause
-        // `Spotify.authorizationManagerDidDeauthorize` to be called.
+        // `Spotify.authorizationManagerDidDeauthorize()` to be called.
         Button(action: spotify.api.authorizationManager.deauthorize, label: {
             Text("Logout")
                 .foregroundColor(.white)
@@ -99,7 +100,7 @@ struct RootView: View {
                 .background(Color(#colorLiteral(red: 0.3923448698, green: 0.7200681584, blue: 0.19703095, alpha: 1)))
                 .cornerRadius(10)
                 .shadow(radius: 3)
-        
+            
         })
     }
 }
