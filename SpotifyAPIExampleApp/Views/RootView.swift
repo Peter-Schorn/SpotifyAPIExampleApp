@@ -51,7 +51,7 @@ struct RootView: View {
         
         // **Always** validate URLs; they offer a potential attack
         // vector into your app.
-        guard url.scheme == Spotify.loginCallbackURL.scheme else {
+        guard url.scheme == self.spotify.loginCallbackURL.scheme else {
             print("not handling URL: unexpected scheme: '\(url)'")
             return
         }
