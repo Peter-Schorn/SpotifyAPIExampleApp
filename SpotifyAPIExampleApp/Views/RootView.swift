@@ -26,7 +26,7 @@ struct RootView: View {
         }
         // The login view is presented if `Spotify.isAuthorized` == `false.
         // When the login button is tapped, `Spotify.authorize()` is called.
-        // After the login process sucessfully completes, `Spotify.isAuthorized`
+        // After the login process successfully completes, `Spotify.isAuthorized`
         // will be set to `true` and `LoginView` will be dismissed, allowing
         // the user to interact with the rest of the app.
         .modifier(LoginView())
@@ -42,7 +42,7 @@ struct RootView: View {
     
     /**
      Handle the URL that Spotify redirects to after the user
-     Either authorizes or denies authorizaion for the application.
+     Either authorizes or denies authorization for the application.
      
      This method is called by the `onOpenURL(perform:)` view modifier
      directly above.
