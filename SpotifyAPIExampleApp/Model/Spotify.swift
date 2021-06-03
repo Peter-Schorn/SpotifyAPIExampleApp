@@ -105,7 +105,7 @@ final class Spotify: NSObject, ObservableObject {
      yet. For example, you could use this property disable UI elements that
      require the user to be logged in.
 
-     This property is updated by `handleChangesToAuthorizationManager()`, which
+     This property is updated by `authorizationManagerDidChange()`, which
      is called every time the authorization information changes, and
      `authorizationManagerDidDeauthorize()`, which is called every-time
      `SpotifyAPI.authorizationManager.deauthorize()` is called.
