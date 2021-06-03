@@ -20,12 +20,13 @@ struct RootView: View {
     var body: some View {
         NavigationView {
             ExamplesListView()
+                .navigationBarTitle("Spotify Example App")
                 .navigationBarItems(trailing: logoutButton)
                 .disabled(!spotify.isAuthorized)
         }
         // The login view is presented if `Spotify.isAuthorized` == `false.
         // When the login button is tapped, `Spotify.authorize()` is called.
-        // After the login process sucessfully completes, `Spotify.isAuthorized`
+        // After the login process successfully completes, `Spotify.isAuthorized`
         // will be set to `true` and `LoginView` will be dismissed, allowing
         // the user to interact with the rest of the app.
         .modifier(LoginView())
@@ -41,7 +42,7 @@ struct RootView: View {
     
     /**
      Handle the URL that Spotify redirects to after the user
-     Either authorizes or denies authorizaion for the application.
+     Either authorizes or denies authorization for the application.
      
      This method is called by the `onOpenURL(perform:)` view modifier
      directly above.
@@ -50,7 +51,7 @@ struct RootView: View {
         
         // **Always** validate URLs; they offer a potential attack
         // vector into your app.
-        guard url.scheme == Spotify.loginCallbackURL.scheme else {
+        guard url.scheme == self.spotify.loginCallbackURL.scheme else {
             print("not handling URL: unexpected scheme: '\(url)'")
             return
         }
@@ -79,7 +80,7 @@ struct RootView: View {
             /*
              After the access and refresh tokens are retrieved,
              `SpotifyAPI.authorizationManagerDidChange` will emit a
-             signal, causing `Spotify.handleChangesToAuthorizationManager()`
+             signal, causing `Spotify.authorizationManagerDidChange()`
              to be called, which will dismiss the loginView if the app was
              successfully authorized by setting the
              @Published `Spotify.isAuthorized` property to `true`.

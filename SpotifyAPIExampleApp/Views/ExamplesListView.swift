@@ -14,6 +14,9 @@ struct ExamplesListView: View {
             NavigationLink(
                 "Search For Tracks", destination: SearchForTracksView()
             )
+            NavigationLink(
+                "Recently Played Tracks", destination: RecentlyPlayedView()
+            )
             
             // This is the location where you can add your own views to
             // test out your application. Each view receives an instance
@@ -21,7 +24,7 @@ struct ExamplesListView: View {
             
         }
         .listStyle(PlainListStyle())
-        .navigationBarTitle("Spotify Example App")
+        
     }
 }
 

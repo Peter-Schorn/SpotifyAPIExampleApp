@@ -56,10 +56,11 @@ struct PlaylistsListView: View {
                 .foregroundColor(.secondary)
                 List {
                     ForEach(playlists, id: \.uri) { playlist in
-                        PlaylistCellView(playlist)
+                        PlaylistCellView(spotify: spotify, playlist: playlist)
                     }
                 }
                 .listStyle(PlainListStyle())
+                .accessibility(identifier: "Playlists List View")
             }
         }
         .navigationTitle("Playlists")

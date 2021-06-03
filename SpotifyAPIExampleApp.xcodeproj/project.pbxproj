@@ -11,13 +11,14 @@
 		470812EF2515E4D700794934 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 470812EE2515E4D700794934 /* RootView.swift */; };
 		470812F12515E4DA00794934 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 470812F02515E4DA00794934 /* Assets.xcassets */; };
 		470812F42515E4DA00794934 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 470812F32515E4DA00794934 /* Preview Assets.xcassets */; };
-		470812FE2515E64300794934 /* SpotifyAPI in Frameworks */ = {isa = PBXBuildFile; productRef = 470812FD2515E64300794934 /* SpotifyAPI */; };
 		470813032515E8A200794934 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 470813022515E8A200794934 /* KeychainAccess */; };
 		4708130A2515EA2800794934 /* Spotify.swift in Sources */ = {isa = PBXBuildFile; fileRef = 470813092515EA2800794934 /* Spotify.swift */; };
 		4708130E2515EB6B00794934 /* ImageNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4708130D2515EB6B00794934 /* ImageNames.swift */; };
 		4725249B253F8B9B00F3FD13 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4725249A253F8B9B00F3FD13 /* LoginView.swift */; };
+		47363AEB26112991007EEF6A /* RecentlyPlayedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47363AEA26112991007EEF6A /* RecentlyPlayedView.swift */; };
 		473F415E2516FF5C009E52C3 /* AlbumTracksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473F415D2516FF5C009E52C3 /* AlbumTracksView.swift */; };
 		475CB239259F34450092653A /* AlbumTrackCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 475CB238259F34450092653A /* AlbumTrackCellView.swift */; };
+		47A93562261A808600134BC3 /* SpotifyAPI in Frameworks */ = {isa = PBXBuildFile; productRef = 47A93561261A808600134BC3 /* SpotifyAPI */; };
 		47AAFC4025A003E800DC1A02 /* PlaylistDeduplicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47AAFC3F25A003E800DC1A02 /* PlaylistDeduplicator.swift */; };
 		47AAFC4325A0098900DC1A02 /* AlertItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47AAFC4225A0098900DC1A02 /* AlertItem.swift */; };
 		47B9615025169BEF0069E441 /* ExamplesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B9614F25169BEF0069E441 /* ExamplesListView.swift */; };
@@ -41,6 +42,7 @@
 		470813092515EA2800794934 /* Spotify.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Spotify.swift; sourceTree = "<group>"; };
 		4708130D2515EB6B00794934 /* ImageNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageNames.swift; sourceTree = "<group>"; };
 		4725249A253F8B9B00F3FD13 /* LoginView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		47363AEA26112991007EEF6A /* RecentlyPlayedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentlyPlayedView.swift; sourceTree = "<group>"; };
 		473F415D2516FF5C009E52C3 /* AlbumTracksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumTracksView.swift; sourceTree = "<group>"; };
 		475CB238259F34450092653A /* AlbumTrackCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumTrackCellView.swift; sourceTree = "<group>"; };
 		47AAFC3F25A003E800DC1A02 /* PlaylistDeduplicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistDeduplicator.swift; sourceTree = "<group>"; };
@@ -62,7 +64,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				470813032515E8A200794934 /* KeychainAccess in Frameworks */,
-				470812FE2515E64300794934 /* SpotifyAPI in Frameworks */,
+				47A93562261A808600134BC3 /* SpotifyAPI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -74,6 +76,7 @@
 			children = (
 				470812EB2515E4D700794934 /* SpotifyAPIExampleApp */,
 				470812EA2515E4D700794934 /* Products */,
+				47A93557261A7FF500134BC3 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -115,6 +118,7 @@
 				47B9614F25169BEF0069E441 /* ExamplesListView.swift */,
 				47B9615D2516BA990069E441 /* SearchForTracksView.swift */,
 				47D760C92541738100A08663 /* TrackView.swift */,
+				47363AEA26112991007EEF6A /* RecentlyPlayedView.swift */,
 				473F41602516FF62009E52C3 /* Album Views */,
 				47B9615B2516A6FE0069E441 /* Playlist Views */,
 			);
@@ -152,6 +156,13 @@
 			path = "Album Views";
 			sourceTree = "<group>";
 		};
+		47A93557261A7FF500134BC3 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		47B9615B2516A6FE0069E441 /* Playlist Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -178,8 +189,8 @@
 			);
 			name = SpotifyAPIExampleApp;
 			packageProductDependencies = (
-				470812FD2515E64300794934 /* SpotifyAPI */,
 				470813022515E8A200794934 /* KeychainAccess */,
+				47A93561261A808600134BC3 /* SpotifyAPI */,
 			);
 			productName = SpotifyAPIExampleApp;
 			productReference = 470812E92515E4D700794934 /* SpotifyAPIExampleApp.app */;
@@ -209,8 +220,8 @@
 			);
 			mainGroup = 470812E02515E4D700794934;
 			packageReferences = (
-				470812FC2515E64300794934 /* XCRemoteSwiftPackageReference "SpotifyAPI" */,
 				470813012515E8A200794934 /* XCRemoteSwiftPackageReference "KeychainAccess" */,
+				47A9355E261A808600134BC3 /* XCRemoteSwiftPackageReference "SpotifyAPI" */,
 			);
 			productRefGroup = 470812EA2515E4D700794934 /* Products */;
 			projectDirPath = "";
@@ -243,6 +254,7 @@
 				473F415E2516FF5C009E52C3 /* AlbumTracksView.swift in Sources */,
 				47B9615E2516BA990069E441 /* SearchForTracksView.swift in Sources */,
 				475CB239259F34450092653A /* AlbumTrackCellView.swift in Sources */,
+				47363AEB26112991007EEF6A /* RecentlyPlayedView.swift in Sources */,
 				470812EF2515E4D700794934 /* RootView.swift in Sources */,
 				47AAFC4025A003E800DC1A02 /* PlaylistDeduplicator.swift in Sources */,
 				47AAFC4325A0098900DC1A02 /* AlertItem.swift in Sources */,
@@ -299,6 +311,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_TESTING_SEARCH_PATHS = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -314,6 +327,10 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(PLATFORM_DIR)/Developer/usr/lib",
+					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
+				);
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -362,6 +379,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTING_SEARCH_PATHS = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -371,6 +389,10 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(PLATFORM_DIR)/Developer/usr/lib",
+					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
+				);
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_LDFLAGS = "-ObjC";
@@ -474,18 +496,26 @@
 				minimumVersion = 4.2.1;
 			};
 		};
+		47A9355E261A808600134BC3 /* XCRemoteSwiftPackageReference "SpotifyAPI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Peter-Schorn/SpotifyAPI.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		470812FD2515E64300794934 /* SpotifyAPI */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 470812FC2515E64300794934 /* XCRemoteSwiftPackageReference "SpotifyAPI" */;
-			productName = SpotifyAPI;
-		};
 		470813022515E8A200794934 /* KeychainAccess */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 470813012515E8A200794934 /* XCRemoteSwiftPackageReference "KeychainAccess" */;
 			productName = KeychainAccess;
+		};
+		47A93561261A808600134BC3 /* SpotifyAPI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 47A9355E261A808600134BC3 /* XCRemoteSwiftPackageReference "SpotifyAPI" */;
+			productName = SpotifyAPI;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

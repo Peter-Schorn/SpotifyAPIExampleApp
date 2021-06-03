@@ -9,14 +9,14 @@ import SpotifyWebAPI
  A helper class that wraps around an instance of `SpotifyAPI`
  and provides convenience methods for authorizing your application.
  
- Its most important role is to handle changes to the authorzation
+ Its most important role is to handle changes to the authorization
  information and save them to persistent storage in the keychain.
  */
 final class Spotify: ObservableObject {
     
     private static let clientId: String = {
         if let clientId = ProcessInfo.processInfo
-            .environment["client_id"] {
+                .environment["CLIENT_ID"] {
             return clientId
         }
         fatalError("Could not find 'client_id' in environment variables")
@@ -24,7 +24,7 @@ final class Spotify: ObservableObject {
     
     private static let clientSecret: String = {
         if let clientSecret = ProcessInfo.processInfo
-            .environment["client_secret"] {
+                .environment["CLIENT_SECRET"] {
             return clientSecret
         }
         fatalError("Could not find 'client_secret' in environment variables")
@@ -32,11 +32,11 @@ final class Spotify: ObservableObject {
     
     /// The key in the keychain that is used to store the authorization
     /// information: "authorizationManager".
-    static let authorizationManagerKey = "authorizationManager"
+    let authorizationManagerKey = "authorizationManager"
     
     /// The URL that Spotify will redirect to after the user either
     /// authorizes or denies authorization for your application.
-    static let loginCallbackURL = URL(
+    let loginCallbackURL = URL(
         string: "spotify-api-example-app://login-callback"
     )!
     
@@ -60,10 +60,10 @@ final class Spotify: ObservableObject {
      Spotify account yet. For example, you could use this property disable
      UI elements that require the user to be logged in.
      
-     This property is updated by `handleChangesToAuthorizationManager()`,
+     This property is updated by `authorizationManagerDidChange()`,
      which is called every time the authorization information changes,
      and `authorizationManagerDidDeauthorize()`, which is called
-     everytime `SpotifyAPI.authorizationManager.deauthorize()` is called.
+     every time `SpotifyAPI.authorizationManager.deauthorize()` is called.
      */
     @Published var isAuthorized = false
     
@@ -80,12 +80,13 @@ final class Spotify: ObservableObject {
     /// the Spotify web API.
     let api = SpotifyAPI(
         authorizationManager: AuthorizationCodeFlowManager(
-            clientId: Spotify.clientId, clientSecret: Spotify.clientSecret
+            clientId: Spotify.clientId,
+            clientSecret: Spotify.clientSecret
         )
     )
     
     var cancellables: Set<AnyCancellable> = []
-    
+
     // MARK: - Methods -
     
     init() {
@@ -100,7 +101,7 @@ final class Spotify: ObservableObject {
             // We must receive on the main thread because we are
             // updating the @Published `isAuthorized` property.
             .receive(on: RunLoop.main)
-            .sink(receiveValue: handleChangesToAuthorizationManager)
+            .sink(receiveValue: authorizationManagerDidChange)
             .store(in: &cancellables)
         
         self.api.authorizationManagerDidDeauthorize
@@ -111,7 +112,7 @@ final class Spotify: ObservableObject {
         
         // MARK: Check to see if the authorization information is saved in
         // MARK: the keychain.
-        if let authManagerData = keychain[data: Self.authorizationManagerKey] {
+        if let authManagerData = keychain[data: self.authorizationManagerKey] {
             
             do {
                 // Try to decode the data.
@@ -124,16 +125,16 @@ final class Spotify: ObservableObject {
                 /*
                  This assignment causes `authorizationManagerDidChange`
                  to emit a signal, meaning that
-                 `handleChangesToAuthorizationManager()` will be called.
+                 `authorizationManagerDidChange()` will be called.
                  
                  Note that if you had subscribed to
                  `authorizationManagerDidChange` after this line,
-                 then `handleChangesToAuthorizationManager()` would not
+                 then `authorizationManagerDidChange()` would not
                  have been called and the @Published `isAuthorized` property
                  would not have been properly updated.
                  
                  We do not need to update `isAuthorized` here because it
-                 is already done in `handleChangesToAuthorizationManager()`.
+                 is already done in `authorizationManagerDidChange()`.
                  */
                 self.api.authorizationManager = authorizationManager
                 
@@ -144,7 +145,6 @@ final class Spotify: ObservableObject {
         else {
             print("did NOT find authorization information in keychain")
         }
-        
         
     }
     
@@ -161,7 +161,7 @@ final class Spotify: ObservableObject {
     func authorize() {
         
         let url = api.authorizationManager.makeAuthorizationURL(
-            redirectURI: Self.loginCallbackURL,
+            redirectURI: self.loginCallbackURL,
             showDialog: true,
             // This same value **MUST** be provided for the state parameter of
             // `authorizationManager.requestAccessAndRefreshTokens(redirectURIWithQuery:state:)`.
@@ -199,7 +199,7 @@ final class Spotify: ObservableObject {
      
      [1]: https://peter-schorn.github.io/SpotifyAPI/Classes/SpotifyAPI.html#/s:13SpotifyWebAPI0aC0C29authorizationManagerDidChange7Combine18PassthroughSubjectCyyts5NeverOGvp
      */
-    func handleChangesToAuthorizationManager() {
+    func authorizationManagerDidChange() {
         
         withAnimation(LoginView.animation) {
             // Update the @Published `isAuthorized` property.
@@ -209,10 +209,9 @@ final class Spotify: ObservableObject {
         }
         
         print(
-            "Spotify.handleChangesToAuthorizationManager: isAuthorized:",
+            "Spotify.authorizationManagerDidChange: isAuthorized:",
             self.isAuthorized
         )
-        
         
         self.retrieveCurrentUser()
         
@@ -223,7 +222,7 @@ final class Spotify: ObservableObject {
             )
             
             // Save the data to the keychain.
-            keychain[data: Self.authorizationManagerKey] = authManagerData
+            keychain[data: self.authorizationManagerKey] = authManagerData
             print("did save authorization manager to keychain")
             
         } catch {
@@ -239,7 +238,7 @@ final class Spotify: ObservableObject {
      Removes `api.authorizationManager` from the keychain and sets
      `currentUser` to `nil`.
      
-     This method is called everytime `api.authorizationManager.deauthorize` is
+     This method is called every time `api.authorizationManager.deauthorize` is
      called.
      */
     func authorizationManagerDidDeauthorize() {
@@ -260,7 +259,7 @@ final class Spotify: ObservableObject {
              retrieved again from persistent storage after this app is
              quit and relaunched.
              */
-            try keychain.remove(Self.authorizationManagerKey)
+            try keychain.remove(self.authorizationManagerKey)
             print("did remove authorization manager from keychain")
             
         } catch {
