@@ -168,7 +168,7 @@ struct AlbumTracksView: View {
             .getAvailableDeviceThenPlay(playbackRequest)
             .receive(on: RunLoop.main)
             .sink(receiveCompletion: { completion in
-                print("Received play album completion")
+                print("Received play album completion: \(completion)")
                 if case .failure(let error) = completion {
                     self.alert = AlertItem(
                         title: "Couldn't Play Album",

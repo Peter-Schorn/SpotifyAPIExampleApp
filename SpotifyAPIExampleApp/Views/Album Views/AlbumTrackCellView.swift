@@ -30,7 +30,7 @@ struct AlbumTrackCellView: View {
         
         let alertTitle = "Couldn't play \(track.name)"
 
-        guard let uri = track.uri else {
+        guard let trackURI = track.uri else {
             self.alert = AlertItem(
                 title: alertTitle,
                 message: "Missing data"
@@ -38,9 +38,19 @@ struct AlbumTrackCellView: View {
             return
         }
         
-        var playbackRequest = PlaybackRequest(uri)
+        let playbackRequest: PlaybackRequest
+        
         if let albumURI = self.album.uri {
-            playbackRequest.context = .contextURI(albumURI)
+            // Play the track in the context of its album. Always prefer
+            // providing a context; otherwise, the back and forwards buttons may
+            // not work.
+            playbackRequest = PlaybackRequest(
+                context: .contextURI(albumURI),
+                offset: .uri(trackURI)
+            )
+        }
+        else {
+            playbackRequest = PlaybackRequest(trackURI)
         }
 
         self.playTrackCancellable = self.spotify.api
