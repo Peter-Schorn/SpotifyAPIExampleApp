@@ -1,10 +1,3 @@
-//
-//  AlbumTracksView.swift
-//  SpotifyAPIExampleApp
-//
-//  Created by Peter Schorn on 9/19/20.
-//
-
 import SwiftUI
 import Combine
 import SpotifyWebAPI
@@ -131,10 +124,10 @@ struct AlbumTracksView: View {
             return
         }
 
-        // the `album` already contains the first page of tracks,
-        // but we need to load additional pages if they exist.
-        // the `extendPages` method immediately republishes the page
-        // that was passed in and then requests additional pages.
+        // the `album` already contains the first page of tracks, but we need to
+        // load additional pages if they exist. the `extendPages` method
+        // immediately republishes the page that was passed in and then requests
+        // additional pages.
         
         self.isLoadingTracks = true
         self.allTracks = []

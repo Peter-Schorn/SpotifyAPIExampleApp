@@ -1,10 +1,3 @@
-//
-//  RootView.swift
-//  SpotifyAPIExampleApp
-//
-//  Created by Peter Schorn on 9/19/20.
-//
-
 import SwiftUI
 import Combine
 import SpotifyWebAPI

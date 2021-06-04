@@ -12,8 +12,8 @@ enum ImageName: String {
 
 extension Image {
     
-    /// Creates an image using `ImageName`, an enum which contains the
-    /// names of all the image assets.
+    /// Creates an image using `ImageName`, an enum which contains the names of
+    /// all the image assets.
     init(_ name: ImageName) {
         self.init(name.rawValue)
     }
@@ -22,8 +22,8 @@ extension Image {
 
 extension UIImage {
     
-    /// Creates an image using `ImageName`, an enum which contains the
-    /// names of all the image assets.
+    /// Creates an image using `ImageName`, an enum which contains the names of
+    /// all the image assets.
     convenience init?(_ name: ImageName) {
         self.init(named: name.rawValue)
     }
