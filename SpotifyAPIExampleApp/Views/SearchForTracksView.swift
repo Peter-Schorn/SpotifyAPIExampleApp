@@ -1,10 +1,3 @@
-//
-//  SearchView.swift
-//  SpotifyAPIExampleApp
-//
-//  Created by Peter Schorn on 9/19/20.
-//
-
 import SwiftUI
 import SpotifyWebAPI
 import Combine
@@ -69,8 +62,8 @@ struct SearchForTracksView: View {
         }
     }
     
-    /// A search bar. Essentially a textfield with a magnifying glass
-    /// and an "x" button overlayed in front of it.
+    /// A search bar. Essentially a textfield with a magnifying glass and an "x"
+    /// button overlayed in front of it.
     var searchBar: some View {
         // `onCommit` is called when the user presses the return key.
         TextField("Search", text: $searchText, onCommit: search)
@@ -81,8 +74,8 @@ struct SearchForTracksView: View {
                         .foregroundColor(.secondary)
                     Spacer()
                     if !searchText.isEmpty {
-                        // Clear the search text when the user taps
-                        // the "x" button.
+                        // Clear the search text when the user taps the "x"
+                        // button.
                         Button(action: {
                             self.searchText = ""
                             self.tracks = []
