@@ -15,8 +15,8 @@ import Combine
  */
 struct LoginView: ViewModifier {
 
-    /// Always show this view for debugging purposes.
-    /// Most importantly, this is useful for the preview provider.
+    /// Always show this view for debugging purposes. Most importantly, this is
+    /// useful for the preview provider.
     fileprivate static var debugAlwaysShowing = false
     
     /// The animation that should be used for presenting and dismissing this
