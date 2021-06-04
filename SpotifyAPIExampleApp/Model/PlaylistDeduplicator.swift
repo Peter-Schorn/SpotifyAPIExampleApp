@@ -19,8 +19,8 @@ class PlaylistDeduplicator: ObservableObject {
 
     private var seenPlaylists: Set<PlaylistItem> = []
     
-    /// The uri of an item in the playlist, along with its position in
-    /// the playlist.
+    /// The uri of an item in the playlist, along with its position in the
+    /// playlist.
     private var duplicates: [(uri: SpotifyURIConvertible, position: Int)] = []
 
     private var cancellables: Set<AnyCancellable> = []
@@ -47,8 +47,8 @@ class PlaylistDeduplicator: ObservableObject {
                     print("received completion:", completion)
                     switch completion {
                         case .finished:
-                            // We've finished finding the duplicates;
-                            // now we need to remove them if there are any.
+                            // We've finished finding the duplicates; now we
+                            // need to remove them if there are any.
                             if self.duplicates.isEmpty {
                                 self.isDeduplicating = false
                                 self.alertPublisher.send(.init(
@@ -64,16 +64,12 @@ class PlaylistDeduplicator: ObservableObject {
                             self.isDeduplicating = false
                             self.alertPublisher.send(.init(
                                 title: "Couldn't check for duplicates for " +
-                                    "\(self.playlist.name)",
+                                       "\(self.playlist.name)",
                                 message: error.localizedDescription
                             ))
                     }
                 },
-                receiveValue: { playlistItemsPage in
-                    self.receivePlaylistItemsPage(
-                        page: playlistItemsPage
-                    )
-                }
+                receiveValue: self.receivePlaylistItemsPage(page:)
             )
             .store(in: &cancellables)
                 
@@ -105,8 +101,8 @@ class PlaylistDeduplicator: ObservableObject {
                 
                 if playlistItem.isProbablyTheSameAs(seenPlaylist) {
                     // To determine the actual index of the item in the
-                    // playlist, we must take into account the offset of
-                    // the current page
+                    // playlist, we must take into account the offset of the
+                    // current page.
                     let playlistIndex = index + page.offset
                     self.duplicates.append(
                         (uri: uri, position: playlistIndex)
@@ -162,9 +158,9 @@ class PlaylistDeduplicator: ObservableObject {
                                 }
                                 receivedError = true
                                 semaphore.signal()
-                                // Do not try to remove any more duplicates
-                                // from the playlist if we get an error because
-                                // the indices of the items may be invalid.
+                                // Do not try to remove any more duplicates from
+                                // the playlist if we get an error because the
+                                // indices of the items may be invalid.
                                 break
                         }
                     },
@@ -183,7 +179,7 @@ class PlaylistDeduplicator: ObservableObject {
             DispatchQueue.main.async {
                 self.isDeduplicating = false
                 // Update the number of items in the playlist by subtracting
-                //             the duplicates that were removed.
+                // the duplicates that were removed.
                 self.totalItems = self.playlist.items.total - self.duplicates.count
                 self.alertPublisher.send(.init(
                     title: "Removed \(self.duplicates.count) duplicates from " +

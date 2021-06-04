@@ -44,12 +44,11 @@ struct PlaylistCellView: View {
                 }
                 Spacer()
             }
-            // Ensure the hitbox extends across the entire width
-            // of the frame. See https://bit.ly/2HqNk4S
+            // Ensure the hit box extends across the entire width of the frame.
+            // See https://bit.ly/2HqNk4S
             .contentShape(Rectangle())
             .contextMenu {
-                // you can only remove duplicates from a playlist
-                // you own
+                // you can only remove duplicates from a playlist you own
                 if let currentUserId = spotify.currentUser?.id,
                         playlist.owner?.id == currentUserId {
                     
@@ -73,9 +72,9 @@ struct PlaylistCellView: View {
     /// Loads the image for the playlist.
     func loadImage() {
         
-        // Return early if the image has already been requested.
-        // We can't just check if `self.image == nil` because the image
-        // might have already been requested, but not loaded yet.
+        // Return early if the image has already been requested. We can't just
+        // check if `self.image == nil` because the image might have already
+        // been requested, but not loaded yet.
         if self.didRequestImage {
             // print("already requested image for '\(playlist.name)'")
             return
@@ -89,10 +88,10 @@ struct PlaylistCellView: View {
 
         // print("loading image for '\(playlist.name)'")
         
-        // Note that a `Set<AnyCancellable>` is NOT being used
-        // so that each time a request to load the image is made,
-        // the previous cancellable assigned to `loadImageCancellable`
-        // is deallocated, which cancels the publisher.
+        // Note that a `Set<AnyCancellable>` is NOT being used so that each time
+        // a request to load the image is made, the previous cancellable
+        // assigned to `loadImageCancellable` is deallocated, which cancels the
+        // publisher.
         self.loadImageCancellable = spotifyImage.load()
             .receive(on: RunLoop.main)
             .sink(

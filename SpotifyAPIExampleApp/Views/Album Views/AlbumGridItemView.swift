@@ -27,8 +27,8 @@ struct AlbumGridItemView: View {
                 Text(album.name)
                     .font(.callout)
                     .lineLimit(3)
-                    // This is necessary to ensure that the text wraps
-                    // to the next line if it is too long.
+                    // This is necessary to ensure that the text wraps to the
+                    // next line if it is too long.
                     .fixedSize(horizontal: false, vertical: true)
                 Spacer()
             }
@@ -40,9 +40,9 @@ struct AlbumGridItemView: View {
     
     func loadImage() {
     
-        // Return early if the image has already been requested.
-        // We can't just check if `self.image == nil` because the image
-        // might have already been requested, but not loaded yet.
+        // Return early if the image has already been requested. We can't just
+        // check if `self.image == nil` because the image might have already
+        // been requested, but not loaded yet.
         if self.didRequestImage { return }
         self.didRequestImage = true
     
@@ -52,10 +52,10 @@ struct AlbumGridItemView: View {
     
         // print("loading image for '\(album.name)'")
     
-        // Note that a `Set<AnyCancellable>` is NOT being used
-        // so that each time a request to load the image is made,
-        // the previous cancellable assigned to `loadImageCancellable`
-        // is deallocated, which cancels the publisher.
+        // Note that a `Set<AnyCancellable>` is NOT being used so that each time
+        // a request to load the image is made, the previous cancellable
+        // assigned to `loadImageCancellable` is deallocated, which cancels the
+        // publisher.
         self.loadImageCancellable = spotifyImage.load()
             .receive(on: RunLoop.main)
             .sink(
