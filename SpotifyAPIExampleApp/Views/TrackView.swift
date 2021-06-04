@@ -48,10 +48,21 @@ struct TrackView: View {
             )
             return
         }
-        
-        
-        // A request to play a single track.
-        let playbackRequest = PlaybackRequest(trackURI)
+
+        let playbackRequest: PlaybackRequest
+
+        if let albumURI = track.album?.uri {
+            // Play the track in the context of its album. Always prefer
+            // providing a context; otherwise, the back and forwards buttons may
+            // not work.
+            playbackRequest = PlaybackRequest(
+                context: .contextURI(albumURI),
+                offset: .uri(trackURI)
+            )
+        }
+        else {
+            playbackRequest = PlaybackRequest(trackURI)
+        }
         
         // By using a single cancellable rather than a collection of
         // cancellables, the previous request always gets cancelled when a new
