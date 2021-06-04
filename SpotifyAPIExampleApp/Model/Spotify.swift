@@ -35,6 +35,7 @@ final class Spotify: ObservableObject {
     
     var currentAccountKey = "currentSpotifyAccount"
     
+    
     /// The URL that Spotify will redirect to after the user either authorizes
     /// or denies authorization for your application.
     let loginCallbackURL = URL(
@@ -67,28 +68,17 @@ final class Spotify: ObservableObject {
      */
     @Published var isAuthorized = false
     
-<<<<<<< HEAD
     @Published var accountsListViewIsPresented = true
 
-    /// If `true`, then the app is retrieving access and refresh tokens.
-    /// Used by `LoginView` to present an activity indicator.
-=======
     /// If `true`, then the app is retrieving access and refresh tokens. Used by
     /// `LoginView` to present an activity indicator.
->>>>>>> 4f98519... Reformatted comments to 80 characters per line in Spotify, RootView, LoginView, and ExamplesListView.
     @Published var isRetrievingTokens = false
     
     /// The keychain to store the authorization information in.
     let keychain = Keychain(service: "com.Peter-Schorn.SpotifyAPIExampleApp")
-<<<<<<< HEAD
 
-    /// An instance of `SpotifyAPI` that you use to make requests to
-    /// the Spotify web API.
-=======
-    
     /// An instance of `SpotifyAPI` that you use to make requests to the Spotify
     /// web API.
->>>>>>> 4f98519... Reformatted comments to 80 characters per line in Spotify, RootView, LoginView, and ExamplesListView.
     let api = SpotifyAPI(
         authorizationManager: AuthorizationCodeFlowManager(
             clientId: Spotify.clientId,
@@ -98,8 +88,8 @@ final class Spotify: ObservableObject {
     
     @Published var accounts: [SpotifyAccount] = []
     
-    /// This will be set when `self.currentAccount` is set and should not be
-    /// set directly anywhere else; therefore, its setter is private.
+    /// This will be set when `self.currentAccount` is set and should not be set
+    /// directly anywhere else; therefore, its setter is private.
     private(set) var currentAccountURI: String? {
         get {
             self.keychain[self.currentAccountKey]
@@ -109,8 +99,8 @@ final class Spotify: ObservableObject {
         }
     }
 
-    /// Gets and sets the current Spotify account. Will also
-    /// update `self.currentAccountURI` accordingly.
+    /// Gets and sets the current Spotify account. Will also update
+    /// `self.currentAccountURI` accordingly.
     var currentAccount: SpotifyAccount? {
         get {
             guard let currentAccountURI = self.currentAccountURI else {
@@ -169,33 +159,15 @@ final class Spotify: ObservableObject {
                     [SpotifyAccount].self,
                     from: accountsData
                 )
-<<<<<<< HEAD
                 if var currentAccount = self.currentAccount {
+                    // Assigning to `api.authorizationManager` causes
+                    // `authorizationManagerDidChange` to be called.
                     self.api.authorizationManager = currentAccount.authorizationManager
                     self.accountsListViewIsPresented = false
                 }
                 else {
                     print("Spotify.init: couldn't get current account")
                 }
-=======
-                print("found authorization information in keychain")
-                
-                /*
-                 This assignment causes `authorizationManagerDidChange` to emit
-                 a signal, meaning that `authorizationManagerDidChange()` will
-                 be called.
-
-                 Note that if you had subscribed to
-                 `authorizationManagerDidChange` after this line, then
-                 `authorizationManagerDidChange()` would not have been called
-                 and the @Published `isAuthorized` property would not have been
-                 properly updated.
-
-                 We do not need to update `isAuthorized` here because it is
-                 already done in `authorizationManagerDidChange()`.
-                 */
-                self.api.authorizationManager = authorizationManager
->>>>>>> 4f98519... Reformatted comments to 80 characters per line in Spotify, RootView, LoginView, and ExamplesListView.
                 
             } catch {
                 print("could not decode spotify accounts from data:\n\(error)")
@@ -237,9 +209,9 @@ final class Spotify: ObservableObject {
             ]
         )!
         
-        // You can open the URL however you like. For example, you could open
-        // it in a web view instead of the browser.
-        // See https://developer.apple.com/documentation/webkit/wkwebview
+        // You can open the URL however you like. For example, you could open it
+        // in a web view instead of the browser. See
+        // https://developer.apple.com/documentation/webkit/wkwebview
         UIApplication.shared.open(url)
         
     }
@@ -261,21 +233,20 @@ final class Spotify: ObservableObject {
         
         print("received redirect from Spotify: '\(redirectURIWithQuery)'")
         
-        // This property is used to display an activity indicator in
-        // `LoginView` indicating that the access and refresh tokens
-        // are being retrieved.
+        // This property is used to display an activity indicator in `LoginView`
+        // indicating that the access and refresh tokens are being retrieved.
         self.isRetrievingTokens = true
         
-        // MARK: IMPORTANT: generate a new value for the state parameter
-        // MARK: after each authorization request. This ensures an incoming
-        // MARK: redirect from Spotify was the result of a request made by
-        // MARK: this app, and not an attacker.
+        // MARK: IMPORTANT: generate a new value for the state parameter after
+        // MARK: each authorization request. This ensures an incoming redirect
+        // MARK: from Spotify was the result of a request made by this app, and
+        // MARK: not an attacker.
         defer {
             self.authorizationState = String.randomURLSafe(length: 128)
         }
         
-        // Complete the authorization process by requesting the
-        // access and refresh tokens.
+        // Complete the authorization process by requesting the access and
+        // refresh tokens.
         return self.api.authorizationManager.requestAccessAndRefreshTokens(
             redirectURIWithQuery: redirectURIWithQuery,
             // This value must be the same as the one used to create the
@@ -302,8 +273,8 @@ final class Spotify: ObservableObject {
 
         }
         .handleEvents(receiveCompletion: { completion in
-            // Whether the request succeeded or not, we need to remove
-            // the activity indicator.
+            // Whether the request succeeded or not, we need to remove the
+            // activity indicator.
             self.isRetrievingTokens = false
         })
         .eraseToAnyPublisher()
@@ -344,30 +315,19 @@ final class Spotify: ObservableObject {
      */
     func authorizationManagerDidChange() {
         
-<<<<<<< HEAD
-        // Update the @Published `isAuthorized` property.
-        // When set to `true`, `LoginView` is dismissed, allowing the
-        // user to interact with the rest of the app.
+        // Update the @Published `isAuthorized` property. When set to `true`,
+        // `LoginView` is dismissed, allowing the user to interact with the rest
+        // of the app.
         self.isAuthorized = self.api.authorizationManager.isAuthorized()
 
-=======
-        withAnimation(LoginView.animation) {
-            // Update the @Published `isAuthorized` property. When set to
-            // `true`, `LoginView` is dismissed, allowing the user to interact
-            // with the rest of the app.
-            self.isAuthorized = self.api.authorizationManager.isAuthorized()
-        }
-        
->>>>>>> 4f98519... Reformatted comments to 80 characters per line in Spotify, RootView, LoginView, and ExamplesListView.
         print(
             "Spotify.authorizationManagerDidChange: isAuthorized:",
             self.isAuthorized
         )
         
-        // Don't save the authorization manager to persistent storage here
-        // if we just retrieved the access and refresh tokens. Instead,
-        // we'll do that in
-        // `Spotify.requestAccessAndRefreshTokens(redirectURIWithQuery:)`
+        // Don't save the authorization manager to persistent storage here if we
+        // just retrieved the access and refresh tokens. Instead, we'll do that
+        // in `Spotify.requestAccessAndRefreshTokens(redirectURIWithQuery:)`
         guard !self.isRetrievingTokens else { return }
         
         print(
@@ -394,80 +354,15 @@ final class Spotify: ObservableObject {
     }
     
     /**
-<<<<<<< HEAD
      Sets `self.isAuthorized` to` `false`.
-    
-=======
-     Removes `api.authorizationManager` from the keychain and sets `currentUser`
-     to `nil`.
 
->>>>>>> 4f98519... Reformatted comments to 80 characters per line in Spotify, RootView, LoginView, and ExamplesListView.
      This method is called every time `api.authorizationManager.deauthorize` is
      called.
      */
     func authorizationManagerDidDeauthorize() {
-<<<<<<< HEAD
     
         self.isAuthorized = false
     
-=======
-        
-        withAnimation(LoginView.animation) {
-            self.isAuthorized = false
-        }
-        
-        self.currentUser = nil
-        
-        do {
-            /*
-             Remove the authorization information from the keychain.
-
-             If you don't do this, then the authorization information that you
-             just removed from memory by calling
-             `SpotifyAPI.authorizationManager.deauthorize()` will be retrieved
-             again from persistent storage after this app is quit and
-             relaunched.
-             */
-            try keychain.remove(self.authorizationManagerKey)
-            print("did remove authorization manager from keychain")
-            
-        } catch {
-            print(
-                "couldn't remove authorization manager " +
-                "from keychain: \(error)"
-            )
-        }
-    }
-
-    /**
-     Retrieve the current user.
-     
-     - Parameter onlyIfNil: Only retrieve the user if `self.currentUser`
-           is `nil`.
-     */
-    func retrieveCurrentUser(onlyIfNil: Bool = true) {
-        
-        if onlyIfNil && self.currentUser != nil {
-            return
-        }
-
-        guard self.isAuthorized else { return }
-
-        self.api.currentUserProfile()
-            .receive(on: RunLoop.main)
-            .sink(
-                receiveCompletion: { completion in
-                    if case .failure(let error) = completion {
-                        print("couldn't retrieve current user: \(error)")
-                    }
-                },
-                receiveValue: { user in
-                    self.currentUser = user
-                }
-            )
-            .store(in: &cancellables)
-        
->>>>>>> 4f98519... Reformatted comments to 80 characters per line in Spotify, RootView, LoginView, and ExamplesListView.
     }
 
 }

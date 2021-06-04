@@ -4,7 +4,7 @@ import SpotifyExampleContent
 import Combine
 import Foundation
 
-struct DebugView: View {
+struct DebugMenuView: View {
     
     @EnvironmentObject var spotify: Spotify
 
@@ -75,9 +75,9 @@ struct DebugView: View {
 
 }
 
-struct DebugView_Previews: PreviewProvider {
+struct DebugMenuView_Previews: PreviewProvider {
     static var previews: some View {
-        DebugView()
+        DebugMenuView()
             .environmentObject(Spotify())
     }
 }

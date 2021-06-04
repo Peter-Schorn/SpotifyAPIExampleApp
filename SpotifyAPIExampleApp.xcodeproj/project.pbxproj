@@ -19,7 +19,7 @@
 		4708130A2515EA2800794934 /* Spotify.swift in Sources */ = {isa = PBXBuildFile; fileRef = 470813092515EA2800794934 /* Spotify.swift */; };
 		4708130E2515EB6B00794934 /* ImageNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4708130D2515EB6B00794934 /* ImageNames.swift */; };
 		473F415E2516FF5C009E52C3 /* AlbumTracksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473F415D2516FF5C009E52C3 /* AlbumTracksView.swift */; };
-		47520AF02622434D00C24441 /* DebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47520AEF2622434D00C24441 /* DebugView.swift */; };
+		47520AF02622434D00C24441 /* DebugMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47520AEF2622434D00C24441 /* DebugMenuView.swift */; };
 		475CB239259F34450092653A /* AlbumTrackCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 475CB238259F34450092653A /* AlbumTrackCellView.swift */; };
 		47AAFC4025A003E800DC1A02 /* PlaylistDeduplicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47AAFC3F25A003E800DC1A02 /* PlaylistDeduplicator.swift */; };
 		47AAFC4325A0098900DC1A02 /* AlertItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47AAFC4225A0098900DC1A02 /* AlertItem.swift */; };
@@ -51,7 +51,7 @@
 		4708130D2515EB6B00794934 /* ImageNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageNames.swift; sourceTree = "<group>"; };
 		473F415D2516FF5C009E52C3 /* AlbumTracksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumTracksView.swift; sourceTree = "<group>"; };
 		47520ACA2622038B00C24441 /* ModalProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalProgressView.swift; sourceTree = "<group>"; };
-		47520AEF2622434D00C24441 /* DebugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugView.swift; sourceTree = "<group>"; };
+		47520AEF2622434D00C24441 /* DebugMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugMenuView.swift; sourceTree = "<group>"; };
 		475CB238259F34450092653A /* AlbumTrackCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumTrackCellView.swift; sourceTree = "<group>"; };
 		47AAFC3F25A003E800DC1A02 /* PlaylistDeduplicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistDeduplicator.swift; sourceTree = "<group>"; };
 		47AAFC4225A0098900DC1A02 /* AlertItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertItem.swift; sourceTree = "<group>"; };
@@ -126,7 +126,7 @@
 				470812EE2515E4D700794934 /* RootView.swift */,
 				47520ACA2622038B00C24441 /* ModalProgressView.swift */,
 				47B9614F25169BEF0069E441 /* ExamplesListView.swift */,
-				47520AEF2622434D00C24441 /* DebugView.swift */,
+				47520AEF2622434D00C24441 /* DebugMenuView.swift */,
 				47FBD28F266864ED00BBF08A /* ModalProgressView.swift */,
 				47FBD28C266864E600BBF08A /* RecentlyPlayedView.swift */,
 				47B9615D2516BA990069E441 /* SearchForTracksView.swift */,
@@ -267,7 +267,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4708130E2515EB6B00794934 /* ImageNames.swift in Sources */,
-				47520AF02622434D00C24441 /* DebugView.swift in Sources */,
+				47520AF02622434D00C24441 /* DebugMenuView.swift in Sources */,
 				47B961592516A6F50069E441 /* PlaylistCellView.swift in Sources */,
 				4705972826219D300056A612 /* SpotifyAccountsListView.swift in Sources */,
 				473F415E2516FF5C009E52C3 /* AlbumTracksView.swift in Sources */,
