@@ -18,12 +18,16 @@ struct ExamplesListView: View {
                 "Recently Played Tracks", destination: RecentlyPlayedView()
             )
             NavigationLink(
+<<<<<<< HEAD
                 "Debug", destination: DebugView()
+=======
+                "Debug Menu", destination: DebugMenuView()
+>>>>>>> 4f98519... Reformatted comments to 80 characters per line in Spotify, RootView, LoginView, and ExamplesListView.
             )
             
-            // This is the location where you can add your own views to
-            // test out your application. Each view receives an instance
-            // of `Spotify` from the environment.
+            // This is the location where you can add your own views to test out
+            // your application. Each view receives an instance of `Spotify`
+            // from the environment.
             
         }
         .listStyle(PlainListStyle())
