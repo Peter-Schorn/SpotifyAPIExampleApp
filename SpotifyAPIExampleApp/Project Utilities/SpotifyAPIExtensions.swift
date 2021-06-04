@@ -5,9 +5,8 @@ import SpotifyWebAPI
 extension SpotifyAPI where AuthorizationManager: SpotifyScopeAuthorizationManager {
 
     /**
-     Makes a call to `availableDevices()` and plays the content on the
-     active device if one exists. Else, plays content on the first available
-     device.
+     Makes a call to `availableDevices()` and plays the content on the active
+     device if one exists. Else, plays content on the first available device.
      
      See [Using the Player Endpoints][1].
 
@@ -22,16 +21,16 @@ extension SpotifyAPI where AuthorizationManager: SpotifyScopeAuthorizationManage
         return self.availableDevices().flatMap {
             devices -> AnyPublisher<Void, Error> in
     
-            // A device must have an id and must not be restricted
-            // in order to accept web API commands.
+            // A device must have an id and must not be restricted in order to
+            // accept web API commands.
             let usableDevices = devices.filter { device in
                 !device.isRestricted && device.id != nil
             }
 
-            // If there is an active device, then it's usually a good idea
-            // to use that one. For example, if content is already playing,
-            // then it will be playing on the active device. If not, then
-            // just use the first available device.
+            // If there is an active device, then it's usually a good idea to
+            // use that one. For example, if content is already playing, then it
+            // will be playing on the active device. If not, then just use the
+            // first available device.
             let device = usableDevices.first(where: \.isActive)
                     ?? usableDevices.first
             
@@ -57,8 +56,8 @@ extension SpotifyAPI where AuthorizationManager: SpotifyScopeAuthorizationManage
 
 extension PlaylistItem {
     
-    /// Returns `true` if this playlist item is probably the same as
-    /// `other` by comparing the name and artist/show name.
+    /// Returns `true` if this playlist item is probably the same as `other` by
+    /// comparing the name, artist/show name, and duration.
     func isProbablyTheSameAs(_ other: Self) -> Bool {
         
         // don't return true if both URIs are `nil`.
@@ -68,22 +67,67 @@ extension PlaylistItem {
         
         switch (self, other) {
             case (.track(let track), .track(let otherTrack)):
-                // if the name of the tracks and the name of the artists
-                // are the same, then the tracks are probably the same
-                return track.name == otherTrack.name &&
-                        track.artists?.first?.name ==
-                        otherTrack.artists?.first?.name
-                
+                return track.isProbablyTheSameAs(otherTrack)
             case (.episode(let episode), .episode(let otherEpisode)):
-                // if the name of the episodes and the names of the
-                // shows they appear on are the same, then the episodes
-                // are probably the same.
-                return episode.name == otherEpisode.name &&
-                        episode.show?.name == otherEpisode.show?.name
+                return episode.isProbablyTheSameAs(otherEpisode)
             default:
                 return false
         }
         
     }
     
+}
+
+extension Track {
+    
+    
+    /// Returns `true` if this track is probably the same as `other` by
+    /// comparing the name, artist name, and duration.
+    func isProbablyTheSameAs(_ other: Self) -> Bool {
+        
+        if self.name != other.name ||
+                self.artists?.first?.name != other.artists?.first?.name {
+            return false
+        }
+        
+        switch (self.durationMS, other.durationMS) {
+            case (.some(let durationMS), .some(let otherDurationMS)):
+                // use a relative tolerance of 10% and an absolute tolerance of
+                // ten seconds
+                return durationMS.isApproximatelyEqual(
+                    to: otherDurationMS,
+                    absoluteTolerance: 10_000,  // 10 seconds
+                    relativeTolerance: 0.1,
+                    norm: { Double($0) }
+                )
+            case (nil, nil):
+                return true
+            default:
+                return false
+        }
+        
+    }
+
+}
+
+extension Episode {
+    
+    /// Returns `true` if this episode is probably the same as `other` by
+    /// comparing the name, show name, and duration.
+    func isProbablyTheSameAs(_ other: Self) -> Bool {
+        
+        return self.name == other.name &&
+                self.show?.name == other.show?.name &&
+                // use a relative tolerance of 10% and an absolute tolerance of
+                // ten seconds
+                self.durationMS.isApproximatelyEqual(
+                    to: other.durationMS,
+                    absoluteTolerance: 10_000,  // 10 seconds
+                    relativeTolerance: 0.1,
+                    norm: { Double($0) }
+                )
+        
+    }
+    
+
 }

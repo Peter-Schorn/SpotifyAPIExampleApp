@@ -48,8 +48,8 @@ struct PlaylistsListView: View {
             else {
                 Text(
                     """
-                    Tap on a playlist to play it. Tap and hold \
-                    on a Playlist to remove duplicates.
+                    Tap on a playlist to play it. Tap and hold on a Playlist \
+                    to remove duplicates.
                     """
                 )
                 .font(.caption)
@@ -107,9 +107,9 @@ struct PlaylistsListView: View {
                             )
                     }
                 },
-                // We will receive a value for each page of playlists.
-                // You could use Combine's `collect()` operator to wait until
-                // all of the pages have been retrieved.
+                // We will receive a value for each page of playlists. You could
+                // use Combine's `collect()` operator to wait until all of the
+                // pages have been retrieved.
                 receiveValue: { playlistsPage in
                     let playlists = playlistsPage.items
                     self.playlists.append(contentsOf: playlists)

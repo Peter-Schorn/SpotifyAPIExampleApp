@@ -18,8 +18,8 @@ struct TrackView: View {
                 Text(trackDisplayName())
                 Spacer()
             }
-            // Ensure the hitbox extends across the entire width
-            // of the frame. See https://bit.ly/2HqNk4S
+            // Ensure the hit box extends across the entire width of the frame.
+            // See https://bit.ly/2HqNk4S
             .contentShape(Rectangle())
         }
         .buttonStyle(PlainButtonStyle())
@@ -28,8 +28,7 @@ struct TrackView: View {
         }
     }
     
-    /// The display name for the track.
-    /// E.g., "Eclipse - Pink Floyd".
+    /// The display name for the track. E.g., "Eclipse - Pink Floyd".
     func trackDisplayName() -> String {
         var displayName = track.name
         if let artistName = track.artists?.first?.name {
@@ -54,10 +53,9 @@ struct TrackView: View {
         // A request to play a single track.
         let playbackRequest = PlaybackRequest(trackURI)
         
-        // By using a single cancellable rather than a collection
-        // of cancellables, the previous request always gets
-        // cancelled when a new request to play a track is
-        // made.
+        // By using a single cancellable rather than a collection of
+        // cancellables, the previous request always gets cancelled when a new
+        // request to play a track is made.
         self.playRequestCancellable =
             self.spotify.api.getAvailableDeviceThenPlay(playbackRequest)
                 .receive(on: RunLoop.main)
