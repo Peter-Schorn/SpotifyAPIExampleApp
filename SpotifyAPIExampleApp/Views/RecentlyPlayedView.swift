@@ -8,14 +8,15 @@ struct RecentlyPlayedView: View {
     @EnvironmentObject var spotify: Spotify
     
     @State private var recentlyPlayed: [Track]
-    
-    @State private var loadRecentlyPlayedCancellable: AnyCancellable? = nil
-    
+
     @State private var alert: AlertItem? = nil
     
     @State private var nextPageHref: URL? = nil
     @State private var isLoadingPage = false
+    @State private var didRequestFirstPage = false
     
+    @State private var loadRecentlyPlayedCancellable: AnyCancellable? = nil
+
     init() {
         self._recentlyPlayed = State(initialValue: [])
     }
@@ -25,34 +26,77 @@ struct RecentlyPlayedView: View {
     }
     
     var body: some View {
-        List {
-            ForEach(
-                Array(recentlyPlayed.enumerated()),
-                id: \.offset
-            ) { item in
-                
-                TrackView(track: item.element)
-                    // Each track in the list will be loaded lazily. We take
-                    // advantage of this feature in order to detect when the
-                    // user has scrolled to *near* the bottom of the list based
-                    // on the offset of this item.
-                    .onAppear {
-                        self.loadNextPageIfNeeded(offset: item.offset)
+        Group {
+            if recentlyPlayed.isEmpty {
+                if isLoadingPage {
+                    HStack {
+                        ProgressView()
+                            .padding()
+                        Text("Loading Tracks")
+                            .font(.title)
+                            .foregroundColor(.secondary)
                     }
-                
+                }
+                else {
+                    Text("No Recently Played Tracks")
+                        .font(.title)
+                        .foregroundColor(.secondary)
+                }
+            }
+            else {
+                List {
+                    ForEach(
+                        Array(recentlyPlayed.enumerated()),
+                        id: \.offset
+                    ) { item in
+
+                        TrackView(track: item.element)
+                            // Each track in the list will be loaded lazily. We
+                            // take advantage of this feature in order to detect
+                            // when the user has scrolled to *near* the bottom
+                            // of the list based on the offset of this item.
+                            .onAppear {
+                                self.loadNextPageIfNeeded(offset: item.offset)
+                            }
+
+                    }
+                }
             }
         }
-        .onAppear(perform: loadRecentlyPlayed)
+        .navigationTitle("Recently Played")
+        .navigationBarItems(trailing: refreshButton)
+        .onAppear {
+            // don't try to load any tracks if we're previewing because sample
+            // tracks have already been provided
+            if ProcessInfo.processInfo.isPreviewing {
+                return
+            }
+
+            print("onAppear")
+            // the `onAppear` can be called multiple times, but we only want to
+            // load the first page once
+            if !self.didRequestFirstPage {
+                self.didRequestFirstPage = true
+                self.loadRecentlyPlayed()
+            }
+        }
         .alert(item: $alert) { alert in
             Alert(title: alert.title, message: alert.message)
         }
         
+        
     }
     
-    func offsetDidChange(to offset: CGFloat) {
-        print("offset did change to \(offset)")
+    var refreshButton: some View {
+        Button(action: self.loadRecentlyPlayed) {
+            Image(systemName: "arrow.clockwise")
+                .font(.title)
+                .scaleEffect(0.8)
+        }
+        .disabled(isLoadingPage)
+        
     }
-    
+
 }
 
 extension RecentlyPlayedView {
@@ -65,7 +109,12 @@ extension RecentlyPlayedView {
         
         let threshold = self.recentlyPlayed.count - 5
         
-        print("loadNextPageIfNeeded threshold: \(threshold); offset: \(offset)")
+        print(
+            """
+            loadNextPageIfNeeded threshold: \(threshold); offset: \(offset); \
+            total: \(self.recentlyPlayed.count)
+            """
+        )
         
         // load the next page if this track is the fifth from the bottom of the
         // list
@@ -74,8 +123,7 @@ extension RecentlyPlayedView {
         }
         
         guard let nextPageHref = self.nextPageHref else {
-            // there are no more pages to be retrieved
-            print("nextPageHref was nil")
+            print("no more paged to load: nextPageHref was nil")
             return
         }
         
@@ -102,9 +150,12 @@ extension RecentlyPlayedView {
             .sink(
                 receiveCompletion: self.receiveRecentlyPlayedCompletion(_:),
                 receiveValue: { playHistory in
-                    print("received next page")
+                    let tracks = playHistory.items.map(\.track)
+                    print(
+                        "received next page with \(tracks.count) items"
+                    )
                     self.nextPageHref = playHistory.next
-                    self.recentlyPlayed += playHistory.items.map(\.track)
+                    self.recentlyPlayed += tracks
                 }
             )
         
@@ -115,6 +166,7 @@ extension RecentlyPlayedView {
         
         print("loading first page")
         self.isLoadingPage = true
+        self.recentlyPlayed = []
         
         self.loadRecentlyPlayedCancellable = self.spotify.api
             .recentlyPlayed()
@@ -122,8 +174,12 @@ extension RecentlyPlayedView {
             .sink(
                 receiveCompletion: self.receiveRecentlyPlayedCompletion(_:),
                 receiveValue: { playHistory in
+                    let tracks = playHistory.items.map(\.track)
+                    print(
+                        "received first page with \(tracks.count) items"
+                    )
                     self.nextPageHref = playHistory.next
-                    self.recentlyPlayed = playHistory.items.map(\.track)
+                    self.recentlyPlayed = tracks
                 }
             )
         
@@ -133,8 +189,10 @@ extension RecentlyPlayedView {
         _ completion: Subscribers.Completion<Error>
     ) {
         if case .failure(let error) = completion {
+            let title = "Couldn't retrieve recently played tracks"
+            print("\(title): \(error)")
             self.alert = AlertItem(
-                title: "Couldn't retrieve recently played tracks",
+                title: title,
                 message: error.localizedDescription
             )
         }
@@ -151,7 +209,12 @@ struct RecentlyPlayedView_Previews: PreviewProvider {
     ]
     
     static var previews: some View {
-        RecentlyPlayedView(recentlyPlayed: tracks)
-            .environmentObject(Spotify())
+        ForEach([tracks], id: \.self) { tracks in
+            NavigationView {
+                RecentlyPlayedView(recentlyPlayed: tracks)
+                    .listStyle(PlainListStyle())
+            }
+        }
+        .environmentObject(Spotify())
     }
 }

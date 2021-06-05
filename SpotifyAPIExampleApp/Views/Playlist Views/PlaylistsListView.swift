@@ -28,7 +28,7 @@ struct PlaylistsListView: View {
                 if isLoadingPlaylists {
                     HStack {
                         ProgressView()
-                                    .padding()
+                            .padding()
                         Text("Loading Playlists")
                             .font(.title)
                             .foregroundColor(.secondary)

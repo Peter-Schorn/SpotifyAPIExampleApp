@@ -287,7 +287,6 @@ final class Spotify: NSObject, ObservableObject {
      in `LoginView`.
      */
     func authorize() {
-        
         let scopes: SPTScope = [
             .userReadPlaybackState,
             .userModifyPlaybackState,
@@ -296,7 +295,8 @@ final class Spotify: NSObject, ObservableObject {
             .userLibraryRead,
             .userLibraryModify,
             .userReadEmail,
-            .appRemoteControl
+            .appRemoteControl,
+            .userReadRecentlyPlayed
         ]
         
         self.sessionManager.initiateSession(with: scopes, options: .default)
