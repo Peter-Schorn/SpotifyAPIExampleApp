@@ -62,6 +62,16 @@
             value = "your client secret"
             isEnabled = "YES">
          </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "TOKENS_URL"
+            value = "token swap URL"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "TOKENS_REFRESH_URL"
+            value = "token refresh URL"
+            isEnabled = "YES">
+         </EnvironmentVariable>
       </EnvironmentVariables>
    </LaunchAction>
    <ProfileAction
