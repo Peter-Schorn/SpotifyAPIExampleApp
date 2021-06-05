@@ -16,6 +16,7 @@
 		4708130E2515EB6B00794934 /* ImageNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4708130D2515EB6B00794934 /* ImageNames.swift */; };
 		4712ECB126696E2900B66884 /* CustomScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4712ECB026696E2900B66884 /* CustomScrollView.swift */; };
 		4712ECB426696E2D00B66884 /* OffsetReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4712ECB326696E2D00B66884 /* OffsetReader.swift */; };
+		471761CB266B142A007B98BA /* DebugMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471761CA266B142A007B98BA /* DebugMenuView.swift */; };
 		4725249B253F8B9B00F3FD13 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4725249A253F8B9B00F3FD13 /* LoginView.swift */; };
 		47363AEB26112991007EEF6A /* RecentlyPlayedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47363AEA26112991007EEF6A /* RecentlyPlayedView.swift */; };
 		473F415E2516FF5C009E52C3 /* AlbumTracksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473F415D2516FF5C009E52C3 /* AlbumTracksView.swift */; };
@@ -45,6 +46,7 @@
 		4708130D2515EB6B00794934 /* ImageNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageNames.swift; sourceTree = "<group>"; };
 		4712ECB026696E2900B66884 /* CustomScrollView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomScrollView.swift; sourceTree = "<group>"; };
 		4712ECB326696E2D00B66884 /* OffsetReader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OffsetReader.swift; sourceTree = "<group>"; };
+		471761CA266B142A007B98BA /* DebugMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugMenuView.swift; sourceTree = "<group>"; };
 		4725249A253F8B9B00F3FD13 /* LoginView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		47363AEA26112991007EEF6A /* RecentlyPlayedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentlyPlayedView.swift; sourceTree = "<group>"; };
 		473F415D2516FF5C009E52C3 /* AlbumTracksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumTracksView.swift; sourceTree = "<group>"; };
@@ -120,6 +122,7 @@
 				470812EE2515E4D700794934 /* RootView.swift */,
 				4725249A253F8B9B00F3FD13 /* LoginView.swift */,
 				47B9614F25169BEF0069E441 /* ExamplesListView.swift */,
+				471761CA266B142A007B98BA /* DebugMenuView.swift */,
 				47B9615D2516BA990069E441 /* SearchForTracksView.swift */,
 				47D760C92541738100A08663 /* TrackView.swift */,
 				47363AEA26112991007EEF6A /* RecentlyPlayedView.swift */,
@@ -270,6 +273,7 @@
 				47B9615325169C030069E441 /* PlaylistsListView.swift in Sources */,
 				4725249B253F8B9B00F3FD13 /* LoginView.swift in Sources */,
 				4712ECB126696E2900B66884 /* CustomScrollView.swift in Sources */,
+				471761CB266B142A007B98BA /* DebugMenuView.swift in Sources */,
 				47B961662516EDDE0069E441 /* SavedAlbumsGridView.swift in Sources */,
 				4712ECB426696E2D00B66884 /* OffsetReader.swift in Sources */,
 				47B9616A2516F3DF0069E441 /* AlbumGridItemView.swift in Sources */,
