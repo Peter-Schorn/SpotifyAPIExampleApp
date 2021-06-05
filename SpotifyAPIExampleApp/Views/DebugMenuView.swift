@@ -1,8 +1,5 @@
 import SwiftUI
-import SpotifyWebAPI
-import SpotifyExampleContent
 import Combine
-import Foundation
 
 struct DebugMenuView: View {
     
@@ -12,21 +9,20 @@ struct DebugMenuView: View {
 
     var body: some View {
         List {
+            Button("Make Access Token Expired") {
+                self.spotify.api.authorizationManager.setExpirationDate(
+                    to: Date()
+                )
+            }
             Button("Refresh Access Token") {
                 self.spotify.api.authorizationManager.refreshTokens(
                     onlyIfExpired: false
                 )
                 .sink(receiveCompletion: { completion in
-                    if case .failure(let error) = completion {
-                        print("couldn't refresh tokens: \(error)")
-                    }
+                    print("refresh tokens completion: \(completion)")
+                    
                 })
                 .store(in: &self.cancellables)
-            }
-            Button("Make Access Token Expired") {
-                self.spotify.api.authorizationManager.setExpirationDate(
-                    to: Date()
-                )
             }
             Button("Print Current Account", action: printCurrentAccount)
         }
@@ -77,7 +73,9 @@ struct DebugMenuView: View {
 
 struct DebugMenuView_Previews: PreviewProvider {
     static var previews: some View {
-        DebugMenuView()
-            .environmentObject(Spotify())
+        NavigationView {
+            DebugMenuView()
+        }
+        .environmentObject(Spotify())
     }
 }
