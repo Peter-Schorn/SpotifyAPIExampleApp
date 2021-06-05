@@ -94,7 +94,6 @@ struct RecentlyPlayedView: View {
                 .scaleEffect(0.8)
         }
         .disabled(isLoadingPage)
-        .buttonStyle(/*@START_MENU_TOKEN@*//*@PLACEHOLDER=Button Style@*/DefaultButtonStyle()/*@END_MENU_TOKEN@*/)
         
     }
 
