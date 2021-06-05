@@ -17,14 +17,14 @@ struct RootView: View {
                 .navigationBarItems(trailing: logoutButton)
                 .disabled(!spotify.isAuthorized)
         }
-        // The login view is presented if `Spotify.isAuthorized` == `false.
-        // When the login button is tapped, `Spotify.authorize()` is called.
-        // After the login process successfully completes, `Spotify.isAuthorized`
-        // will be set to `true` and `LoginView` will be dismissed, allowing
-        // the user to interact with the rest of the app.
+        // The login view is presented if `Spotify.isAuthorized` == `false. When
+        // the login button is tapped, `Spotify.authorize()` is called. After
+        // the login process successfully completes, `Spotify.isAuthorized` will
+        // be set to `true` and `LoginView` will be dismissed, allowing the user
+        // to interact with the rest of the app.
         .modifier(LoginView())
-        // Presented if an error occurs during the process of authorizing
-        // with the user's Spotify account.
+        // Presented if an error occurs during the process of authorizing with
+        // the user's Spotify account.
         .alert(item: $alert) { alert in
             Alert(title: alert.title, message: alert.message)
         }
@@ -48,11 +48,11 @@ struct RootView: View {
     }
     
     /**
-     Handle the URL that Spotify redirects to after the user
-     Either authorizes or denies authorization for the application.
-     
-     This method is called by the `onOpenURL(perform:)` view modifier
-     directly above.
+     Handle the URL that Spotify redirects to after the user Either authorizes
+     or denies authorization for the application.
+
+     This method is called by the `onOpenURL(perform:)` view modifier directly
+     above.
      */
     func handleURL(_ url: URL) {
         
@@ -82,10 +82,10 @@ struct RootView: View {
     
     /// Removes the authorization information for the user.
     var logoutButton: some View {
-        // Calling `spotify.api.authorizationManager.deauthorize` will
-        // cause `SpotifyAPI.authorizationManagerDidDeauthorize` to emit
-        // a signal, which will cause
-        // `Spotify.authorizationManagerDidDeauthorize()` to be called.
+        // Calling `spotify.api.authorizationManager.deauthorize` will cause
+        // `SpotifyAPI.authorizationManagerDidDeauthorize` to emit a signal,
+        // which will cause `Spotify.authorizationManagerDidDeauthorize()` to be
+        // called.
         Button(action: spotify.api.authorizationManager.deauthorize, label: {
             Text("Logout")
                 .foregroundColor(.white)

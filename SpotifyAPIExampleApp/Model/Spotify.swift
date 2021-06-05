@@ -6,11 +6,11 @@ import KeychainAccess
 import SpotifyWebAPI
 
 /**
- A helper class that wraps around an instance of `SpotifyAPI`
- and provides convenience methods for authorizing your application.
- 
- Its most important role is to handle changes to the authorization
- information and save them to persistent storage in the keychain.
+ A helper class that wraps around an instance of `SpotifyAPI` and provides
+ convenience methods for authorizing your application.
+
+ Its most important role is to handle changes to the authorization information
+ and save them to persistent storage in the keychain.
  */
 final class Spotify: NSObject, ObservableObject {
     
@@ -105,9 +105,9 @@ final class Spotify: NSObject, ObservableObject {
      yet. For example, you could use this property disable UI elements that
      require the user to be logged in.
 
-     This property is updated by `authorizationManagerDidChange()`, which
-     is called every time the authorization information changes, and
-     `authorizationManagerDidDeauthorize()`, which is called every-time
+     This property is updated by `authorizationManagerDidChange()`, which is
+     called every time the authorization information changes, and
+     `authorizationManagerDidDeauthorize()`, which is called every time
      `SpotifyAPI.authorizationManager.deauthorize()` is called.
      */
     @Published var isAuthorized = false
@@ -188,8 +188,8 @@ final class Spotify: NSObject, ObservableObject {
         // MARK: Important: Subscribe to `authorizationManagerDidChange` BEFORE
         // MARK: retrieving `authorizationManager` from persistent storage
         self.api.authorizationManagerDidChange
-            // We must receive on the main thread because we are
-            // updating the @Published `isAuthorized` property.
+            // We must receive on the main thread because we are updating the
+            // @Published `isAuthorized` property.
             .receive(on: RunLoop.main)
             .sink(receiveValue: authorizationManagerDidChange)
             .store(in: &cancellables)
@@ -221,18 +221,18 @@ final class Spotify: NSObject, ObservableObject {
                 print("found authorization information in keychain")
                 
                 /*
-                 This assignment causes `authorizationManagerDidChange`
-                 to emit a signal, meaning that
-                 `authorizationManagerDidChange()` will be called.
-                 
+                 This assignment causes `authorizationManagerDidChange` to emit
+                 a signal, meaning that `authorizationManagerDidChange()` will
+                 be called.
+
                  Note that if you had subscribed to
-                 `authorizationManagerDidChange` after this line,
-                 then `authorizationManagerDidChange()` would not
-                 have been called and the @Published `isAuthorized` property
-                 would not have been properly updated.
-                 
-                 We do not need to update `isAuthorized` here because it
-                 is already done in `authorizationManagerDidChange()`.
+                 `authorizationManagerDidChange` after this line, then
+                 `authorizationManagerDidChange()` would not have been called
+                 and the @Published `isAuthorized` property would not have been
+                 properly updated.
+
+                 We do not need to update `isAuthorized` here because it is
+                 already done in `authorizationManagerDidChange()`.
                  */
                 self.api.authorizationManager = authorizationManager
 
@@ -277,14 +277,14 @@ final class Spotify: NSObject, ObservableObject {
     }
     
     /**
-     A convenience method that creates the authorization URL and opens it
-     in the browser.
-     
+     A convenience method that creates the authorization URL and opens it in the
+     browser.
+
      You could also configure it to accept parameters for the authorization
      scopes.
-     
-     This is called when the user taps the "Log in with Spotify" button
-     in `LoginView`.
+
+     This is called when the user taps the "Log in with Spotify" button in
+     `LoginView`.
      */
     func authorize() {
         let scopes: SPTScope = [
@@ -305,24 +305,25 @@ final class Spotify: NSObject, ObservableObject {
     
     /**
      Saves changes to `api.authorizationManager` to the keychain.
-     
+
      This method is called every time the authorization information changes. For
-     example, when the access token gets automatically refreshed, (it expires after
-     an hour) this method will be called.
-     
-     It will also be called after the access and refresh tokens are retrieved using
-     `requestAccessAndRefreshTokens(redirectURIWithQuery:state:)`.
-     
-     Read the full documentation for [SpotifyAPI.authorizationManagerDidChange][1].
-     
+     example, when the access token gets automatically refreshed, (it expires
+     after an hour) this method will be called.
+
+     It will also be called after the access and refresh tokens are retrieved
+     using `requestAccessAndRefreshTokens(redirectURIWithQuery:state:)`.
+
+     Read the full documentation for
+     [SpotifyAPI.authorizationManagerDidChange][1].
+
      [1]: https://peter-schorn.github.io/SpotifyAPI/Classes/SpotifyAPI.html#/s:13SpotifyWebAPI0aC0C29authorizationManagerDidChange7Combine18PassthroughSubjectCyyts5NeverOGvp
      */
     func authorizationManagerDidChange() {
         
         withAnimation(LoginView.animation) {
-            // Update the @Published `isAuthorized` property.
-            // When set to `true`, `LoginView` is dismissed, allowing the
-            // user to interact with the rest of the app.
+            // Update the @Published `isAuthorized` property. When set to
+            // `true`, `LoginView` is dismissed, allowing the user to interact
+            // with the rest of the app.
             self.isAuthorized = self.api.authorizationManager.isAuthorized()
         }
         
@@ -372,8 +373,9 @@ final class Spotify: NSObject, ObservableObject {
     }
  
     /**
-     Removes `api.authorizationManager` from the keychain.
-     
+     Removes `api.authorizationManager` from the keychain and sets `currentUser`
+     to `nil`.
+
      This method is called every time `api.authorizationManager.deauthorize` is
      called.
      */
@@ -392,12 +394,12 @@ final class Spotify: NSObject, ObservableObject {
         do {
             /*
              Remove the authorization information from the keychain.
-             
-             If you don't do this, then the authorization information
-             that you just removed from memory by calling
-             `SpotifyAPI.authorizationManager.deauthorize()` will be
-             retrieved again from persistent storage after this app is
-             quit and relaunched.
+
+             If you don't do this, then the authorization information that you
+             just removed from memory by calling
+             `SpotifyAPI.authorizationManager.deauthorize()` will be retrieved
+             again from persistent storage after this app is quit and
+             relaunched.
              */
             try self.keychain.remove(self.authorizationManagerKey)
             print("did remove authorization manager from keychain")
