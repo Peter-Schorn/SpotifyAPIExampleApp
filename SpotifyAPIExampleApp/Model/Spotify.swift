@@ -598,7 +598,7 @@ extension Spotify: SPTSessionManagerDelegate {
              `session.expirationDate` (the expiration date of the access token)
              is set to the date that the access token was retrieved, when it
              should be set to one hour after the access token was retrieved.
-             
+
              If `session.expirationDate` is equal to the current date within a
              tolerance of 5 minutes, then we assume it's wrong and use the
              current date + one hour as the expiration date.

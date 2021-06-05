@@ -6,11 +6,11 @@ import SpotifyExampleContent
 struct RecentlyPlayedView: View {
     
     @EnvironmentObject var spotify: Spotify
-    
+
     @State private var recentlyPlayed: [Track]
 
     @State private var alert: AlertItem? = nil
-    
+
     @State private var nextPageHref: URL? = nil
     @State private var isLoadingPage = false
     @State private var didRequestFirstPage = false
@@ -24,7 +24,7 @@ struct RecentlyPlayedView: View {
     fileprivate init(recentlyPlayed: [Track]) {
         self._recentlyPlayed = State(initialValue: recentlyPlayed)
     }
-    
+
     var body: some View {
         Group {
             if recentlyPlayed.isEmpty {
@@ -130,14 +130,14 @@ extension RecentlyPlayedView {
         guard !self.isLoadingPage else {
             return
         }
-        
+
         self.loadNextPage(href: nextPageHref)
-        
+
     }
     
     /// Loads the next page of results from the provided URL.
     func loadNextPage(href: URL) {
-        
+    
         print("loading next page")
         self.isLoadingPage = true
         
@@ -158,9 +158,9 @@ extension RecentlyPlayedView {
                     self.recentlyPlayed += tracks
                 }
             )
-        
+
     }
-    
+
     /// Loads the first page. Called when this view appears.
     func loadRecentlyPlayed() {
         
@@ -182,7 +182,7 @@ extension RecentlyPlayedView {
                     self.recentlyPlayed = tracks
                 }
             )
-        
+
     }
     
     func receiveRecentlyPlayedCompletion(
@@ -198,7 +198,7 @@ extension RecentlyPlayedView {
         }
         self.isLoadingPage = false
     }
-    
+
 }
 
 struct RecentlyPlayedView_Previews: PreviewProvider {
