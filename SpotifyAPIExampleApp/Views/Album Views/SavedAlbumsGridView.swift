@@ -44,6 +44,11 @@ struct SavedAlbumsGridView: View {
                         .font(.title)
                         .foregroundColor(.secondary)
                 }
+                else {
+                    Text("No Albums")
+                        .font(.title)
+                        .foregroundColor(.secondary)
+                }
             }
             else {
                 ScrollView {
