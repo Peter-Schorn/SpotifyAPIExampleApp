@@ -14,8 +14,8 @@ struct RootView: View {
         NavigationView {
             ExamplesListView()
                 .navigationBarTitle("Spotify Example App")
-                .disabled(!spotify.isAuthorized)
                 .navigationBarItems(trailing: accountsButton)
+                .disabled(!spotify.isAuthorized)
                 .sheet(
                     isPresented: $spotify.accountsListViewIsPresented
                 ) {
