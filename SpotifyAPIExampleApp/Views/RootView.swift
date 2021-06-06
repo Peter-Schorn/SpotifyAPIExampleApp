@@ -56,11 +56,8 @@ struct RootView: View {
      */
     func handleURL(_ url: URL) {
         
-        /*
-         **Always** validate URLs; they offer a potential attack vector into
-         your app. The `appRemoteCallbackURL` has the same scheme, so we could
-         compare it against that as well.
-         */
+        // **Always** validate URLs; they offer a potential attack vector into
+        // your app.
         guard url.scheme == self.spotify.appRemoteCallbackURL.scheme else {
             print("not handling URL: unexpected scheme: '\(url)'")
             self.alert = AlertItem(
