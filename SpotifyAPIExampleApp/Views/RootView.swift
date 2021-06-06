@@ -6,10 +6,10 @@ struct RootView: View {
     
     @EnvironmentObject var spotify: Spotify
 
-    @State private var alert: AlertItem? = nil
-    
     @State private var cancellables: Set<AnyCancellable> = []
 
+    @State private var alert: AlertItem? = nil
+    
     var body: some View {
         NavigationView {
             ExamplesListView()
