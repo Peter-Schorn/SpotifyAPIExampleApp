@@ -5,8 +5,8 @@ struct DebugMenuView: View {
     
     @EnvironmentObject var spotify: Spotify
     
-    @State var cancellables: Set<AnyCancellable> = []
-    
+    @State private var cancellables: Set<AnyCancellable> = []
+
     var body: some View {
         List {
             Button("Make Access Token Expired") {
