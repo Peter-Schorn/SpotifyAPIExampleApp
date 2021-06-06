@@ -33,6 +33,7 @@ struct ExamplesListView: View {
             
         }
         .listStyle(PlainListStyle())
+        
     }
 }
 

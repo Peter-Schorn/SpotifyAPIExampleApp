@@ -44,14 +44,19 @@ struct SavedAlbumsGridView: View {
                         .font(.title)
                         .foregroundColor(.secondary)
                 }
+                else {
+                    Text("No Albums")
+                        .font(.title)
+                        .foregroundColor(.secondary)
+                }
             }
             else {
                 ScrollView {
                     LazyVGrid(columns: columns) {
-                        // WARNING: do not use `\.self` for the id.
-                        // This is extremely expensive and causes lag when
-                        // scrolling because the hash of the entire album
-                        // instance must be calculated.
+                        // WARNING: do not use `\.self` for the id. This is
+                        // extremely expensive and causes lag when scrolling
+                        // because the hash of the entire album instance, which
+                        // is very large, must be calculated.
                         ForEach(savedAlbums, id: \.id) { album in
                             AlbumGridItemView(album: album)
                         }
