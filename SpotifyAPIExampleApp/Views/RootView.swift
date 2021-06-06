@@ -46,6 +46,10 @@ struct RootView: View {
         // your app.
         guard url.scheme == self.spotify.loginCallbackURL.scheme else {
             print("not handling URL: unexpected scheme: '\(url)'")
+            self.alert = AlertItem(
+                title: "Cannot Handle Redirect",
+                message: "Unexpected URL"
+            )
             return
         }
         
