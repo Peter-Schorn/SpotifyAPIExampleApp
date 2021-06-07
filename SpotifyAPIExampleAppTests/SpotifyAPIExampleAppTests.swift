@@ -21,6 +21,10 @@ class SpotifyAPIExampleAppTests: XCTestCase {
     var isIgnoringFailures = false
 
     override class func setUp() {
+        
+        setenv("CLIENT_ID", spotifyCredentials.clientId, 1)
+        setenv("CLIENT_SECRET", spotifyCredentials.clientSecret, 1)
+
         Self.spotifyAPI.authorizationManager.authorizeAndWaitForTokens()
         print("\n--- DID AUTHORIZE SPOTIFY API ---\n")
         do {
