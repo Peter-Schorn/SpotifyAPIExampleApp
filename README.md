@@ -15,7 +15,8 @@ spotify-api-example-app://login-callback
 
 Next, set the `CLIENT_ID` and `CLIENT_SECRET` [environment variables][env] in the scheme:
 
-![Screen Shot 2021-06-05 at 9.59.51 PM](/Users/pschorn/Desktop/Screen Shot 2021-06-05 at 9.59.51 PM.png)
+![Screen Shot 2021-06-10 at 8 36 45 PM](https://user-images.githubusercontent.com/58197311/121617977-9bba1480-ca2b-11eb-8e9e-f1bfdc2563af.png)
+
 
 To expirement with this app, add your own views to the `List` in [`ExamplesListView.swift`][examples list].  
 
