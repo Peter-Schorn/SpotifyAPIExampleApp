@@ -22,14 +22,6 @@ final class Spotify: NSObject, ObservableObject {
         fatalError("Could not find 'CLIENT_ID' in environment variables")
     }()
     
-    private static let clientSecret: String = {
-        if let clientSecret = ProcessInfo.processInfo
-                .environment["CLIENT_SECRET"] {
-            return clientSecret
-        }
-        fatalError("Could not find 'CLIENT_SECRET' in environment variables")
-    }()
-    
     private static let tokensURL: URL = {
         if let tokensURLString = ProcessInfo.processInfo
                 .environment["TOKENS_URL"] {

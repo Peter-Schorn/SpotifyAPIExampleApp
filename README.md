@@ -17,9 +17,9 @@ Then, add the bundle id of this app to the "Bundle IDs" section at the bottom of
 
 This app requires a custom backend server that retrieves the authorization information on behalf of your app. It must have an endpoint that swaps the authorization code for the access and refresh tokens (`TOKENS_URL`) and an endpoint that uses the refresh token to get a new access token (`TOKENS_REFRESH_URL`), as described in [Token Swap and Refresh][token swap]. You can use the `/authorization-code-flow/retrieve-tokens` and ` /authorization-code-flow/refresh-tokens` endpoints of [SpotifyAPIServer][spotify api server], respectively, for this functionality. This server can be deployed to heroku in one click.
 
-Next, set the `CLIENT_ID` , `CLIENT_SECRET`, `TOKENS_URL`, and `TOKENS_REFRESH_URL` [environment variables][env] in the scheme:
+Next, set the `CLIENT_ID` , `TOKENS_URL`, and `TOKENS_REFRESH_URL` [environment variables][env] in the scheme:
 
-![Screen Shot 2021-06-10 at 8 56 55 PM](https://user-images.githubusercontent.com/58197311/121619550-68c55000-ca2e-11eb-801b-ed695a0df97c.png)
+![Screen Shot 2021-06-10 at 9 18 52 PM](https://user-images.githubusercontent.com/58197311/121621267-77f9cd00-ca31-11eb-9140-b911ab048da1.png)
 
 
 To expirement with this app, add your own views to the `List` in [`ExamplesListView.swift`][examples list].  

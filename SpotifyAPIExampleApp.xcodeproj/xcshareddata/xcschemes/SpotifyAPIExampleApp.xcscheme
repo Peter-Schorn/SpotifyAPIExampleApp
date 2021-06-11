@@ -58,11 +58,6 @@
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
-            key = "CLIENT_SECRET"
-            value = "your client secret"
-            isEnabled = "YES">
-         </EnvironmentVariable>
-         <EnvironmentVariable
             key = "TOKENS_URL"
             value = "token swap URL"
             isEnabled = "YES">
