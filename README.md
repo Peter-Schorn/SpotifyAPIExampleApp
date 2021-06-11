@@ -4,8 +4,6 @@ An Example App that demonstrates the usage of [SpotifyAPI](https://github.com/Pe
 
 Requires Xcode 12 and iOS 14.
 
-**The following was written for the main branch**; differences between it and the other branches may not be reflected here.
-
 ## Setup
 
 To compile and run this application, go to https://developer.spotify.com/dashboard/login and create an app. Take note of the client id and client secret. Then click on "edit settings" and add the following redirect URI:
