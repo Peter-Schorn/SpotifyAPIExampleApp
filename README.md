@@ -10,41 +10,21 @@ Requires Xcode 12 and iOS 14.
 
 To compile and run this application, go to https://developer.spotify.com/dashboard/login and create an app. Take note of the client id and client secret. Then click on "edit settings" and add the following redirect URI:
 ```
-spotify-api-example-app://login-callback
+peter-schorn-spotify-sdk-app://app-remote-callback
 ```
 
-Next, set the `CLIENT_ID` and `CLIENT_SECRET` [environment variables][env] in the scheme:
+Then, add the bundle id of this app to the "Bundle IDs" section at the bottom of the settings (your bundle id may be different):
 
-![Screen Shot 2021-06-10 at 8 36 45 PM](https://user-images.githubusercontent.com/58197311/121617977-9bba1480-ca2b-11eb-8e9e-f1bfdc2563af.png)
+![screenshot](https://user-images.githubusercontent.com/58197311/121619018-74fcdd80-ca2d-11eb-84bf-d9de290caaec.jpg)
+
+This app requires a custom backend server that retrieves the authorization information on behalf of your app. It must have an endpoint that swaps the authorization code for the access and refresh tokens (`TOKENS_URL`) and an endpoint that uses the refresh token to get a new access token (`TOKENS_REFRESH_URL`), as described in [Token Swap and Refresh][token swap]. You can use the `/authorization-code-flow/retrieve-tokens` and ` /authorization-code-flow/refresh-tokens` endpoints of [SpotifyAPIServer][spotify api server], respectively, for this functionality. This server can be deployed to heroku in one click.
+
+Next, set the `CLIENT_ID` , `CLIENT_SECRET`, `TOKENS_URL`, and `TOKENS_REFRESH_URL` [environment variables][env] in the scheme:
+
+![Screen Shot 2021-06-10 at 8 56 55 PM](https://user-images.githubusercontent.com/58197311/121619550-68c55000-ca2e-11eb-801b-ed695a0df97c.png)
 
 
 To expirement with this app, add your own views to the `List` in [`ExamplesListView.swift`][examples list].  
-
-## How the Authorization Process Works
-
-**This app uses the [Authorization Code Flow][auth code flow] to authorize with the Spotify web API.**
-
-The first step in setting up the authorization process for an app like this is to [register a URL scheme for your app][url scheme]. To do this, navigate to the Info tab of the target inside your project and add a URL scheme to the URL Types section. For this app, the scheme `spotify-api-example-app` is used.
-
-<img src="https://i.ibb.co/qdBR6C8/Screen-Shot-2020-10-20-at-3-38-06-AM.png" alt="Screen-Shot-2020-10-20-at-3-38-06-AM" border="0">
-
-When another app, such as the web broswer, opens a URL containing this scheme (e.g., `spotify-api-example-app://login-callback`), the URL is delivered to this app to handle it. This is how your app receives redirects from Spotify.
-
-The next step is to create the authorization URL using [`AuthorizationCodeFlowManager.makeAuthorizationURL(redirectURI:showDialog:state:scopes:)`][make auth URL] and then open it in a browser or web view so that the user can login and grant your app access to their Spotify account. In this app, this step is performed by [`Spotify.authorize()`][authorize], which is called when the user [taps the login button][login button] in [`LoginView.swift`][login view]:
-
-<a href="https://ibb.co/Bc7ZYzV"><img src="https://i.ibb.co/17pq4vf/IMG-67-DE87-F2410-C-1.jpg" alt="IMG-67-DE87-F2410-C-1" border="0"></a>
-
-When the user presses "agree" or "cancel", the system redirects back to this app and calls the [`onOpenURL(perform:)`][on open URL] view modifier in [`Rootview.swift`][root view], which calls through to the `handleURL(_:)` method directly below. After validating the URL scheme, this method requests the access and refresh tokens using [`AuthorizationCodeFlowManager.requestAccessAndRefreshTokens(redirectURIWithQuery:state:)`][request tokens], the final step in the authorization process.
-
-When the access and refresh tokens are successfully retrieved, the [`SpotifyAPI.authorizationManagerDidChange`][auth did change publisher] PassthroughSubject emits a signal. This subject is subscribed to in the [init method of `Spotify`][spotify init subscribe]. The subscription calls [`Spotify.authorizationManagerDidChange()`][auth did change method] everytime this subject emits. This method saves the authorization information to persistent storage in the keychain and sets the [`@Published var isAuthorized`][is authorized] property of [`Spotify`][spotify file] to `true`, which dismisses [`LoginView`][login view file] and allows the user to interact with the rest of the app.
-
-A subscription is also made to [`SpotifyAPI.authorizationManagerDidDeauthorize`][did deauth publisher], which emits every time [`AuthorizationCodeFlowManagerBase.deauthorize()`][auth base deauth] is called.
-
-Every time the authorization information changes (e.g., when the access token, which expires after an hour, gets refreshed), [`Spotify.authorizationManagerDidChange()`][auth did change method] is called so that the authorization information in the keychain can be updated.  When the user taps the [`logoutButton`][logout button] in [`Rootview.swift`][root view], [`AuthorizationCodeFlowManagerBase.deauthorize()`][auth base deauth] is called, which causes [`SpotifyAPI.authorizationManagerDidDeauthorize`][did deauth publisher] to emit a signal, which, in turn, causes [`Spotify.authorizationManagerDidDeauthorize()`][did deauth method] to be called.
-
-See the wiki page [Saving authorization information to persistent storage][persistent storage wiki].
-
-The next time the app is quit and relaunched, the authorization information will be retrieved from the keychain in the [init method of `Spotify`][spotify init keychain], which prevents the user from having to login again.
 
 [env]: https://help.apple.com/xcode/mac/11.4/index.html?localePath=en.lproj#/dev3ec8a1cb4
 [examples list]:  https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/main/SpotifyAPIExampleApp/Views/ExamplesListView.swift
@@ -71,4 +51,6 @@ The next time the app is quit and relaunched, the authorization information will
 
 [login view file]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/main/SpotifyAPIExampleApp/Views/LoginView.swift
 [spotify init keychain]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/8d41edb66c43df27b0c675526f531116e3df8fcc/SpotifyAPIExampleApp/Model/Spotify.swift#L114
+[token swap]: https://developer.spotify.com/documentation/ios/guides/token-swap-and-refresh/
+[spotify api server]: https://github.com/Peter-Schorn/SpotifyAPIServer
 
