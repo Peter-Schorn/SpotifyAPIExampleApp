@@ -17,6 +17,7 @@
 		4712ECB126696E2900B66884 /* CustomScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4712ECB026696E2900B66884 /* CustomScrollView.swift */; };
 		4712ECB426696E2D00B66884 /* OffsetReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4712ECB326696E2D00B66884 /* OffsetReader.swift */; };
 		471761CB266B142A007B98BA /* DebugMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 471761CA266B142A007B98BA /* DebugMenuView.swift */; };
+		472371732690518C002066AB /* CombineExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 472371722690518C002066AB /* CombineExtensions.swift */; };
 		4725249B253F8B9B00F3FD13 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4725249A253F8B9B00F3FD13 /* LoginView.swift */; };
 		47363AEB26112991007EEF6A /* RecentlyPlayedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47363AEA26112991007EEF6A /* RecentlyPlayedView.swift */; };
 		473F415E2516FF5C009E52C3 /* AlbumTracksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 473F415D2516FF5C009E52C3 /* AlbumTracksView.swift */; };
@@ -47,6 +48,7 @@
 		4712ECB026696E2900B66884 /* CustomScrollView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomScrollView.swift; sourceTree = "<group>"; };
 		4712ECB326696E2D00B66884 /* OffsetReader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OffsetReader.swift; sourceTree = "<group>"; };
 		471761CA266B142A007B98BA /* DebugMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugMenuView.swift; sourceTree = "<group>"; };
+		472371722690518C002066AB /* CombineExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CombineExtensions.swift; sourceTree = "<group>"; };
 		4725249A253F8B9B00F3FD13 /* LoginView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		47363AEA26112991007EEF6A /* RecentlyPlayedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentlyPlayedView.swift; sourceTree = "<group>"; };
 		473F415D2516FF5C009E52C3 /* AlbumTracksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumTracksView.swift; sourceTree = "<group>"; };
@@ -140,6 +142,7 @@
 				4708130D2515EB6B00794934 /* ImageNames.swift */,
 				47AAFC4225A0098900DC1A02 /* AlertItem.swift */,
 				47C332A6251688D9009ED5CA /* MiscellaneousUtilities.swift */,
+				472371722690518C002066AB /* CombineExtensions.swift */,
 				47C5818B255B1858007EE0CA /* SpotifyAPIExtensions.swift */,
 			);
 			path = "Project Utilities";
@@ -267,6 +270,7 @@
 				470812EF2515E4D700794934 /* RootView.swift in Sources */,
 				47AAFC4025A003E800DC1A02 /* PlaylistDeduplicator.swift in Sources */,
 				47AAFC4325A0098900DC1A02 /* AlertItem.swift in Sources */,
+				472371732690518C002066AB /* CombineExtensions.swift in Sources */,
 				47C332A7251688D9009ED5CA /* MiscellaneousUtilities.swift in Sources */,
 				4708130A2515EA2800794934 /* Spotify.swift in Sources */,
 				47D760CA2541738100A08663 /* TrackView.swift in Sources */,
@@ -338,7 +342,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(PLATFORM_DIR)/Developer/usr/lib",
 					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
@@ -400,7 +404,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(PLATFORM_DIR)/Developer/usr/lib",
 					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
@@ -430,7 +434,7 @@
 					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = SpotifyAPIExampleApp/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -456,7 +460,7 @@
 					"$(PROJECT_DIR)",
 				);
 				INFOPLIST_FILE = SpotifyAPIExampleApp/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

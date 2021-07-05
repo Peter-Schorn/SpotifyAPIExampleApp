@@ -30,7 +30,7 @@ struct PlaylistCellView: View {
     }
     
     var body: some View {
-        Button(action: playPlaylist, label: {
+        Button(action: playPlaylist) {
             HStack {
                 image
                     .resizable()
@@ -58,7 +58,7 @@ struct PlaylistCellView: View {
                     .disabled(playlistDeduplicator.isDeduplicating)
                 }
             }
-        })
+        }
         .buttonStyle(PlainButtonStyle())
         .alert(item: $alert) { alert in
             Alert(title: alert.title, message: alert.message)

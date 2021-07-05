@@ -59,21 +59,33 @@ struct PlaylistsListView: View {
                         PlaylistCellView(spotify: spotify, playlist: playlist)
                     }
                 }
+                .refreshable(action: retrievePlaylists)
                 .listStyle(PlainListStyle())
                 .accessibility(identifier: "Playlists List View")
             }
         }
         .navigationTitle("Playlists")
-        .navigationBarItems(trailing: refreshButton)
+        .modify { view in
+            if #available(iOS 15, *) {
+                view
+            } else {
+                view.navigationBarItems(trailing: refreshButton)
+            }
+        
+        }
         .alert(item: $alert) { alert in
             Alert(title: alert.title, message: alert.message)
         }
-        .onAppear(perform: retrievePlaylists)
+        .task(retrievePlaylists)
         
     }
     
     var refreshButton: some View {
-        Button(action: retrievePlaylists) {
+        Button(action: {
+            async {
+                await self.retrievePlaylists()
+            }
+        }) {
             Image(systemName: "arrow.clockwise")
                 .font(.title)
                 .scaleEffect(0.8)
@@ -82,40 +94,79 @@ struct PlaylistsListView: View {
         
     }
     
-    func retrievePlaylists() {
+    func retrievePlaylists() async {
         
         // Don't try to load any playlists if we're in preview mode.
         if ProcessInfo.processInfo.isPreviewing { return }
         
         self.isLoadingPlaylists = true
-        self.playlists = []
-        spotify.api.currentUserPlaylists(limit: 50)
-            // Gets all pages of playlists.
-            .extendPages(spotify.api)
-            .receive(on: RunLoop.main)
-            .sink(
-                receiveCompletion: { completion in
-                    self.isLoadingPlaylists = false
-                    switch completion {
-                        case .finished:
-                            self.couldntLoadPlaylists = false
-                        case .failure(let error):
-                            self.couldntLoadPlaylists = true
-                            self.alert = AlertItem(
-                                title: "Couldn't Retrieve Playlists",
-                                message: error.localizedDescription
-                            )
-                    }
-                },
-                // We will receive a value for each page of playlists. You could
-                // use Combine's `collect()` operator to wait until all of the
-                // pages have been retrieved.
-                receiveValue: { playlistsPage in
-                    let playlists = playlistsPage.items
-                    self.playlists.append(contentsOf: playlists)
-                }
+        
+        do {
+            let playlists = try await spotify.api
+                .currentUserPlaylists(limit: 50)
+                .extendPages(spotify.api)
+                .receive(on: RunLoop.main)
+                .reduce([], { playlists, playlistsPage in
+                    return playlists + playlistsPage.items
+                })
+                .awaitSingleValue() ?? []
+                
+            
+            self.couldntLoadPlaylists = false
+            self.playlists = playlists
+            
+        } catch {
+            self.couldntLoadPlaylists = true
+            self.alert = AlertItem(
+                title: "Couldn't Retrieve Playlists",
+                message: error.localizedDescription
             )
-            .store(in: &cancellables)
+        }
+        
+        self.isLoadingPlaylists = false
+            
+    }
+    
+    func retrievePlaylistsOld() async {
+        
+        // Don't try to load any playlists if we're in preview mode.
+        if ProcessInfo.processInfo.isPreviewing { return }
+        
+        return await withCheckedContinuation { continuation in
+            
+            self.isLoadingPlaylists = true
+            spotify.api.currentUserPlaylists(limit: 50)
+                // Gets all pages of playlists.
+                .extendPages(spotify.api)
+                .reduce([]) { playlists, playlistsPage in
+                    return playlists + playlistsPage.items
+                }
+                .receive(on: RunLoop.main)
+                .sink(
+                    receiveCompletion: { completion in
+                        self.isLoadingPlaylists = false
+                        switch completion {
+                            case .finished:
+                                self.couldntLoadPlaylists = false
+                            case .failure(let error):
+                                self.couldntLoadPlaylists = true
+                                self.alert = AlertItem(
+                                    title: "Couldn't Retrieve Playlists",
+                                    message: error.localizedDescription
+                                )
+                        }
+                        continuation.resume()
+                    },
+                    // We will receive a value for each page of playlists. You
+                    // could use Combine's `collect()` operator to wait until
+                    // all of the pages have been retrieved.
+                    receiveValue: { playlists in
+                        self.playlists = playlists
+                    }
+                )
+                .store(in: &cancellables)
+            
+        }  // withCheckedContinuation
 
     }
     

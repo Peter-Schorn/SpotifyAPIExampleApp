@@ -8,6 +8,12 @@ extension View {
     func eraseToAnyView() -> AnyView {
         return AnyView(self)
     }
+    
+    func modify<Content: View>(
+        @ViewBuilder _ modify: (Self) -> Content
+    ) -> some View {
+        return modify(self)
+    }
 
 }
 
