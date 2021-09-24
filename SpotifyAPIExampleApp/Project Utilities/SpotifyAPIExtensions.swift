@@ -131,3 +131,20 @@ extension Episode {
     
 
 }
+
+private func test(spotify: Spotify) async throws {
+    
+    let isrc = ""
+    
+    let searchResults = try await spotify.api.search(
+        query: "isrc:\(isrc)",
+        categories: [.track],
+        market: "from_token",
+        limit: 1
+    )
+        .awaitSingleValue()
+    
+    let trackItems = searchResults?.tracks?.items
+    
+
+}

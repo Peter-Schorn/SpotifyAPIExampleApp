@@ -3,67 +3,66 @@ import Combine
 
 extension Publisher {
     
-    func awaitValues() async throws -> [Output] {
-
-        return try await withCheckedThrowingContinuation { continuation in
-
-            let queue = DispatchQueue(
-                label: "\(Self.self).waitForValues"
-            )
-            
-            var output: [Output] = []
-
-            var cancellable: AnyCancellable? = self
-                .receive(on: queue)
-                .sink(
-                    receiveCompletion: { completion in
-                        // prevent the cancellable from being deallocated
-                        cancellable = nil
-                        _ = cancellable
-                        switch completion {
-                            case .finished:
-                                continuation.resume(returning: output)
-                            case .failure(let error):
-                                continuation.resume(throwing: error)
-                        }
-                    },
-                    receiveValue: { value in
-                        output.append(value)
-                    }
-                )
-            
-
-        }
-    }
-    
     func awaitSingleValue() async throws -> Output? {
         
         return try await withCheckedThrowingContinuation { continuation in
             
-            var output: Output? = nil
+            var didSendValue = false
             
-            var cancellable: AnyCancellable? = self
+            var cancellable: AnyCancellable? = nil
+            
+            cancellable = self
                 .sink(
                     receiveCompletion: { completion in
-                        // prevent the cancellable from being deallocated
-                        cancellable = nil
-                        _ = cancellable
                         switch completion {
                             case .finished:
-                                continuation.resume(returning: output)
+                                if !didSendValue {
+                                    continuation.resume(returning: nil)
+                                }
                             case .failure(let error):
                                 continuation.resume(throwing: error)
                         }
                     },
                     receiveValue: { value in
-                        output = value
+                        // prevent any more values from being received
+                        cancellable?.cancel()
+                        
+                        if !didSendValue {
+                            didSendValue = true
+                            continuation.resume(returning: value)
+                        }
+                        
                     }
                 )
+            
             
             
         }
     }
     
+    func awaitValues() -> AsyncThrowingStream<Output, Error> {
+        return AsyncThrowingStream { continuation in
+            
+            let cancellable = self
+                .sink(
+                    receiveCompletion: { completion in
+                        switch completion {
+                            case .finished:
+                                continuation.finish()
+                            case .failure(let error):
+                                continuation.finish(throwing: error)
+                        }
+                    },
+                    receiveValue: { value in
+                        continuation.yield(value)
+                    }
+                )
+            
+            continuation.onTermination = { @Sendable termination in
+                cancellable.cancel()
+            }
+            
+        }
+    }
     
-
 }

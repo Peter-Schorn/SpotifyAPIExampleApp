@@ -82,7 +82,7 @@ struct PlaylistsListView: View {
     
     var refreshButton: some View {
         Button(action: {
-            async {
+            Task {
                 await self.retrievePlaylists()
             }
         }) {
@@ -100,21 +100,31 @@ struct PlaylistsListView: View {
         if ProcessInfo.processInfo.isPreviewing { return }
         
         self.isLoadingPlaylists = true
-        
+
         do {
-            let playlists = try await spotify.api
+//            let playlists = try await spotify.api
+//                .currentUserPlaylists(limit: 50)
+//                .extendPages(spotify.api)
+//                .receive(on: RunLoop.main)
+//                .reduce([], { playlists, playlistsPage in
+//                    return playlists + playlistsPage.items
+//                })
+//                .awaitSingleValue() ?? []
+//
+//
+//            self.couldntLoadPlaylists = false
+//            self.playlists = playlists
+            
+            let publisher = spotify.api
                 .currentUserPlaylists(limit: 50)
                 .extendPages(spotify.api)
-                .receive(on: RunLoop.main)
-                .reduce([], { playlists, playlistsPage in
-                    return playlists + playlistsPage.items
-                })
-                .awaitSingleValue() ?? []
+                .map(\.items)
+            
+            for try await playlists in publisher.awaitValues() {
                 
+            }
             
-            self.couldntLoadPlaylists = false
-            self.playlists = playlists
-            
+
         } catch {
             self.couldntLoadPlaylists = true
             self.alert = AlertItem(
