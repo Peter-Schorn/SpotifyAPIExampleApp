@@ -123,7 +123,9 @@ struct RootView: View {
             Text("Logout")
                 .foregroundColor(.white)
                 .padding(7)
-                .background(Color(#colorLiteral(red: 0.3923448698, green: 0.7200681584, blue: 0.19703095, alpha: 1)))
+                .background(
+                    Color(red: 0.392, green: 0.720, blue: 0.197)
+                )
                 .cornerRadius(10)
                 .shadow(radius: 3)
             

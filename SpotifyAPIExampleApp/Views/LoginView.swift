@@ -33,7 +33,10 @@ struct LoginView: ViewModifier {
     
     let backgroundGradient = LinearGradient(
         gradient: Gradient(
-            colors: [Color(#colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)), Color(#colorLiteral(red: 0.1903857588, green: 0.8321116255, blue: 0.4365008013, alpha: 1))]
+            colors: [
+                Color(red: 0.467, green: 0.765, blue: 0.267),
+                Color(red: 0.190, green: 0.832, blue: 0.437)
+            ]
         ),
         startPoint: .leading, endPoint: .trailing
     )
