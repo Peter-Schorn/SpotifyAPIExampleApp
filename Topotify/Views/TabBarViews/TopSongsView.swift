@@ -15,7 +15,7 @@ struct TopSongsView: View {
     
     @EnvironmentObject var spotify: Spotify
 
-    @State private var topSongs: [Track]
+    @State private var topSongs = [Track]()
     
     @State private var showSettingsView = false
 

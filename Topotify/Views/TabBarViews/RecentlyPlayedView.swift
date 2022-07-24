@@ -7,7 +7,7 @@ struct RecentlyPlayedView: View {
     
     @EnvironmentObject var spotify: Spotify
 
-    @State private var recentlyPlayed: [Track]
+    @State private var recentlyPlayed = [Track]()
 
     @State private var alert: AlertItem? = nil
 
@@ -51,7 +51,7 @@ struct RecentlyPlayedView: View {
                             id: \.offset
                         ) { item in
 
-                            TrackView(track: item.element)
+                            TrackView(track: item.element, offset: item.offset)
                                 .onAppear {
                                     self.loadNextPageIfNeeded(offset: item.offset)
                                 }
