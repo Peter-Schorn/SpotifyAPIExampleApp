@@ -159,13 +159,13 @@ final class Spotify: ObservableObject {
      */
     func authorize() {
         
-        let url = api.authorizationManager.makeAuthorizationURL(
+        let url = self.api.authorizationManager.makeAuthorizationURL(
             redirectURI: self.loginCallbackURL,
             showDialog: true,
             // This same value **MUST** be provided for the state parameter of
             // `authorizationManager.requestAccessAndRefreshTokens(redirectURIWithQuery:state:)`.
             // Otherwise, an error will be thrown.
-            state: authorizationState,
+            state: self.authorizationState,
             scopes: [
                 .userReadPlaybackState,
                 .userModifyPlaybackState,
@@ -222,7 +222,7 @@ final class Spotify: ObservableObject {
             )
             
             // Save the data to the keychain.
-            keychain[data: self.authorizationManagerKey] = authManagerData
+            self.keychain[data: self.authorizationManagerKey] = authManagerData
             print("did save authorization manager to keychain")
             
         } catch {
@@ -259,7 +259,7 @@ final class Spotify: ObservableObject {
              again from persistent storage after this app is quit and
              relaunched.
              */
-            try keychain.remove(self.authorizationManagerKey)
+            try self.keychain.remove(self.authorizationManagerKey)
             print("did remove authorization manager from keychain")
             
         } catch {
