@@ -15,7 +15,7 @@ struct TopArtistsView: View {
     
     @EnvironmentObject var spotify: Spotify
 
-    @State private var topArtists = [Artist]()
+    @State private var topArtists: [Artist] = []
 
     @State private var alert: AlertItem? = nil
 
