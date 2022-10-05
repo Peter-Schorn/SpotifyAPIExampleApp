@@ -12,7 +12,7 @@ extension SpotifyAPI where AuthorizationManager: SpotifyScopeAuthorizationManage
 
      - Parameter playbackRequest: A request to play content.
 
-     [1]: https://github.com/Peter-Schorn/SpotifyAPI/wiki/Using-the-Player-Endpoints
+     [1]: https://peter-schorn.github.io/SpotifyAPI/documentation/spotifywebapi/using-the-player-endpoints
      */
     func getAvailableDeviceThenPlay(
         _ playbackRequest: PlaybackRequest
