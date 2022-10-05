@@ -308,7 +308,7 @@ final class Spotify: NSObject, ObservableObject {
      Read the full documentation for
      [SpotifyAPI.authorizationManagerDidChange][1].
 
-     [1]: https://spotify-api-docs.herokuapp.com/documentation/spotifywebapi/spotifyapi/authorizationmanagerdidchange
+     [1]: https://peter-schorn.github.io/SpotifyAPI/documentation/spotifywebapi/spotifyapi/authorizationmanagerdidchange
      */
     func authorizationManagerDidChange() {
         
