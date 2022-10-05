@@ -28,14 +28,14 @@ To expirement with this app, add your own views to the `List` in [`ExamplesListV
 [examples list]:  https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/main/SpotifyAPIExampleApp/Views/ExamplesListView.swift
 [auth code flow]: https://github.com/Peter-Schorn/SpotifyAPI#authorizing-with-the-authorization-code-flow
 [url scheme]: https://developer.apple.com/documentation/xcode/allowing_apps_and_websites_to_link_to_your_content/defining_a_custom_url_scheme_for_your_app
-[make auth URL]: https://peter-schorn.github.io/SpotifyAPI/Classes/AuthorizationCodeFlowBackendManager.html#/s:13SpotifyWebAPI35AuthorizationCodeFlowBackendManagerC04makeD3URL11redirectURI10showDialog5state6scopes10Foundation0J0VSgAK_SbSSSgShyAA5ScopeOGtF
+[make auth URL]: https://spotify-api-docs.herokuapp.com/documentation/spotifywebapi/authorizationcodeflowbackendmanager/makeauthorizationurl(redirecturi:showdialog:state:scopes:)
 [authorize]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/8d41edb66c43df27b0c675526f531116e3df8fcc/SpotifyAPIExampleApp/Model/Spotify.swift#L160-L185
 [login button]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/8d41edb66c43df27b0c675526f531116e3df8fcc/SpotifyAPIExampleApp/Views/LoginView.swift#L89
 [login view]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/main/SpotifyAPIExampleApp/Views/LoginView.swift
 [on open URL]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/8d41edb66c43df27b0c675526f531116e3df8fcc/SpotifyAPIExampleApp/Views/RootView.swift#L32
 [root view]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/main/SpotifyAPIExampleApp/Views/RootView.swift
-[request tokens]: https://peter-schorn.github.io/SpotifyAPI/Classes/AuthorizationCodeFlowBackendManager.html#/s:13SpotifyWebAPI35AuthorizationCodeFlowBackendManagerC29requestAccessAndRefreshTokens20redirectURIWithQuery5state7Combine12AnyPublisherVyyts5Error_pG10Foundation3URLV_SSSgtF
-[auth did change publisher]: https://peter-schorn.github.io/SpotifyAPI/Classes/SpotifyAPI.html#/s:13SpotifyWebAPI0aC0C29authorizationManagerDidChange7Combine18PassthroughSubjectCyyts5NeverOGvp
+[request tokens]: https://spotify-api-docs.herokuapp.com/documentation/spotifywebapi/authorizationcodeflowbackendmanager/requestaccessandrefreshtokens(redirecturiwithquery:state:)
+[auth did change publisher]: https://spotify-api-docs.herokuapp.com/documentation/spotifywebapi/spotifyapi/authorizationmanagerdidchange
 [spotify init subscribe]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/8d41edb66c43df27b0c675526f531116e3df8fcc/SpotifyAPIExampleApp/Model/Spotify.swift#L97-L104
 [auth did change method]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/8d41edb66c43df27b0c675526f531116e3df8fcc/SpotifyAPIExampleApp/Model/Spotify.swift#L187-L235
 [is authorized]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/8d41edb66c43df27b0c675526f531116e3df8fcc/SpotifyAPIExampleApp/Model/Spotify.swift#L67
@@ -44,8 +44,9 @@ To expirement with this app, add your own views to the `List` in [`ExamplesListV
 [spotify file]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/main/SpotifyAPIExampleApp/Model/Spotify.swift
 [did deauth method]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/8d41edb66c43df27b0c675526f531116e3df8fcc/SpotifyAPIExampleApp/Model/Spotify.swift#L237-L271
 [logout button]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/8d41edb66c43df27b0c675526f531116e3df8fcc/SpotifyAPIExampleApp/Views/RootView.swift#L116-L131
-[did deauth publisher]: https://peter-schorn.github.io/SpotifyAPI/Classes/SpotifyAPI.html#/s:13SpotifyWebAPI0aC0C34authorizationManagerDidDeauthorize7Combine18PassthroughSubjectCyyts5NeverOGvp
-[auth base deauth]: https://peter-schorn.github.io/SpotifyAPI/Classes/AuthorizationCodeFlowManagerBase.html#/s:13SpotifyWebAPI32AuthorizationCodeFlowManagerBaseC11deauthorizeyyF
+[did deauth publisher]: https://spotify-api-docs.herokuapp.com/documentation/spotifywebapi/spotifyapi/authorizationmanagerdiddeauthorize
+
+[auth base deauth]: https://spotify-api-docs.herokuapp.com/documentation/spotifywebapi/authorizationcodeflowmanagerbase/deauthorize()
 
 [login view file]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/main/SpotifyAPIExampleApp/Views/LoginView.swift
 [spotify init keychain]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/8d41edb66c43df27b0c675526f531116e3df8fcc/SpotifyAPIExampleApp/Model/Spotify.swift#L114
