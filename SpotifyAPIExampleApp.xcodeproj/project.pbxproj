@@ -665,7 +665,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Peter-Schorn/SpotifyAPI.git";
 			requirement = {
-				branch = SpotifySDK;
+				branch = master;
 				kind = branch;
 			};
 		};
