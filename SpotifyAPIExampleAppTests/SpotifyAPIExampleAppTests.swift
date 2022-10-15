@@ -24,6 +24,17 @@ class SpotifyAPIExampleAppTests: XCTestCase {
         
         setenv("CLIENT_ID", spotifyCredentials.clientId, 1)
         setenv("CLIENT_SECRET", spotifyCredentials.clientSecret, 1)
+        setenv("SPOTIFY_DC", spotifyDCCookieValue, 1)
+        
+        
+        setenv(
+            "SPOTIFY_AUTHORIZATION_CODE_FLOW_TOKENS_URL",
+            authorizationCodeFlowTokensURL.absoluteString, 1
+        )
+        setenv(
+            "SPOTIFY_AUTHORIZATION_CODE_FLOW_REFRESH_TOKENS_URL",
+            authorizationCodeFlowRefreshTokensURL.absoluteString, 1
+        )
 
         Self.spotifyAPI.authorizationManager.authorizeAndWaitForTokens()
         print("\n--- DID AUTHORIZE SPOTIFY API ---\n")

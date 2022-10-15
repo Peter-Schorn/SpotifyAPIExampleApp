@@ -65,6 +65,7 @@
 		470813092515EA2800794934 /* Spotify.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Spotify.swift; sourceTree = "<group>"; };
 		4708130D2515EB6B00794934 /* ImageNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageNames.swift; sourceTree = "<group>"; };
 		4712ECA42669639A00B66884 /* RecentlyPlayedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentlyPlayedView.swift; sourceTree = "<group>"; };
+		4713F1E228FB0F7000735CB0 /* SpotifyAPI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = SpotifyAPI; path = ../../../../Libraries/SpotifyAPI; sourceTree = "<group>"; };
 		4724B02C26579ECD00974519 /* PublisherExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublisherExtensions.swift; sourceTree = "<group>"; };
 		4725249A253F8B9B00F3FD13 /* LoginView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		4726655425B16B8C0056A10E /* EquatableOverloads.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquatableOverloads.swift; sourceTree = "<group>"; };
@@ -120,6 +121,7 @@
 		470812E02515E4D700794934 = {
 			isa = PBXGroup;
 			children = (
+				4713F1E228FB0F7000735CB0 /* SpotifyAPI */,
 				47ED3B3A254BCA9200D2D4B7 /* SpotifyiOS.framework */,
 				470812EB2515E4D700794934 /* SpotifyAPIExampleApp */,
 				47CA8C6B265430310057D6B5 /* SpotifyAPIExampleAppTests */,
