@@ -55,17 +55,17 @@
          <EnvironmentVariable
             key = "CLIENT_ID"
             value = "your client id"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "TOKENS_URL"
             value = "token swap URL"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "TOKENS_REFRESH_URL"
             value = "token refresh URL"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </EnvironmentVariable>
       </EnvironmentVariables>
    </LaunchAction>
