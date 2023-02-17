@@ -16,7 +16,6 @@
 		4708130E2515EB6B00794934 /* ImageNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4708130D2515EB6B00794934 /* ImageNames.swift */; };
 		4712ECA52669639A00B66884 /* RecentlyPlayedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4712ECA42669639A00B66884 /* RecentlyPlayedView.swift */; };
 		4713F1E528FB1DDB00735CB0 /* SpotifyAPI in Frameworks */ = {isa = PBXBuildFile; productRef = 4713F1E428FB1DDB00735CB0 /* SpotifyAPI */; };
-		4713F1E728FB1DDB00735CB0 /* _SpotifyAPITestUtilities in Frameworks */ = {isa = PBXBuildFile; productRef = 4713F1E628FB1DDB00735CB0 /* _SpotifyAPITestUtilities */; };
 		4724B02D26579ECD00974519 /* PublisherExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4724B02C26579ECD00974519 /* PublisherExtensions.swift */; };
 		4725249B253F8B9B00F3FD13 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4725249A253F8B9B00F3FD13 /* LoginView.swift */; };
 		4726655525B16B8C0056A10E /* EquatableOverloads.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4726655425B16B8C0056A10E /* EquatableOverloads.swift */; };
@@ -100,7 +99,6 @@
 				470813032515E8A200794934 /* KeychainAccess in Frameworks */,
 				4713F1E528FB1DDB00735CB0 /* SpotifyAPI in Frameworks */,
 				47CA8C7D26543DF40057D6B5 /* SpotifyiOS.framework in Frameworks */,
-				4713F1E728FB1DDB00735CB0 /* _SpotifyAPITestUtilities in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -255,7 +253,6 @@
 			packageProductDependencies = (
 				470813022515E8A200794934 /* KeychainAccess */,
 				4713F1E428FB1DDB00735CB0 /* SpotifyAPI */,
-				4713F1E628FB1DDB00735CB0 /* _SpotifyAPITestUtilities */,
 			);
 			productName = SpotifyAPIExampleApp;
 			productReference = 470812E92515E4D700794934 /* SpotifyAPIExampleApp.app */;
@@ -431,7 +428,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = YES;
+				ENABLE_TESTABILITY = NO;
 				ENABLE_TESTING_SEARCH_PATHS = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -694,11 +691,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 4713F1E328FB1DDB00735CB0 /* XCRemoteSwiftPackageReference "SpotifyAPI" */;
 			productName = SpotifyAPI;
-		};
-		4713F1E628FB1DDB00735CB0 /* _SpotifyAPITestUtilities */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 4713F1E328FB1DDB00735CB0 /* XCRemoteSwiftPackageReference "SpotifyAPI" */;
-			productName = _SpotifyAPITestUtilities;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -34,9 +34,9 @@ extension Scope {
         return sptScope.elements.reduce(into: []) { scopes, scope in
             switch scope {
                 case .playlistReadPrivate:
-                    scopes.insert(playlistReadPrivate)
+                    scopes.insert(.playlistReadPrivate)
                 case .playlistReadCollaborative:
-                    scopes.insert(playlistReadCollaborative)
+                    scopes.insert(.playlistReadCollaborative)
                 case .playlistModifyPublic:
                     scopes.insert(.playlistModifyPublic)
                 case .playlistModifyPrivate:
