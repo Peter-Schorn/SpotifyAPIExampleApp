@@ -40,7 +40,7 @@ To expirement with this app, add your own views to the `List` in [`ExamplesListV
 [auth did change method]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/8d41edb66c43df27b0c675526f531116e3df8fcc/SpotifyAPIExampleApp/Model/Spotify.swift#L187-L235
 [is authorized]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/8d41edb66c43df27b0c675526f531116e3df8fcc/SpotifyAPIExampleApp/Model/Spotify.swift#L67
 [is authorized true]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/8d41edb66c43df27b0c675526f531116e3df8fcc/SpotifyAPIExampleApp/Model/Spotify.swift#L208
-[persistent storage]:https://peter-schorn.github.io/SpotifyAPI/documentation/spotifywebapi/saving-the-authorization-information-to-persistent-storage.
+[persistent storage]:https://peter-schorn.github.io/SpotifyAPI/documentation/spotifywebapi/saving-the-authorization-information-to-persistent-storage/
 [spotify file]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/main/SpotifyAPIExampleApp/Model/Spotify.swift
 [did deauth method]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/8d41edb66c43df27b0c675526f531116e3df8fcc/SpotifyAPIExampleApp/Model/Spotify.swift#L237-L271
 [logout button]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/8d41edb66c43df27b0c675526f531116e3df8fcc/SpotifyAPIExampleApp/Views/RootView.swift#L116-L131
@@ -51,4 +51,3 @@ To expirement with this app, add your own views to the `List` in [`ExamplesListV
 [spotify init keychain]: https://github.com/Peter-Schorn/SpotifyAPIExampleApp/blob/8d41edb66c43df27b0c675526f531116e3df8fcc/SpotifyAPIExampleApp/Model/Spotify.swift#L114
 [token swap]: https://developer.spotify.com/documentation/ios/guides/token-swap-and-refresh/
 [spotify api server]: https://github.com/Peter-Schorn/SpotifyAPIServer
-
