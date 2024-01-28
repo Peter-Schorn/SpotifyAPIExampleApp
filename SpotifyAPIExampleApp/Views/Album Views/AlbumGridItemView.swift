@@ -8,7 +8,7 @@ struct AlbumGridItemView: View {
     @EnvironmentObject var spotify: Spotify
     
     /// The cover image for the album.
-    @State private var image = Image(.spotifyAlbumPlaceholder)
+    @State private var image = Image(ImageName.spotifyAlbumPlaceholder)
     
     @State private var loadImageCancellable: AnyCancellable? = nil
     @State private var didRequestImage = false

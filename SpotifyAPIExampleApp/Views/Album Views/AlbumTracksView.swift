@@ -190,7 +190,7 @@ struct AlbumTracksView_Previews: PreviewProvider {
         NavigationView {
             AlbumTracksView(
                 album: album,
-                image: Image(.spotifyAlbumPlaceholder),
+                image: Image(ImageName.spotifyAlbumPlaceholder),
                 tracks: tracks
             )
             .environmentObject(spotify)

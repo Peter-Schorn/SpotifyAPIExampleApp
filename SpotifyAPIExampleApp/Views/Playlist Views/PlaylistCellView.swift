@@ -11,7 +11,7 @@ struct PlaylistCellView: View {
     let playlist: Playlist<PlaylistItemsReference>
 
     /// The cover image for the playlist.
-    @State private var image = Image(.spotifyAlbumPlaceholder)
+    @State private var image = Image(ImageName.spotifyAlbumPlaceholder)
 
     @State private var didRequestImage = false
     
